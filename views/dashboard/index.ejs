@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+
+<section class="container hero">
+  <div class="hero-card">
+    <p class="eyebrow">Budget overview</p>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-text">
+      This page will display balance summary, recent transactions,
+      category analytics and quick actions for managing the budget.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/login" class="btn btn-primary">Open project</a>
+      <a href="/register" class="btn btn-secondary">Create account</a>
+    </div>
+  </div>
+</section>
+
+<section class="container cards-grid">
+  <article class="info-card">
+    <h2>Total balance</h2>
+    <p class="card-value">0.00</p>
+    <p class="card-text">Summary balance placeholder for future calculations.</p>
+  </article>
+
+  <article class="info-card">
+    <h2>Income</h2>
+    <p class="card-value">0.00</p>
+    <p class="card-text">Income data will be connected after database setup.</p>
+  </article>
+
+  <article class="info-card">
+    <h2>Expenses</h2>
+    <p class="card-value">0.00</p>
+    <p class="card-text">Expense data will appear here once transactions are added.</p>
+  </article>
+</section>
+
+<%- include('../partials/footer') %>

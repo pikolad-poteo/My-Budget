@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: white;
+  color: black;
+}
+
+.container {
+  width: 700px;
+  margin: 100px auto 0;
+  text-align: center;
+}
+
+.header,
+.main,
+.footer {
+  margin-bottom: 30px;
+}

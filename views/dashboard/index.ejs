@@ -1,18 +1,12 @@
 <%- include('../partials/header') %>
 
-<section class="container hero">
-  <div class="hero-card">
-    <p class="eyebrow">Budget overview</p>
+<section class="container page-heading">
+  <div>
+    <p class="eyebrow">Overview</p>
     <h1 class="page-title">Dashboard</h1>
     <p class="page-text">
-      This page will display balance summary, recent transactions,
-      category analytics and quick actions for managing the budget.
+      Main page with balance summary, category analytics and quick actions.
     </p>
-
-    <div class="hero-actions">
-      <a href="/login" class="btn btn-primary">Open project</a>
-      <a href="/register" class="btn btn-secondary">Create account</a>
-    </div>
   </div>
 </section>
 
@@ -20,20 +14,50 @@
   <article class="info-card">
     <h2>Total balance</h2>
     <p class="card-value">0.00</p>
-    <p class="card-text">Summary balance placeholder for future calculations.</p>
+    <p class="card-text">Balance summary will be connected after database setup.</p>
   </article>
 
   <article class="info-card">
-    <h2>Income</h2>
+    <h2>Total income</h2>
     <p class="card-value">0.00</p>
-    <p class="card-text">Income data will be connected after database setup.</p>
+    <p class="card-text">Income analytics will appear here in future updates.</p>
   </article>
 
   <article class="info-card">
-    <h2>Expenses</h2>
+    <h2>Total expenses</h2>
     <p class="card-value">0.00</p>
-    <p class="card-text">Expense data will appear here once transactions are added.</p>
+    <p class="card-text">Expense analytics will be displayed after transactions integration.</p>
   </article>
+</section>
+
+<section class="container section-block">
+  <div class="section-card">
+    <div class="section-header">
+      <h2>Quick actions</h2>
+    </div>
+
+    <div class="actions-grid">
+      <a href="/categories" class="action-card">
+        <h3>Manage categories</h3>
+        <p>Create income and expense categories.</p>
+      </a>
+
+      <a href="/transactions" class="action-card">
+        <h3>View transactions</h3>
+        <p>Open transaction history and filters.</p>
+      </a>
+
+      <a href="/wishlist" class="action-card">
+        <h3>Open wishlist</h3>
+        <p>Plan future purchases and goals.</p>
+      </a>
+
+      <a href="/calendar" class="action-card">
+        <h3>Open calendar</h3>
+        <p>Manage events and reminders.</p>
+      </a>
+    </div>
+  </div>
 </section>
 
 <%- include('../partials/footer') %>

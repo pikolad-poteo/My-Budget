@@ -16,12 +16,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Redirect root URL to the main dashboard page
+
+
+// Route: root page
+// Redirects user from the main URL to the dashboard page
 app.get('/', (req, res) => {
   res.redirect('/dashboard');
 });
 
-// Dashboard page route
+// Route: dashboard page
+// Renders the main dashboard interface
 app.get('/dashboard', (req, res) => {
   res.render('dashboard/index', {
     title: 'Dashboard',
@@ -29,7 +33,53 @@ app.get('/dashboard', (req, res) => {
   });
 });
 
-// Login page route
+// Route: categories page
+// Displays the categories management page
+app.get('/categories', (req, res) => {
+  res.render('categories/index', {
+    title: 'Categories',
+    activePage: 'categories'
+  });
+});
+
+// Route: transactions page
+// Displays the page with financial transactions
+app.get('/transactions', (req, res) => {
+  res.render('transactions/index', {
+    title: 'Transactions',
+    activePage: 'transactions'
+  });
+});
+
+// Route: family page
+// Displays the family members section
+app.get('/family', (req, res) => {
+  res.render('family/index', {
+    title: 'Family',
+    activePage: 'family'
+  });
+});
+
+// Route: wishlist page
+// Displays the wishlist page with planned purchases
+app.get('/wishlist', (req, res) => {
+  res.render('wishlist/index', {
+    title: 'Wishlist',
+    activePage: 'wishlist'
+  });
+});
+
+// Route: calendar page
+// Displays the calendar view for planning and events
+app.get('/calendar', (req, res) => {
+  res.render('calendar/index', {
+    title: 'Calendar',
+    activePage: 'calendar'
+  });
+});
+
+// Route: login page
+// Renders the user login form
 app.get('/login', (req, res) => {
   res.render('login', {
     title: 'Login',
@@ -37,7 +87,8 @@ app.get('/login', (req, res) => {
   });
 });
 
-// Registration page route
+// Route: register page
+// Renders the user registration form
 app.get('/register', (req, res) => {
   res.render('register', {
     title: 'Register',

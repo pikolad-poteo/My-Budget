@@ -13,9 +13,17 @@
 
       <nav class="nav">
         <a href="/dashboard" class="nav-link <%= activePage === 'dashboard' ? 'is-active' : '' %>">Dashboard</a>
-        <a href="/login" class="nav-link <%= activePage === 'login' ? 'is-active' : '' %>">Login</a>
-        <a href="/register" class="nav-link <%= activePage === 'register' ? 'is-active' : '' %>">Register</a>
+        <a href="/categories" class="nav-link <%= activePage === 'categories' ? 'is-active' : '' %>">Categories</a>
+        <a href="/transactions" class="nav-link <%= activePage === 'transactions' ? 'is-active' : '' %>">Transactions</a>
+        <a href="/family" class="nav-link <%= activePage === 'family' ? 'is-active' : '' %>">Family</a>
+        <a href="/wishlist" class="nav-link <%= activePage === 'wishlist' ? 'is-active' : '' %>">Wishlist</a>
+        <a href="/calendar" class="nav-link <%= activePage === 'calendar' ? 'is-active' : '' %>">Calendar</a>
       </nav>
+
+      <div class="header-actions">
+        <a href="/login" class="header-link">Login</a>
+        <a href="/register" class="btn btn-primary btn-small">Register</a>
+      </div>
     </div>
   </header>
 

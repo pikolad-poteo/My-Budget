@@ -2,24 +2,231 @@
 
 <section class="container page-heading">
   <div>
-    <p class="eyebrow">Shared budget</p>
-    <h1 class="page-title">Family</h1>
+    <p class="eyebrow">Shared budget workspace</p>
+    <h1 class="page-title">Family settings</h1>
     <p class="page-text">
-      Family members, permissions and shared budget settings will be managed here.
+      Manage your shared household, member access and collaboration settings for the family budget.
     </p>
   </div>
 </section>
 
-<section class="container section-block">
-  <div class="section-card">
-    <div class="section-header">
-      <h2>Family settings</h2>
+<section class="container family-grid">
+  <div class="family-main">
+    <div class="section-card family-overview-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Overview</p>
+          <h2>Budget group information</h2>
+        </div>
+        <span class="status-badge status-badge-active">Active</span>
+      </div>
+
+      <div class="family-overview-stats">
+        <div class="family-stat-box">
+          <span class="family-stat-label">Family name</span>
+          <strong class="family-stat-value">My Budget Home</strong>
+        </div>
+
+        <div class="family-stat-box">
+          <span class="family-stat-label">Members</span>
+          <strong class="family-stat-value">4</strong>
+        </div>
+
+        <div class="family-stat-box">
+          <span class="family-stat-label">Owner</span>
+          <strong class="family-stat-value"><%= currentUser ? currentUser.name : 'Current user' %></strong>
+        </div>
+      </div>
+
+      <p class="family-description">
+        Your family workspace combines shared transactions, categories, financial planning and activity tracking in one place.
+      </p>
     </div>
 
-    <div class="placeholder-box">
-      <p>Member invitation, editing and management UI will be added in future updates.</p>
+    <div class="section-card family-members-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Members</p>
+          <h2>Current family members</h2>
+        </div>
+        <button class="btn btn-secondary btn-small" type="button">Invite member</button>
+      </div>
+
+      <div class="family-members-list">
+        <article class="family-member-item">
+          <div class="family-member-info">
+            <div class="family-member-avatar">A</div>
+            <div>
+              <h3><%= currentUser ? currentUser.name : 'Alex Johnson' %></h3>
+              <p><%= currentUser ? currentUser.email : 'alex@example.com' %></p>
+            </div>
+          </div>
+
+          <div class="family-member-meta">
+            <span class="role-badge role-badge-owner">Owner</span>
+            <div class="family-member-actions">
+              <button class="btn btn-secondary btn-small" type="button">Edit</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="family-member-item">
+          <div class="family-member-info">
+            <div class="family-member-avatar family-member-avatar-soft">M</div>
+            <div>
+              <h3>Maria Johnson</h3>
+              <p>maria@example.com</p>
+            </div>
+          </div>
+
+          <div class="family-member-meta">
+            <span class="role-badge">Member</span>
+            <div class="family-member-actions">
+              <button class="btn btn-secondary btn-small" type="button">Edit</button>
+              <button class="btn btn-secondary btn-small" type="button">Remove</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="family-member-item">
+          <div class="family-member-info">
+            <div class="family-member-avatar family-member-avatar-soft">D</div>
+            <div>
+              <h3>Daniel Johnson</h3>
+              <p>daniel@example.com</p>
+            </div>
+          </div>
+
+          <div class="family-member-meta">
+            <span class="role-badge">Viewer</span>
+            <div class="family-member-actions">
+              <button class="btn btn-secondary btn-small" type="button">Edit</button>
+              <button class="btn btn-secondary btn-small" type="button">Remove</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="section-card family-activity-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Recent activity</p>
+          <h2>Latest household updates</h2>
+        </div>
+      </div>
+
+      <div class="family-activity-list">
+        <article class="family-activity-item">
+          <div class="family-activity-dot"></div>
+          <div>
+            <h3>Maria joined the shared budget</h3>
+            <p>New member access was added to the family workspace.</p>
+          </div>
+          <span class="family-activity-time">Today</span>
+        </article>
+
+        <article class="family-activity-item">
+          <div class="family-activity-dot"></div>
+          <div>
+            <h3>Transaction permissions updated</h3>
+            <p>Editors can now manage shared expense records.</p>
+          </div>
+          <span class="family-activity-time">Yesterday</span>
+        </article>
+
+        <article class="family-activity-item">
+          <div class="family-activity-dot"></div>
+          <div>
+            <h3>Family budget created</h3>
+            <p>The shared workspace was created and linked to the owner account.</p>
+          </div>
+          <span class="family-activity-time">2 days ago</span>
+        </article>
+      </div>
     </div>
   </div>
+
+  <aside class="family-sidebar">
+    <div class="section-card family-invite-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Invitation</p>
+          <h2>Invite a new member</h2>
+        </div>
+      </div>
+
+      <form class="family-form">
+        <div class="form-group">
+          <label class="form-label" for="memberName">Full name</label>
+          <input class="form-input" id="memberName" name="memberName" type="text" placeholder="Enter member name" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="memberEmail">Email address</label>
+          <input class="form-input" id="memberEmail" name="memberEmail" type="email" placeholder="Enter email address" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="memberRole">Role</label>
+          <select class="form-input form-select" id="memberRole" name="memberRole">
+            <option value="member">Member</option>
+            <option value="viewer">Viewer</option>
+            <option value="editor">Editor</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Send invitation</button>
+      </form>
+    </div>
+
+    <div class="section-card family-permissions-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Permissions</p>
+          <h2>Access summary</h2>
+        </div>
+      </div>
+
+      <ul class="family-permissions-list">
+        <li>Owners can manage members and shared settings.</li>
+        <li>Editors can add and update transactions.</li>
+        <li>Members can work with the common budget.</li>
+        <li>Viewers can review information without editing.</li>
+      </ul>
+
+      <div class="family-sidebar-actions">
+        <button class="btn btn-secondary" type="button">Save changes</button>
+        <button class="btn btn-secondary" type="button">Leave family</button>
+      </div>
+    </div>
+
+    <div class="section-card family-rules-card">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Rules</p>
+          <h2>Shared budget notes</h2>
+        </div>
+      </div>
+
+      <div class="family-rules-list">
+        <div class="family-rule-item">
+          <strong>Transparency</strong>
+          <p>All shared transactions should remain visible to every family member.</p>
+        </div>
+
+        <div class="family-rule-item">
+          <strong>Consistency</strong>
+          <p>Use the same categories when recording recurring expenses.</p>
+        </div>
+
+        <div class="family-rule-item">
+          <strong>Planning</strong>
+          <p>Review future purchases together before adding them to the wishlist.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
 </section>
 
 <%- include('../partials/footer') %>

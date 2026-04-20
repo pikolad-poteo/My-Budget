@@ -1,23 +1,402 @@
 <%- include('../partials/header') %>
 
 <section class="container page-heading">
-  <div>
-    <p class="eyebrow">Scheduling</p>
-    <h1 class="page-title">Calendar</h1>
-    <p class="page-text">
-      The calendar page will contain family events, reminders and recurring activities.
-    </p>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <p class="eyebrow">Planning</p>
+      <h1 class="page-title">Calendar</h1>
+      <p class="page-text">
+        Manage family events, reminders, tasks, and important dates in one place.
+      </p>
+    </div>
+
+    <div>
+      <button type="button" class="btn btn-primary calendar-header-btn">
+        <i class="bi bi-plus-lg"></i>
+        Add event
+      </button>
+    </div>
   </div>
 </section>
 
-<section class="container section-block">
-  <div class="section-card">
-    <div class="section-header">
-      <h2>Event calendar</h2>
-    </div>
+<section class="container section-block calendar-page">
+  <div class="calendar-layout">
+    <aside class="calendar-sidebar section-card">
+      <div class="section-header">
+        <div>
+          <p class="section-label">Quick add</p>
+          <h2>New event</h2>
+        </div>
+      </div>
 
-    <div class="placeholder-box">
-      <p>Calendar views, event forms and scheduling controls will be implemented later.</p>
+      <form class="calendar-quick-form">
+        <div class="form-group">
+          <label for="eventTitle" class="form-label">Title</label>
+          <input
+            type="text"
+            id="eventTitle"
+            class="form-control"
+            placeholder="Enter event title"
+          />
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="eventDate" class="form-label">Date</label>
+            <input type="date" id="eventDate" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="eventTime" class="form-label">Time</label>
+            <input type="time" id="eventTime" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="eventType" class="form-label">Type</label>
+            <select id="eventType" class="form-select">
+              <option>Event</option>
+              <option>Reminder</option>
+              <option>Task</option>
+              <option>Birthday</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="eventMember" class="form-label">Member</label>
+            <select id="eventMember" class="form-select">
+              <option>All family</option>
+              <option>Alex</option>
+              <option>Maria</option>
+              <option>Chris</option>
+            </select>
+          </div>
+        </div>
+
+        <details class="calendar-expandable">
+          <summary>More options</summary>
+
+          <div class="calendar-expandable-content">
+            <div class="form-group">
+              <label for="eventDescription" class="form-label">Description</label>
+              <textarea
+                id="eventDescription"
+                class="form-control form-textarea"
+                rows="4"
+                placeholder="Add a note about this event"
+              ></textarea>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="eventColor" class="form-label">Color</label>
+                <select id="eventColor" class="form-select">
+                  <option>Blue</option>
+                  <option>Green</option>
+                  <option>Orange</option>
+                  <option>Red</option>
+                  <option>Purple</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="eventRepeat" class="form-label">Repeat</label>
+                <select id="eventRepeat" class="form-select">
+                  <option>Does not repeat</option>
+                  <option>Daily</option>
+                  <option>Weekly</option>
+                  <option>Monthly</option>
+                  <option>Yearly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="calendar-checks">
+              <label class="calendar-check">
+                <input type="checkbox" />
+                <span>All day</span>
+              </label>
+
+              <label class="calendar-check">
+                <input type="checkbox" />
+                <span>Important</span>
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <div class="calendar-form-actions">
+          <button type="button" class="btn btn-primary">Save event</button>
+          <button type="reset" class="btn btn-outline-secondary">Clear</button>
+        </div>
+      </form>
+    </aside>
+
+    <div class="calendar-main">
+      <section class="section-card calendar-board">
+        <div class="calendar-toolbar">
+          <div class="calendar-toolbar-left">
+            <div class="calendar-nav-group">
+              <button type="button" class="calendar-nav-btn">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" class="calendar-nav-btn">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm">
+              Today
+            </button>
+
+            <div class="calendar-current-period">April 2026</div>
+          </div>
+
+          <div class="calendar-toolbar-right">
+            <div class="calendar-view-switch">
+              <button type="button" class="calendar-view-btn is-active">Month</button>
+              <button type="button" class="calendar-view-btn">Day</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="calendar-weekdays">
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+          <div>Sun</div>
+        </div>
+
+        <div class="calendar-month-grid">
+          <div class="calendar-day is-muted">
+            <div class="calendar-day-number">30</div>
+          </div>
+
+          <div class="calendar-day is-muted">
+            <div class="calendar-day-number">31</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">1</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-reminder">Pay rent</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">2</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">3</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-event">Family dinner</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">4</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">5</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">6</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">7</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">8</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-task">Budget review</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">9</div>
+          </div>
+
+          <div class="calendar-day is-selected">
+            <div class="calendar-day-number">10</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-birthday">Mom birthday</span>
+              <span class="calendar-event-pill type-event">Doctor visit</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">11</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">12</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">13</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">14</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">15</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">16</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">17</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">18</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-reminder">Electricity bill</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">19</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">20</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">21</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">22</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">23</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">24</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">25</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">26</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">27</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">28</div>
+            <div class="calendar-day-events">
+              <span class="calendar-event-pill type-task">Update expenses</span>
+            </div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">29</div>
+          </div>
+
+          <div class="calendar-day">
+            <div class="calendar-day-number">30</div>
+          </div>
+
+          <div class="calendar-day is-muted">
+            <div class="calendar-day-number">1</div>
+          </div>
+
+          <div class="calendar-day is-muted">
+            <div class="calendar-day-number">2</div>
+          </div>
+
+          <div class="calendar-day is-muted">
+            <div class="calendar-day-number">3</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card calendar-day-panel">
+        <div class="section-header">
+          <div>
+            <p class="section-label">Selected date</p>
+            <h2>10 April 2026</h2>
+          </div>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm">
+            Day view
+          </button>
+        </div>
+
+        <div class="calendar-day-list">
+          <article class="calendar-day-item">
+            <div class="calendar-day-item-color type-birthday"></div>
+            <div class="calendar-day-item-body">
+              <div class="calendar-day-item-top">
+                <h3>Mom birthday</h3>
+                <span class="calendar-day-item-time">All day</span>
+              </div>
+              <p class="calendar-day-item-meta">Birthday • Maria</p>
+              <p class="calendar-day-item-text">
+                Buy flowers and prepare a small family dinner in the evening.
+              </p>
+            </div>
+            <div class="calendar-day-item-actions">
+              <button type="button" class="icon-btn">
+                <i class="bi bi-check2-circle"></i>
+              </button>
+              <button type="button" class="icon-btn">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="icon-btn">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </article>
+
+          <article class="calendar-day-item">
+            <div class="calendar-day-item-color type-event"></div>
+            <div class="calendar-day-item-body">
+              <div class="calendar-day-item-top">
+                <h3>Doctor visit</h3>
+                <span class="calendar-day-item-time">14:30</span>
+              </div>
+              <p class="calendar-day-item-meta">Event • Alex</p>
+              <p class="calendar-day-item-text">
+                Regular appointment. Do not forget insurance documents.
+              </p>
+            </div>
+            <div class="calendar-day-item-actions">
+              <button type="button" class="icon-btn">
+                <i class="bi bi-check2-circle"></i>
+              </button>
+              <button type="button" class="icon-btn">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="icon-btn">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
     </div>
   </div>
 </section>

@@ -1,5 +1,17 @@
 <%- include('../partials/header') %>
 
+<%
+  const currentFamily = typeof family !== 'undefined' ? family : null;
+  const familyMembers = typeof members !== 'undefined' ? members : [];
+  const pageError = typeof errorMessage !== 'undefined' ? errorMessage : '';
+  const pageSuccess = typeof successMessage !== 'undefined' ? successMessage : '';
+
+  const ownerMember = familyMembers.find((member) => member.role === 'owner');
+  const ownerName = ownerMember
+    ? ownerMember.name
+    : (currentUser ? currentUser.name : 'Current user');
+%>
+
 <section class="container page-heading">
   <div>
     <p class="eyebrow">Shared budget workspace</p>
@@ -18,30 +30,80 @@
           <p class="section-label">Overview</p>
           <h2>Budget group information</h2>
         </div>
-        <span class="status-badge status-badge-active">Active</span>
+
+        <% if (currentFamily) { %>
+          <span class="status-badge status-badge-active">Active</span>
+        <% } else { %>
+          <span class="status-badge">Not created</span>
+        <% } %>
       </div>
 
       <div class="family-overview-stats">
         <div class="family-stat-box">
           <span class="family-stat-label">Family name</span>
-          <strong class="family-stat-value">My Budget Home</strong>
+          <strong class="family-stat-value">
+            <%= currentFamily ? currentFamily.name : 'No family yet' %>
+          </strong>
         </div>
 
         <div class="family-stat-box">
           <span class="family-stat-label">Members</span>
-          <strong class="family-stat-value">4</strong>
+          <strong class="family-stat-value"><%= familyMembers.length %></strong>
         </div>
 
         <div class="family-stat-box">
           <span class="family-stat-label">Owner</span>
-          <strong class="family-stat-value"><%= currentUser ? currentUser.name : 'Current user' %></strong>
+          <strong class="family-stat-value"><%= ownerName %></strong>
         </div>
       </div>
 
       <p class="family-description">
-        Your family workspace combines shared transactions, categories, financial planning and activity tracking in one place.
+        <% if (currentFamily) { %>
+          Your family workspace combines shared transactions, categories, financial planning and activity tracking in one place.
+        <% } else { %>
+          Create a family workspace to start sharing categories, transactions and planning tools with other registered users.
+        <% } %>
       </p>
+
+      <% if (pageError) { %>
+        <div class="alert alert-danger"><%= pageError %></div>
+      <% } %>
+
+      <% if (pageSuccess) { %>
+        <div class="alert alert-success"><%= pageSuccess %></div>
+      <% } %>
     </div>
+
+    <% if (!currentFamily) { %>
+      <div class="section-card family-create-card">
+        <div class="section-header family-section-header">
+          <div>
+            <p class="section-label">Setup</p>
+            <h2>Create your family workspace</h2>
+          </div>
+        </div>
+
+        <p class="family-description">
+          Start by creating one shared family space. After that, you can invite other registered users by email.
+        </p>
+
+        <form class="family-form" action="/family/create" method="POST">
+          <div class="form-group">
+            <label class="form-label" for="familyName">Family name</label>
+            <input
+              class="form-input"
+              id="familyName"
+              name="familyName"
+              type="text"
+              placeholder="Enter family name"
+              required
+            />
+          </div>
+
+          <button class="btn btn-primary" type="submit">Create family</button>
+        </form>
+      </div>
+    <% } %>
 
     <div class="section-card family-members-card">
       <div class="section-header family-section-header">
@@ -49,62 +111,56 @@
           <p class="section-label">Members</p>
           <h2>Current family members</h2>
         </div>
-        <button class="btn btn-secondary btn-small" type="button">Invite member</button>
+
+        <% if (currentFamily) { %>
+          <span class="status-badge status-badge-active">Connected</span>
+        <% } else { %>
+          <span class="status-badge">Waiting setup</span>
+        <% } %>
       </div>
 
       <div class="family-members-list">
-        <article class="family-member-item">
-          <div class="family-member-info">
-            <div class="family-member-avatar">A</div>
-            <div>
-              <h3><%= currentUser ? currentUser.name : 'Alex Johnson' %></h3>
-              <p><%= currentUser ? currentUser.email : 'alex@example.com' %></p>
-            </div>
-          </div>
+        <% if (!currentFamily) { %>
+          <p class="family-empty-text">
+            No family members yet because the family workspace has not been created.
+          </p>
+        <% } else if (familyMembers.length === 0) { %>
+          <p class="family-empty-text">
+            No members found in this family.
+          </p>
+        <% } else { %>
+          <% familyMembers.forEach((member) => { %>
+            <article class="family-member-item">
+              <div class="family-member-info">
+                <div class="family-member-avatar <%= member.role === 'owner' ? '' : 'family-member-avatar-soft' %>">
+                  <%= member.name ? member.name.charAt(0).toUpperCase() : '?' %>
+                </div>
+                <div>
+                  <h3><%= member.name %></h3>
+                  <p><%= member.email %></p>
+                </div>
+              </div>
 
-          <div class="family-member-meta">
-            <span class="role-badge role-badge-owner">Owner</span>
-            <div class="family-member-actions">
-              <button class="btn btn-secondary btn-small" type="button">Edit</button>
-            </div>
-          </div>
-        </article>
+              <div class="family-member-meta">
+                <span class="role-badge <%= member.role === 'owner' ? 'role-badge-owner' : '' %>">
+                  <%= member.role === 'owner' ? 'Owner' : 'Member' %>
+                </span>
 
-        <article class="family-member-item">
-          <div class="family-member-info">
-            <div class="family-member-avatar family-member-avatar-soft">M</div>
-            <div>
-              <h3>Maria Johnson</h3>
-              <p>maria@example.com</p>
-            </div>
-          </div>
-
-          <div class="family-member-meta">
-            <span class="role-badge">Member</span>
-            <div class="family-member-actions">
-              <button class="btn btn-secondary btn-small" type="button">Edit</button>
-              <button class="btn btn-secondary btn-small" type="button">Remove</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="family-member-item">
-          <div class="family-member-info">
-            <div class="family-member-avatar family-member-avatar-soft">D</div>
-            <div>
-              <h3>Daniel Johnson</h3>
-              <p>daniel@example.com</p>
-            </div>
-          </div>
-
-          <div class="family-member-meta">
-            <span class="role-badge">Viewer</span>
-            <div class="family-member-actions">
-              <button class="btn btn-secondary btn-small" type="button">Edit</button>
-              <button class="btn btn-secondary btn-small" type="button">Remove</button>
-            </div>
-          </div>
-        </article>
+                <div class="family-member-actions">
+                  <% if (member.role === 'owner') { %>
+                    <button class="btn btn-secondary btn-small" type="button" disabled>
+                      Owner account
+                    </button>
+                  <% } else { %>
+                    <button class="btn btn-secondary btn-small" type="button" disabled>
+                      Member linked
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        <% } %>
       </div>
     </div>
 
@@ -117,32 +173,48 @@
       </div>
 
       <div class="family-activity-list">
-        <article class="family-activity-item">
-          <div class="family-activity-dot"></div>
-          <div>
-            <h3>Maria joined the shared budget</h3>
-            <p>New member access was added to the family workspace.</p>
-          </div>
-          <span class="family-activity-time">Today</span>
-        </article>
+        <% if (!currentFamily) { %>
+          <article class="family-activity-item">
+            <div class="family-activity-dot"></div>
+            <div>
+              <h3>Family workspace not created yet</h3>
+              <p>Create your first family to start shared budget collaboration.</p>
+            </div>
+            <span class="family-activity-time">Now</span>
+          </article>
+        <% } else { %>
+          <article class="family-activity-item">
+            <div class="family-activity-dot"></div>
+            <div>
+              <h3>Family workspace is active</h3>
+              <p>
+                The shared family budget <strong><%= currentFamily.name %></strong> is connected to your account.
+              </p>
+            </div>
+            <span class="family-activity-time">Current</span>
+          </article>
 
-        <article class="family-activity-item">
-          <div class="family-activity-dot"></div>
-          <div>
-            <h3>Transaction permissions updated</h3>
-            <p>Editors can now manage shared expense records.</p>
-          </div>
-          <span class="family-activity-time">Yesterday</span>
-        </article>
+          <article class="family-activity-item">
+            <div class="family-activity-dot"></div>
+            <div>
+              <h3>Member count updated</h3>
+              <p>
+                This workspace currently has <strong><%= familyMembers.length %></strong> linked
+                <%= familyMembers.length === 1 ? 'member' : 'members' %>.
+              </p>
+            </div>
+            <span class="family-activity-time">Live</span>
+          </article>
 
-        <article class="family-activity-item">
-          <div class="family-activity-dot"></div>
-          <div>
-            <h3>Family budget created</h3>
-            <p>The shared workspace was created and linked to the owner account.</p>
-          </div>
-          <span class="family-activity-time">2 days ago</span>
-        </article>
+          <article class="family-activity-item">
+            <div class="family-activity-dot"></div>
+            <div>
+              <h3>Shared features ready</h3>
+              <p>Family categories can now be used as a base for transactions and dashboard statistics.</p>
+            </div>
+            <span class="family-activity-time">Ready</span>
+          </article>
+        <% } %>
       </div>
     </div>
   </div>
@@ -156,28 +228,38 @@
         </div>
       </div>
 
-      <form class="family-form">
+      <form class="family-form" action="/family/add-member" method="POST">
         <div class="form-group">
-          <label class="form-label" for="memberName">Full name</label>
-          <input class="form-input" id="memberName" name="memberName" type="text" placeholder="Enter member name" />
+          <label class="form-label" for="email">Email address</label>
+          <input
+            class="form-input"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter registered user email"
+            <%= !currentFamily ? 'disabled' : '' %>
+            required
+          />
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="memberEmail">Email address</label>
-          <input class="form-input" id="memberEmail" name="memberEmail" type="email" placeholder="Enter email address" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="memberRole">Role</label>
-          <select class="form-input form-select" id="memberRole" name="memberRole">
-            <option value="member">Member</option>
-            <option value="viewer">Viewer</option>
-            <option value="editor">Editor</option>
-          </select>
-        </div>
-
-        <button class="btn btn-primary" type="submit">Send invitation</button>
+        <button class="btn btn-primary" type="submit" <%= !currentFamily ? 'disabled' : '' %>>
+          Add member
+        </button>
       </form>
+
+      <% if (!currentFamily) { %>
+        <p class="family-sidebar-note">
+          Create a family first, then you can add other registered users by email.
+        </p>
+      <% } else if (currentFamily.owner_user_id !== (currentUser ? currentUser.id : null)) { %>
+        <p class="family-sidebar-note">
+          Only the family owner can add new members.
+        </p>
+      <% } else { %>
+        <p class="family-sidebar-note">
+          The invited person must already have an account in My-Budget.
+        </p>
+      <% } %>
     </div>
 
     <div class="section-card family-permissions-card">
@@ -190,14 +272,13 @@
 
       <ul class="family-permissions-list">
         <li>Owners can manage members and shared settings.</li>
-        <li>Editors can add and update transactions.</li>
-        <li>Members can work with the common budget.</li>
-        <li>Viewers can review information without editing.</li>
+        <li>Family members can work with the common budget space.</li>
+        <li>Shared categories can be used later in transactions and reports.</li>
+        <li>Advanced role editing can be added in the next backend step.</li>
       </ul>
 
       <div class="family-sidebar-actions">
-        <button class="btn btn-secondary" type="button">Save changes</button>
-        <button class="btn btn-secondary" type="button">Leave family</button>
+        <button class="btn btn-secondary" type="button" disabled>Role editor coming later</button>
       </div>
     </div>
 

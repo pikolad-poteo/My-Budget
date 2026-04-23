@@ -1,3 +1,9 @@
+/**
+ * Categories routes.
+ * Handles category page rendering and category CRUD actions,
+ * including create, update, delete, search, and tab state persistence.
+ */
+
 const express = require('express');
 const router = express.Router();
 
@@ -16,6 +22,11 @@ const {
   getCategoryByIdForUser,
   findDuplicateCategory
 } = require('../scr/category.utils');
+
+const {
+  CATEGORY_ICON_OPTIONS,
+  CATEGORY_COLOR_OPTIONS
+} = require('../scr/category.constants');
 
 router.get('/categories', requireAuth, async (req, res) => {
   try {
@@ -56,6 +67,8 @@ router.get('/categories', requireAuth, async (req, res) => {
       expenseCategories,
       searchTerm,
       activeTab,
+      iconOptions: CATEGORY_ICON_OPTIONS,
+      colorOptions: CATEGORY_COLOR_OPTIONS,
       errorMessage: flash && flash.type === 'error' ? flash.message : '',
       successMessage: flash && flash.type === 'success' ? flash.message : ''
     });
@@ -71,6 +84,8 @@ router.get('/categories', requireAuth, async (req, res) => {
       expenseCategories: [],
       searchTerm: '',
       activeTab: 'expense',
+      iconOptions: CATEGORY_ICON_OPTIONS,
+      colorOptions: CATEGORY_COLOR_OPTIONS,
       errorMessage: 'Failed to load categories.',
       successMessage: ''
     });

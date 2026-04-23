@@ -1,0 +1,58 @@
+<% if (categories.length === 0) { %>
+  <div class="categories-empty-state">
+    <span class="categories-empty-icon"><i class="bi bi-tags"></i></span>
+    <h3><%= emptyTitle %></h3>
+    <p><%= emptyText %></p>
+  </div>
+<% } else { %>
+  <div class="categories-grid">
+    <% categories.forEach((category) => { %>
+      <article class="category-card">
+        <div
+          class="category-card-preview-shell"
+          style="border-color: <%= hexToRgba(category.color, 0.18) %>; background: linear-gradient(180deg, #ffffff 0%, <%= hexToRgba(category.color, 0.08) %> 100%);"
+        >
+          <div class="category-card-preview-main">
+            <span
+              class="category-card-icon"
+              style="background-color: <%= hexToRgba(category.color, 0.16) %>; color: <%= category.color || '#6c757d' %>;"
+            >
+              <i class="bi bi-<%= category.icon || 'tag' %>"></i>
+            </span>
+
+            <div class="category-card-body">
+              <h3><%= category.name %></h3>
+              <p><%= getCategoryHint(category) %></p>
+            </div>
+          </div>
+
+          <div class="category-card-badges">
+            <span class="category-badge"><%= getTypeLabel(category.type) %></span>
+            <span class="category-badge category-badge--soft"><%= getScopeLabel(category) %></span>
+          </div>
+        </div>
+
+        <details class="category-editor">
+          <summary class="category-editor-summary">
+            <span>Edit category</span>
+            <i class="bi bi-chevron-down"></i>
+          </summary>
+
+          <%- include('./_edit_form', {
+            category,
+            activeTab,
+            currentSearch,
+            iconOptions,
+            typeKey
+          }) %>
+        </details>
+      </article>
+    <% }) %>
+
+    <button class="category-card category-card-add" type="button" data-add-card-type="<%= typeKey %>">
+      <span class="category-add-icon"><i class="bi bi-plus-lg"></i></span>
+      <strong><%= addButtonTitle %></strong>
+      <span><%= addButtonText %></span>
+    </button>
+  </div>
+<% } %>

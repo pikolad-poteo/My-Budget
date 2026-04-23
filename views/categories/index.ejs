@@ -6,95 +6,6 @@
   const totalCount = expenseCount + incomeCount;
   const currentSearch = typeof searchTerm === 'string' ? searchTerm : '';
 
-  const iconOptions = [
-    'cart3',
-    'house-door',
-    'car-front',
-    'bus-front',
-    'heart-pulse',
-    'controller',
-    'cup-hot',
-    'lightning-charge',
-    'wallet2',
-    'bank',
-    'briefcase',
-    'gift',
-    'airplane',
-    'book',
-    'basket',
-    'phone',
-    'cash-stack',
-    'piggy-bank',
-    'credit-card',
-    'bag',
-    'shop',
-    'shop-window',
-    'basket2',
-    'egg-fried',
-    'cake2',
-    'cup-straw',
-    'bicycle',
-    'fuel-pump',
-    'train-front',
-    'ev-front',
-    'capsule',
-    'hospital',
-    'tv',
-    'laptop',
-    'tablet',
-    'phone-fill',
-    'wifi',
-    'palette',
-    'camera',
-    'music-note-beamed',
-    'film',
-    'book-half',
-    'mortarboard',
-    'balloon',
-    'flower1',
-    'gem',
-    'sun',
-    'moon-stars',
-    'tree',
-    'hammer',
-    'tools',
-    'wrench-adjustable',
-    'house-heart',
-    'people',
-    'person-heart',
-    'trophy',
-    'rocket',
-    'globe2',
-    'map',
-    'geo-alt',
-    'archive',
-    'box-seam',
-    'tag',
-    'tags',
-    'receipt',
-    'clipboard-data',
-    'graph-up-arrow',
-    'coin'
-  ];
-
-  const colorOptions = [
-    '#ef4444',
-    '#f97316',
-    '#f59e0b',
-    '#eab308',
-    '#22c55e',
-    '#10b981',
-    '#3b82f6',
-    '#6366f1',
-    '#8b5cf6',
-    '#a855f7',
-    '#ec4899',
-    '#f43f5e',
-    '#6b7280',
-    '#000000',
-    '#7A4A00'
-  ];
-
   function hexToRgba(hex, alpha) {
     if (!hex) return `rgba(108, 117, 125, ${alpha})`;
 
@@ -115,11 +26,9 @@
   }
 
   function getCategoryHint(category) {
-    if (category.family_id) {
-      return 'Shared category for family members';
-    }
-
-    return 'Visible only in your personal budget';
+    return category.family_id
+      ? 'Shared category for family members'
+      : 'Visible only in your personal budget';
   }
 
   function getTypeLabel(type) {
@@ -186,112 +95,13 @@
       </article>
     </div>
 
-    <div class="category-create-panel-inline" id="categoryCreatePanel" hidden>
-      <div class="section-header category-create-header">
-        <div>
-          <p class="section-label">Create</p>
-          <h2>New category</h2>
-        </div>
-      </div>
-
-      <form class="category-form" method="POST" action="/categories/create" id="categoryCreateForm">
-        <input type="hidden" name="redirectTab" id="categoryRedirectTabInput" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
-        <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
-
-        <div class="category-form-grid">
-          <div class="form-group">
-            <label class="form-label">Type</label>
-            <div class="form-toggle-group">
-              <button type="button" class="form-toggle-btn is-active" data-toggle-target="type" data-toggle-value="expense">Expense</button>
-              <button type="button" class="form-toggle-btn" data-toggle-target="type" data-toggle-value="income">Income</button>
-            </div>
-            <input type="hidden" id="categoryType" name="type" value="expense" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Scope</label>
-            <div class="form-toggle-group <%= family ? '' : 'is-single' %>">
-              <button type="button" class="form-toggle-btn is-active" data-toggle-target="scope" data-toggle-value="personal">Personal</button>
-              <% if (family) { %>
-                <button type="button" class="form-toggle-btn" data-toggle-target="scope" data-toggle-value="family">Family</button>
-              <% } %>
-            </div>
-            <input type="hidden" id="categoryScope" name="scope" value="personal" />
-          </div>
-
-          <div class="form-group category-form-grid-wide">
-            <label class="form-label" for="categoryName">Category name</label>
-            <input class="form-input" id="categoryName" name="name" type="text" placeholder="For example: Groceries, Salary, Transport" required />
-          </div>
-        </div>
-
-        <div class="category-form-tools-grid">
-          <div class="category-form-preview">
-            <span class="category-preview-icon" id="selectedCategoryIconPreview" style="background-color: rgba(239, 68, 68, 0.16); color: #ef4444;">
-              <i class="bi bi-cart3"></i>
-            </span>
-
-            <div class="category-preview-text">
-              <strong id="selectedCategoryNamePreview">New category</strong>
-              <div class="category-preview-meta">
-                <span class="category-meta-pill" id="categoryModeBadge">Expense</span>
-                <span class="category-meta-pill category-meta-pill--soft" id="categoryScopeBadge">Personal</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-tools-side">
-            <div class="form-group">
-              <div class="category-colors-compact-row">
-                <div class="category-color-swatches-box">
-                  <div class="category-color-swatches">
-                    <% colorOptions.forEach((color, index) => { %>
-                      <button
-                        class="category-color-swatch <%= index === 0 ? 'is-active' : '' %>"
-                        type="button"
-                        style="background-color: <%= color %>;"
-                        aria-label="<%= color %>"
-                        data-color-value="<%= color %>"
-                      ></button>
-                    <% }) %>
-                  </div>
-                </div>
-
-                <div class="category-custom-color-box">
-                  <input class="category-color-picker category-color-picker--rounded" id="customColor" name="color" type="color" value="#ef4444" />
-                  <span class="category-color-value" id="categoryColorValue">#EF4444</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-icon-picker-wrap">
-            <div class="form-group category-form-grid-wide">
-              <div class="category-edit-icons-grid category-create-icons-grid" data-create-icon-grid>
-                <% iconOptions.forEach((iconName, index) => { %>
-                  <div class="category-edit-icon-cell">
-                    <button
-                      type="button"
-                      class="category-edit-icon-btn category-create-icon-btn <%= index === 0 ? 'is-active' : '' %>"
-                      data-icon-value="<%= iconName %>"
-                      title="<%= iconName %>"
-                    >
-                      <i class="bi bi-<%= iconName %>"></i>
-                    </button>
-                  </div>
-                <% }) %>
-              </div>
-
-              <input type="hidden" name="icon" id="selectedCategoryIconInput" value="cart3" />
-            </div>
-          </div>
-        </div>
-        <div class="category-editor-actions">
-          <button class="btn btn-primary" type="submit">Save category</button>
-          <button class="btn btn-secondary" type="reset" id="categoryFormResetButton">Reset</button>
-        </div>
-      </form>
-    </div>
+    <%- include('./_create_form', {
+      activeTab,
+      currentSearch,
+      family,
+      colorOptions,
+      iconOptions
+    }) %>
   </section>
 
   <section class="section-card categories-section">
@@ -310,6 +120,7 @@
 
       <form class="categories-search" method="GET" action="/categories">
         <input type="hidden" name="tab" id="categoriesSearchTabInput" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
+
         <div class="categories-search-input-wrap">
           <i class="bi bi-search"></i>
           <input
@@ -331,446 +142,43 @@
     </div>
 
     <div class="categories-tab-panel is-active" data-category-panel="expense">
-      <% if (expenseCategories.length === 0) { %>
-        <div class="categories-empty-state">
-          <span class="categories-empty-icon"><i class="bi bi-tags"></i></span>
-          <h3>No expense categories yet</h3>
-          <p>Create your first expense category using the button above.</p>
-        </div>
-      <% } else { %>
-        <div class="categories-grid">
-          <% expenseCategories.forEach((category) => { %>
-            <article class="category-card">
-              <div class="category-card-preview-shell" style="border-color: <%= hexToRgba(category.color, 0.18) %>; background: linear-gradient(180deg, #ffffff 0%, <%= hexToRgba(category.color, 0.08) %> 100%);">
-                <div class="category-card-preview-main">
-                  <span class="category-card-icon" style="background-color: <%= hexToRgba(category.color, 0.16) %>; color: <%= category.color || '#6c757d' %>;">
-                    <i class="bi bi-<%= category.icon || 'tag' %>"></i>
-                  </span>
-
-                  <div class="category-card-body">
-                    <h3><%= category.name %></h3>
-                    <p><%= getCategoryHint(category) %></p>
-                  </div>
-                </div>
-
-                <div class="category-card-badges">
-                  <span class="category-badge"><%= getTypeLabel(category.type) %></span>
-                  <span class="category-badge category-badge--soft"><%= getScopeLabel(category) %></span>
-                </div>
-              </div>
-
-              <details class="category-editor">
-                <summary class="category-editor-summary">
-                  <span>Edit category</span>
-                  <i class="bi bi-chevron-down"></i>
-                </summary>
-
-                <form class="category-editor-body" method="POST" action="/categories/<%= category.id %>/update">
-                  <input type="hidden" name="redirectTab" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
-                  <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
-
-                  <div class="category-edit-grid">
-                    <div class="form-group">
-                      <label class="form-label" for="expense-name-<%= category.id %>">Name</label>
-                      <input class="form-input" id="expense-name-<%= category.id %>" name="name" type="text" value="<%= category.name %>" required />
-                    </div>
-
-                    <div class="form-group">
-                      <label class="form-label" for="expense-type-<%= category.id %>">Type</label>
-                      <select class="form-input form-select" id="expense-type-<%= category.id %>" name="type" required>
-                        <option value="expense" <%= category.type === 'expense' ? 'selected' : '' %>>Expense</option>
-                        <option value="income" <%= category.type === 'income' ? 'selected' : '' %>>Income</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label class="form-label" for="expense-color-<%= category.id %>">Color</label>
-                      <input class="category-color-picker category-color-picker--rounded category-edit-color-input" id="expense-color-<%= category.id %>" name="color" type="color" value="<%= category.color || '#6c757d' %>" />
-                    </div>
-
-                    <div class="form-group category-edit-grid-wide">
-                      <label class="form-label">Icon</label>
-                      <div class="category-edit-icons-grid" data-edit-icon-grid>
-                        <% iconOptions.forEach((iconName) => { %>
-                          <div class="category-edit-icon-cell">
-                            <button
-                              type="button"
-                              class="category-edit-icon-btn <%= (category.icon || 'tag') === iconName ? 'is-active' : '' %>"
-                              data-edit-icon-value="<%= iconName %>"
-                              title="<%= iconName %>"
-                            >
-                              <i class="bi bi-<%= iconName %>"></i>
-                            </button>
-                          </div>
-                        <% }) %>
-                      </div>
-                      <input type="hidden" name="icon" value="<%= category.icon || 'tag' %>" data-edit-icon-input />
-                    </div>
-                  </div>
-
-                  <div class="category-edit-actions">
-                    <button type="submit" class="category-save-btn">Save</button>
-
-                    <button
-                      type="submit"
-                      class="category-delete-btn"
-                      formaction="/categories/<%= category.id %>/delete"
-                      formmethod="POST"
-                      onclick="return confirm('Delete this category?')"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </form>
-              </details>
-            </article>
-          <% }) %>
-
-          <button class="category-card category-card-add" type="button" data-add-card-type="expense">
-            <span class="category-add-icon"><i class="bi bi-plus-lg"></i></span>
-            <strong>Add expense category</strong>
-            <span>Create one more expense card</span>
-          </button>
-        </div>
-      <% } %>
+      <%- include('./_category_list', {
+        categories: expenseCategories,
+        activeTab,
+        currentSearch,
+        iconOptions,
+        typeKey: 'expense',
+        emptyTitle: 'No expense categories yet',
+        emptyText: 'Create your first expense category using the button above.',
+        addButtonTitle: 'Add expense category',
+        addButtonText: 'Create one more expense card',
+        hexToRgba,
+        getCategoryHint,
+        getScopeLabel,
+        getTypeLabel
+      }) %>
     </div>
 
     <div class="categories-tab-panel" data-category-panel="income">
-      <% if (incomeCategories.length === 0) { %>
-        <div class="categories-empty-state">
-          <span class="categories-empty-icon"><i class="bi bi-tags"></i></span>
-          <h3>No income categories yet</h3>
-          <p>Create your first income category using the button above.</p>
-        </div>
-      <% } else { %>
-        <div class="categories-grid">
-          <% incomeCategories.forEach((category) => { %>
-            <article class="category-card">
-              <div class="category-card-preview-shell" style="border-color: <%= hexToRgba(category.color, 0.18) %>; background: linear-gradient(180deg, #ffffff 0%, <%= hexToRgba(category.color, 0.08) %> 100%);">
-                <div class="category-card-preview-main">
-                  <span class="category-card-icon" style="background-color: <%= hexToRgba(category.color, 0.16) %>; color: <%= category.color || '#6c757d' %>;">
-                    <i class="bi bi-<%= category.icon || 'tag' %>"></i>
-                  </span>
-
-                  <div class="category-card-body">
-                    <h3><%= category.name %></h3>
-                    <p><%= getCategoryHint(category) %></p>
-                  </div>
-                </div>
-
-                <div class="category-card-badges">
-                  <span class="category-badge"><%= getTypeLabel(category.type) %></span>
-                  <span class="category-badge category-badge--soft"><%= getScopeLabel(category) %></span>
-                </div>
-              </div>
-
-              <details class="category-editor">
-                <summary class="category-editor-summary">
-                  <span>Edit category</span>
-                  <i class="bi bi-chevron-down"></i>
-                </summary>
-
-                <form class="category-editor-body" method="POST" action="/categories/<%= category.id %>/update">
-                  <input type="hidden" name="redirectTab" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
-                  <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
-
-                  <div class="category-edit-grid">
-                    <div class="form-group">
-                      <label class="form-label" for="income-name-<%= category.id %>">Name</label>
-                      <input class="form-input" id="income-name-<%= category.id %>" name="name" type="text" value="<%= category.name %>" required />
-                    </div>
-
-                    <div class="form-group">
-                      <label class="form-label" for="income-type-<%= category.id %>">Type</label>
-                      <select class="form-input form-select" id="income-type-<%= category.id %>" name="type" required>
-                        <option value="expense" <%= category.type === 'expense' ? 'selected' : '' %>>Expense</option>
-                        <option value="income" <%= category.type === 'income' ? 'selected' : '' %>>Income</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label class="form-label" for="income-color-<%= category.id %>">Color</label>
-                      <input class="category-color-picker category-color-picker--rounded category-edit-color-input" id="income-color-<%= category.id %>" name="color" type="color" value="<%= category.color || '#6c757d' %>" />
-                    </div>
-
-                    <div class="form-group category-edit-grid-wide">
-                      <label class="form-label">Icon</label>
-                      <div class="category-edit-icons-grid" data-edit-icon-grid>
-                        <% iconOptions.forEach((iconName) => { %>
-                          <div class="category-edit-icon-cell">
-                            <button
-                              type="button"
-                              class="category-edit-icon-btn <%= (category.icon || 'tag') === iconName ? 'is-active' : '' %>"
-                              data-edit-icon-value="<%= iconName %>"
-                              title="<%= iconName %>"
-                            >
-                              <i class="bi bi-<%= iconName %>"></i>
-                            </button>
-                          </div>
-                        <% }) %>
-                      </div>
-                      <input type="hidden" name="icon" value="<%= category.icon || 'tag' %>" data-edit-icon-input />
-                    </div>
-                  </div>
-
-                  <div class="category-edit-actions">
-                    <button type="submit" class="category-save-btn">Save</button>
-
-                    <button
-                      type="submit"
-                      class="category-delete-btn"
-                      formaction="/categories/<%= category.id %>/delete"
-                      formmethod="POST"
-                      onclick="return confirm('Delete this category?')"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </form>
-              </details>
-            </article>
-          <% }) %>
-
-          <button class="category-card category-card-add" type="button" data-add-card-type="income">
-            <span class="category-add-icon"><i class="bi bi-plus-lg"></i></span>
-            <strong>Add income category</strong>
-            <span>Create one more income card</span>
-          </button>
-        </div>
-      <% } %>
+      <%- include('./_category_list', {
+        categories: incomeCategories,
+        activeTab,
+        currentSearch,
+        iconOptions,
+        typeKey: 'income',
+        emptyTitle: 'No income categories yet',
+        emptyText: 'Create your first income category using the button above.',
+        addButtonTitle: 'Add income category',
+        addButtonText: 'Create one more income card',
+        hexToRgba,
+        getCategoryHint,
+        getScopeLabel,
+        getTypeLabel
+      }) %>
     </div>
   </section>
 </section>
 
-<script>
-  (function () {
-    const createPanel = document.getElementById('categoryCreatePanel');
-    const toggleCreateButton = document.getElementById('toggleCategoryCreateButton');
-    const toggleCreateButtonText = document.getElementById('toggleCategoryCreateButtonText');
-
-    const typeInput = document.getElementById('categoryType');
-    const scopeInput = document.getElementById('categoryScope');
-    const nameInput = document.getElementById('categoryName');
-    const modeBadge = document.getElementById('categoryModeBadge');
-    const scopeBadge = document.getElementById('categoryScopeBadge');
-
-    const colorInput = document.getElementById('customColor');
-    const colorValue = document.getElementById('categoryColorValue');
-    const swatches = document.querySelectorAll('.category-color-swatch');
-
-    const iconButtons = document.querySelectorAll('[data-create-icon-grid] [data-icon-value]');
-    const iconInput = document.getElementById('selectedCategoryIconInput');
-
-    const iconPreview = document.getElementById('selectedCategoryIconPreview');
-    const namePreview = document.getElementById('selectedCategoryNamePreview');
-    const resetButton = document.getElementById('categoryFormResetButton');
-
-    const toggleButtons = document.querySelectorAll('.form-toggle-btn');
-    const tabButtons = document.querySelectorAll('[data-category-tab]');
-    const tabPanels = document.querySelectorAll('[data-category-panel]');
-    const searchTabInput = document.getElementById('categoriesSearchTabInput');
-    const createRedirectTabInput = document.getElementById('categoryRedirectTabInput');
-    const addCardButtons = document.querySelectorAll('[data-add-card-type]');
-    const editIconGrids = document.querySelectorAll('[data-edit-icon-grid]');
-
-    function hexToRgba(hex, alpha) {
-      if (!hex) return 'rgba(108, 117, 125, ' + alpha + ')';
-      const normalized = hex.replace('#', '');
-      const value = normalized.length === 3
-        ? normalized.split('').map(function (char) { return char + char; }).join('')
-        : normalized;
-      const r = parseInt(value.substring(0, 2), 16);
-      const g = parseInt(value.substring(2, 4), 16);
-      const b = parseInt(value.substring(4, 6), 16);
-      return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
-    }
-
-    function setActiveTab(targetTab) {
-      tabButtons.forEach(function (item) {
-        item.classList.toggle('is-active', item.dataset.categoryTab === targetTab);
-      });
-
-      tabPanels.forEach(function (panel) {
-        panel.classList.toggle('is-active', panel.dataset.categoryPanel === targetTab);
-      });
-
-      if (searchTabInput) {
-        searchTabInput.value = targetTab;
-      }
-
-      if (createRedirectTabInput) {
-        createRedirectTabInput.value = targetTab;
-      }
-    }
-
-    function openCreatePanel() {
-      createPanel.hidden = false;
-      toggleCreateButton.setAttribute('aria-expanded', 'true');
-      toggleCreateButtonText.textContent = 'Hide category form';
-    }
-
-    function closeCreatePanel() {
-      createPanel.hidden = true;
-      toggleCreateButton.setAttribute('aria-expanded', 'false');
-      toggleCreateButtonText.textContent = 'Add category';
-    }
-
-    function syncToggleGroup(target, value) {
-      document.querySelectorAll('[data-toggle-target="' + target + '"]').forEach(function (button) {
-        button.classList.toggle('is-active', button.dataset.toggleValue === value);
-      });
-    }
-
-    function updateModeBadge() {
-      modeBadge.textContent = typeInput.value === 'income' ? 'Income' : 'Expense';
-    }
-
-    function updateScopeBadge() {
-      scopeBadge.textContent = scopeInput.value === 'family' ? 'Family' : 'Personal';
-    }
-
-    function updateNamePreview() {
-      const trimmed = nameInput.value.trim();
-      namePreview.textContent = trimmed || 'New category';
-    }
-
-    function updateColorPreview(color) {
-      colorValue.textContent = color.toUpperCase();
-      iconPreview.style.color = color;
-      iconPreview.style.backgroundColor = hexToRgba(color, 0.16);
-
-      swatches.forEach(function (swatch) {
-        swatch.classList.toggle('is-active', swatch.dataset.colorValue.toLowerCase() === color.toLowerCase());
-      });
-    }
-
-    function updateIconPreview(icon) {
-      if (iconInput) {
-        iconInput.value = icon;
-      }
-
-      if (iconPreview) {
-        iconPreview.innerHTML = '<i class="bi bi-' + icon + '"></i>';
-      }
-
-      iconButtons.forEach(function (button) {
-        button.classList.toggle('is-active', button.dataset.iconValue === icon);
-      });
-    }
-
-    toggleCreateButton.addEventListener('click', function () {
-      if (createPanel.hidden) {
-        openCreatePanel();
-      } else {
-        closeCreatePanel();
-      }
-    });
-
-    toggleButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        const target = button.dataset.toggleTarget;
-        const value = button.dataset.toggleValue;
-
-        if (target === 'type') {
-          typeInput.value = value;
-          updateModeBadge();
-        }
-
-        if (target === 'scope') {
-          scopeInput.value = value;
-          updateScopeBadge();
-        }
-
-        syncToggleGroup(target, value);
-      });
-    });
-
-    nameInput.addEventListener('input', updateNamePreview);
-
-    colorInput.addEventListener('input', function () {
-      updateColorPreview(colorInput.value);
-    });
-
-    swatches.forEach(function (swatch) {
-      swatch.addEventListener('click', function () {
-        colorInput.value = swatch.dataset.colorValue;
-        updateColorPreview(swatch.dataset.colorValue);
-      });
-    });
-
-    iconButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        updateIconPreview(button.dataset.iconValue);
-      });
-    });
-
-    tabButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        const targetTab = button.dataset.categoryTab;
-        setActiveTab(targetTab);
-      });
-    });
-
-    addCardButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        const type = button.dataset.addCardType;
-        openCreatePanel();
-        typeInput.value = type;
-        syncToggleGroup('type', type);
-        updateModeBadge();
-        nameInput.focus();
-      });
-    });
-
-    editIconGrids.forEach(function (grid) {
-      const hiddenInput = grid.parentElement.querySelector('[data-edit-icon-input]');
-      const buttons = grid.querySelectorAll('[data-edit-icon-value]');
-
-      buttons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          hiddenInput.value = button.dataset.editIconValue;
-          buttons.forEach(function (item) {
-            item.classList.toggle('is-active', item === button);
-          });
-        });
-      });
-    });
-
-    resetButton.addEventListener('click', function () {
-      window.setTimeout(function () {
-        typeInput.value = 'expense';
-        scopeInput.value = 'personal';
-        colorInput.value = '#ef4444';
-        nameInput.value = '';
-        syncToggleGroup('type', 'expense');
-        syncToggleGroup('scope', 'personal');
-        updateModeBadge();
-        updateScopeBadge();
-        updateNamePreview();
-        updateColorPreview('#ef4444');
-        updateIconPreview('cart3');
-      }, 0);
-    });
-
-    syncToggleGroup('type', typeInput.value);
-    syncToggleGroup('scope', scopeInput.value);
-    updateModeBadge();
-    updateScopeBadge();
-    updateNamePreview();
-    updateColorPreview(colorInput.value);
-    updateIconPreview(iconInput.value);
-
-    (function initActiveTab() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const requestedTab = urlParams.get('tab');
-      const availableTabs = Array.from(tabButtons).map(function (button) {
-        return button.dataset.categoryTab;
-      });
-      const fallbackTab = availableTabs.indexOf('expense') !== -1 ? 'expense' : availableTabs[0];
-      const safeTab = availableTabs.indexOf(requestedTab) !== -1 ? requestedTab : fallbackTab;
-      setActiveTab(safeTab);
-    })();
-  })();
-</script>
+<script src="/js/categories.js"></script>
 
 <%- include('../partials/footer') %>

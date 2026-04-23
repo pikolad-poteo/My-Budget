@@ -1,75 +1,13 @@
-const db = require('./db');
+/**
+ * Category utility helpers.
+ * Contains validation, sanitization, redirect helpers,
+ * flash helpers, and database query helpers for category operations.
+ */
 
-const ALLOWED_CATEGORY_ICONS = new Set([
-  'cart3',
-  'house-door',
-  'car-front',
-  'bus-front',
-  'heart-pulse',
-  'controller',
-  'cup-hot',
-  'lightning-charge',
-  'wallet2',
-  'bank',
-  'briefcase',
-  'gift',
-  'airplane',
-  'book',
-  'basket',
-  'phone',
-  'cash-stack',
-  'piggy-bank',
-  'credit-card',
-  'bag',
-  'shop',
-  'shop-window',
-  'basket2',
-  'egg-fried',
-  'cake2',
-  'cup-straw',
-  'bicycle',
-  'fuel-pump',
-  'train-front',
-  'ev-front',
-  'capsule',
-  'hospital',
-  'tv',
-  'laptop',
-  'tablet',
-  'phone-fill',
-  'wifi',
-  'palette',
-  'camera',
-  'music-note-beamed',
-  'film',
-  'book-half',
-  'mortarboard',
-  'balloon',
-  'flower1',
-  'gem',
-  'sun',
-  'moon-stars',
-  'tree',
-  'hammer',
-  'tools',
-  'wrench-adjustable',
-  'house-heart',
-  'people',
-  'person-heart',
-  'trophy',
-  'rocket',
-  'globe2',
-  'map',
-  'geo-alt',
-  'archive',
-  'box-seam',
-  'tag',
-  'tags',
-  'receipt',
-  'clipboard-data',
-  'graph-up-arrow',
-  'coin'
-]);
+const db = require('./db');
+const { CATEGORY_ICON_OPTIONS } = require('./category.constants');
+
+const ALLOWED_CATEGORY_ICONS = new Set(CATEGORY_ICON_OPTIONS);
 
 function sanitizeCategoryName(value = '') {
   return String(value).trim().replace(/\s+/g, ' ').slice(0, 100);

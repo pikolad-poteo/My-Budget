@@ -35,14 +35,14 @@ router.get('/transactions', requireAuth, async (req, res) => {
     const requestedType = sanitizeTransactionFilterType(req.query.type);
 
     let resolvedType = requestedType;
-    if (requestedView === 'expenses' && requestedType === 'all') {
+    if (requestedView === 'expenses') {
       resolvedType = 'expense';
     }
-    if (requestedView === 'income' && requestedType === 'all') {
+    if (requestedView === 'income') {
       resolvedType = 'income';
     }
 
-   const filters = {
+    const filters = {
       from: sanitizeTransactionDate(req.query.from || defaultDates.from),
       to: sanitizeTransactionDate(req.query.to || defaultDates.to),
       category: String(req.query.category || 'all').trim(),

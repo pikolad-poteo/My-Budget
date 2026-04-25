@@ -12,9 +12,16 @@
     if (filters.from) params.set('from', filters.from);
     if (filters.to) params.set('to', filters.to);
     if (filters.category && filters.category !== 'all') params.set('category', filters.category);
-    if (filters.type && filters.type !== 'all') params.set('type', filters.type);
     if (filters.scope && filters.scope !== 'all') params.set('scope', filters.scope);
     if (filters.member && filters.member !== 'all') params.set('member', filters.member);
+
+    if (nextView === 'expenses') {
+      params.set('type', 'expense');
+    } else if (nextView === 'income') {
+      params.set('type', 'income');
+    } else if (currentView === 'date' && filters.type && filters.type !== 'all') {
+      params.set('type', filters.type);
+    }
 
     return `/transactions?${params.toString()}`;
   }

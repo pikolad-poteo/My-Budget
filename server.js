@@ -11,6 +11,7 @@ const pagesRoutes = require('./routes/pages.routes');
 const authRoutes = require('./routes/auth.routes');
 const familyRoutes = require('./routes/family.routes');
 const categoriesRoutes = require('./routes/categories.routes');
+const transactionsRoutes = require('./routes/transactions.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.use(pagesRoutes);
 app.use(authRoutes);
 app.use(familyRoutes);
 app.use(categoriesRoutes);
+app.use(transactionsRoutes);
 
 app.use((req, res) => {
   res.status(404).send('404 - Page not found');

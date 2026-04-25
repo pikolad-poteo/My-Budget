@@ -18,12 +18,6 @@ router.get('/dashboard', requireAuth, (req, res) => {
   });
 });
 
-router.get('/transactions', requireAuth, (req, res) => {
-  res.render('transactions/index', {
-    title: 'Transactions',
-    activePage: 'transactions'
-  });
-});
 
 router.get('/wishlist', requireAuth, (req, res) => {
   res.render('wishlist/index', {

@@ -1,0 +1,126 @@
+<%
+  const createDefaultType = filters.type === 'income' ? 'income' : 'expense';
+  const createDefaultCategory = categories.find((category) => category.type === createDefaultType) || categories[0] || null;
+  const createDefaultMember = members[0] || null;
+
+  function getTypeButtonClass(type) {
+    return createDefaultType === type
+      ? `form-toggle-btn is-active transaction-toggle-${type}`
+      : `form-toggle-btn transaction-toggle-${type}`;
+  }
+%>
+
+<div class="transaction-create-panel-inline" id="transactionCreatePanel" hidden>
+  <div class="section-header transaction-card-header transaction-card-header--compact">
+    <div>
+      <p class="section-label">Create</p>
+      <h2>New transaction</h2>
+    </div>
+  </div>
+
+  <% if (!categories.length) { %>
+    <div class="placeholder-box transaction-empty-create-state">
+      <p>Create at least one category before adding transactions.</p>
+      <a class="btn btn-primary btn-small" href="/categories">Go to categories</a>
+    </div>
+  <% } else { %>
+    <form class="transaction-form" method="POST" action="/transactions/create">
+      <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
+      <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
+      <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
+      <input type="hidden" name="redirectType" value="<%= filters.type %>" />
+      <input type="hidden" name="redirectScope" value="<%= filters.scope %>" />
+      <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
+      <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
+
+      <div class="transaction-form-grid">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <div class="form-toggle-group transaction-type-switch" role="group" aria-label="Transaction type">
+            <button class="<%= getTypeButtonClass('expense') %>" type="button" data-transaction-type-option data-value="expense">Expense</button>
+            <button class="<%= getTypeButtonClass('income') %>" type="button" data-transaction-type-option data-value="income">Income</button>
+          </div>
+          <input type="hidden" name="type" value="<%= createDefaultType %>" data-transaction-type-input />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="transactionAmount">Amount</label>
+          <div class="transaction-amount-field">
+            <span class="transaction-amount-prefix">€</span>
+            <input class="form-input" id="transactionAmount" name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required data-transaction-amount-input />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="transactionDate">Date</label>
+          <input class="form-input transaction-date-input" id="transactionDate" name="transaction_date" type="date" value="<%= filters.to %>" required />
+        </div>
+      </div>
+
+      <div class="transaction-form-tools-grid">
+        <div class="transaction-side-fields">
+          <div class="form-group">
+            <label class="form-label" for="transactionMember">Paid by</label>
+            <select class="form-input form-select" id="transactionMember" name="paid_by_user_id">
+              <% members.forEach((member) => { %>
+                <option value="<%= member.id %>" <%= createDefaultMember && member.id === createDefaultMember.id ? 'selected' : '' %>><%= member.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="transactionDescription">Description</label>
+            <input class="form-input" id="transactionDescription" name="description" type="text" placeholder="Optional note for this transaction" />
+          </div>
+        </div>
+
+        <div class="transaction-category-picker-wrap">
+          <div class="transaction-inline-heading">
+            <label class="form-label" for="transactionCategory">Category</label>
+            <span class="transaction-helper-text">Only categories matching the selected type are shown</span>
+          </div>
+
+          <select class="form-input form-select transaction-native-select" id="transactionCategory" name="category_id" data-transaction-category-select required>
+            <% categories.forEach((category) => { %>
+              <option
+                value="<%= category.id %>"
+                data-type="<%= category.type %>"
+                data-color="<%= category.color %>"
+                data-icon="<%= category.icon %>"
+                data-name="<%= category.name %>"
+                <%= createDefaultCategory && category.id === createDefaultCategory.id ? 'selected' : '' %>
+              >
+                <%= category.name %>
+              </option>
+            <% }) %>
+          </select>
+
+          <div class="transaction-category-list">
+            <% categories.forEach((category) => { %>
+              <button
+                class="transaction-category-option <%= createDefaultCategory && category.id === createDefaultCategory.id ? 'is-active' : '' %>"
+                type="button"
+                data-category-option
+                data-id="<%= category.id %>"
+                data-type="<%= category.type %>"
+                data-color="<%= category.color %>"
+                data-icon="<%= category.icon %>"
+                data-name="<%= category.name %>"
+              >
+                <span class="transaction-category-option-icon" style="background-color: <%= category.color %>22; color: <%= category.color %>;">
+                  <i class="bi bi-<%= category.icon %>"></i>
+                </span>
+                <span class="transaction-category-option-name"><%= category.name %></span>
+              </button>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="transaction-form-actions">
+        <button class="btn btn-primary" type="submit">Save transaction</button>
+        <button class="btn btn-secondary" type="reset">Reset</button>
+      </div>
+    </form>
+  <% } %>
+</div>

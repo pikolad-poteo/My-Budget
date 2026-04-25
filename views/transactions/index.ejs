@@ -1,347 +1,362 @@
 <%- include('../partials/header') %>
 
-<section class="container page-heading">
-  <div class="transactions-page-intro">
-    <p class="eyebrow">Money flow</p>
-    <h1 class="page-title">Transactions</h1>
-    <p class="page-text">
-      Add income and expenses quickly, keep the form compact and use extra options only when needed.
-    </p>
+<section class="container transactions-shell">
+  <% if (errorMessage) { %>
+    <div class="alert alert-danger mb-4" role="alert">
+      <%= errorMessage %>
+    </div>
+  <% } %>
+
+  <% if (successMessage) { %>
+    <div class="alert alert-success mb-4" role="alert">
+      <%= successMessage %>
+    </div>
+  <% } %>
+
+  <section class="section-card transactions-overview-panel">
+    <div class="transactions-toolbar-main">
+      <div class="transactions-toolbar-copy">
+        <p class="section-label">Management</p>
+        <h2>Transaction overview</h2>
+        <p class="transactions-toolbar-text">
+          Track personal and family income or expenses in one clean workspace.
+        </p>
+      </div>
+
+      <div class="transactions-toolbar-actions">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="toggleTransactionCreateButton"
+          aria-expanded="false"
+          aria-controls="transactionCreatePanel"
+        >
+          <i class="bi bi-plus-lg me-2"></i>
+          <span id="toggleTransactionCreateButtonText">Add transaction</span>
+        </button>
+      </div>
+    </div>
+
+    <%- include('./_form_new', { categories, members, filters }) %>
+  </section>
+  <div class="transactions-history-zone" data-transactions-history-zone>
+    <%- include('./_filters', { categories, members, filters }) %>
+    <%- include('./_table', { transactions, categories, members, filters }) %>
   </div>
+
+  <section class="section-card transactions-stats-panel">
+    <div class="transactions-stats">
+      <article class="categories-stat-chip">
+        <span class="categories-stat-value"><%= summary.total %></span>
+        <span class="categories-stat-label">Total</span>
+      </article>
+
+      <article class="categories-stat-chip">
+        <span class="categories-stat-value"><%= summary.expenseCount %></span>
+        <span class="categories-stat-label">Expenses</span>
+      </article>
+
+      <article class="categories-stat-chip">
+        <span class="categories-stat-value"><%= summary.incomeCount %></span>
+        <span class="categories-stat-label">Income</span>
+      </article>
+
+      <article class="categories-stat-chip">
+        <span class="categories-stat-value"><%= family ? 'On' : 'Off' %></span>
+        <span class="categories-stat-label">Family mode</span>
+      </article>
+    </div>
+  </section>
 </section>
 
-<section class="container transactions-layout">
-  <aside class="transactions-sidebar">
-    <section class="section-card transaction-form-card">
-      <div class="section-header transaction-card-header">
-        <div>
-          <p class="section-label">New record</p>
-          <h2>Add transaction</h2>
-        </div>
-      </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
 
-      <form class="transaction-form">
-        <div class="transaction-type-switch" role="group" aria-label="Transaction type">
-          <button class="transaction-type-option is-active is-expense" type="button">
-            <i class="bi bi-dash-circle"></i>
-            <span>Expense</span>
-          </button>
+    function initTransactionCreateToggle() {
+      const panel = document.getElementById('transactionCreatePanel');
+      const button = document.getElementById('toggleTransactionCreateButton');
+      const buttonText = document.getElementById('toggleTransactionCreateButtonText');
 
-          <button class="transaction-type-option is-income" type="button">
-            <i class="bi bi-plus-circle"></i>
-            <span>Income</span>
-          </button>
-        </div>
+      if (!panel || !button) return;
 
-        <div class="form-group">
-          <label class="form-label" for="transactionAmount">Amount</label>
-          <div class="transaction-amount-field">
-            <span>€</span>
-            <input
-              class="form-input"
-              id="transactionAmount"
-              name="transactionAmount"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-            />
-          </div>
-        </div>
+      button.addEventListener('click', function () {
+        const isOpening = panel.hasAttribute('hidden');
 
-        <div class="transaction-quick-categories">
-          <div class="transaction-inline-heading">
-            <label class="form-label" for="transactionCategory">Category</label>
-            <span class="transaction-helper-text">Popular</span>
-          </div>
+        if (isOpening) {
+          panel.removeAttribute('hidden');
+        } else {
+          panel.setAttribute('hidden', '');
+        }
 
-          <div class="transaction-chip-list">
-            <button class="transaction-category-chip is-active" type="button">
-              <span class="transaction-category-dot" style="background-color: #ef4444;"></span>
-              <i class="bi bi-cart3"></i>
-              <span>Groceries</span>
-            </button>
+        button.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
 
-            <button class="transaction-category-chip" type="button">
-              <span class="transaction-category-dot" style="background-color: #3b82f6;"></span>
-              <i class="bi bi-car-front"></i>
-              <span>Transport</span>
-            </button>
+        if (buttonText) {
+          buttonText.textContent = isOpening ? 'Hide form' : 'Add transaction';
+        }
+      });
+    }
 
-            <button class="transaction-category-chip" type="button">
-              <span class="transaction-category-dot" style="background-color: #8b5cf6;"></span>
-              <i class="bi bi-house-door"></i>
-              <span>Rent</span>
-            </button>
+    function initTransactionForm() {
+      const form = document.querySelector('.transaction-form');
+      if (!form) return;
 
-            <button class="transaction-category-chip" type="button">
-              <span class="transaction-category-dot" style="background-color: #10b981;"></span>
-              <i class="bi bi-basket2"></i>
-              <span>Shopping</span>
-            </button>
-          </div>
-        </div>
+      const typeInput = form.querySelector('[data-transaction-type-input]');
+      const typeButtons = Array.from(form.querySelectorAll('[data-transaction-type-option]'));
+      const categorySelect = form.querySelector('[data-transaction-category-select]');
+      const categoryButtons = Array.from(form.querySelectorAll('[data-category-option]'));
 
-        <div class="form-group">
-          <label class="form-label" for="transactionCategory">All categories</label>
-          <div class="transaction-select-wrap">
-            <i class="bi bi-grid-1x2-fill transaction-select-icon"></i>
-            <select class="form-input form-select transaction-select-with-icon" id="transactionCategory" name="transactionCategory">
-              <option selected>🛒 Groceries</option>
-              <option>🚗 Transport</option>
-              <option>🏠 Rent</option>
-              <option>💼 Salary</option>
-              <option>🛍 Shopping</option>
-              <option>☕ Cafes</option>
-            </select>
-          </div>
-        </div>
+      if (!typeInput || !categorySelect || !categoryButtons.length) return;
 
-        <div class="form-group">
-          <label class="form-label" for="transactionDescription">Description</label>
-          <input
-            class="form-input"
-            id="transactionDescription"
-            name="transactionDescription"
-            type="text"
-            placeholder="Optional note for this transaction"
-          />
-        </div>
+      function applyActiveCategory() {
+        const selectedValue = categorySelect.value;
 
-        <details class="transaction-expandable">
-          <summary class="transaction-expandable-summary">
-            <span>
-              <i class="bi bi-sliders"></i>
-              Additional parameters
-            </span>
-            <span class="transaction-expandable-hint">Date and payer</span>
-          </summary>
+        categoryButtons.forEach((button) => {
+          const isActive = button.dataset.id === selectedValue;
+          button.classList.toggle('is-active', isActive);
+        });
+      }
 
-          <div class="transaction-expandable-body">
-            <div class="transaction-inline-grid">
-              <div class="form-group">
-                <label class="form-label" for="transactionDate">Date</label>
-                <input
-                  class="form-input"
-                  id="transactionDate"
-                  name="transactionDate"
-                  type="date"
-                  value="2026-04-19"
-                />
-              </div>
+      function filterCategoriesByType(type) {
+        categoryButtons.forEach((button) => {
+          const matches = button.dataset.type === type;
+          button.hidden = !matches;
+        });
 
-              <div class="form-group">
-                <label class="form-label" for="transactionMember">Paid by</label>
-                <select class="form-input form-select" id="transactionMember" name="transactionMember">
-                  <option selected>Martin</option>
-                  <option>Anna</option>
-                  <option>Shared</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </details>
+        const currentOption = categorySelect.options[categorySelect.selectedIndex];
 
-        <div class="transaction-form-actions">
-          <button class="btn btn-primary" type="submit">Save transaction</button>
-          <button class="btn btn-secondary" type="button">Clear form</button>
-        </div>
-      </form>
-    </section>
-  </aside>
+        if (!currentOption || currentOption.dataset.type !== type) {
+          const nextOption = Array.from(categorySelect.options).find((option) => option.dataset.type === type);
 
-  <div class="transactions-main">
-    <section class="section-card transaction-filters-card">
-      <div class="section-header transaction-card-header">
-        <div>
-          <p class="section-label">History tools</p>
-          <h2>Filters</h2>
-        </div>
-        <a href="#" class="transaction-clear-link">Reset filters</a>
-      </div>
+          if (nextOption) {
+            categorySelect.value = nextOption.value;
+          }
+        }
 
-      <form class="transaction-filters-form">
-        <div class="transaction-filters-main-grid">
-          <div class="form-group">
-            <label class="form-label" for="filterSearch">Search</label>
-            <input
-              class="form-input"
-              id="filterSearch"
-              name="filterSearch"
-              type="text"
-              placeholder="Search description"
-            />
-          </div>
+        applyActiveCategory();
+      }
 
-          <div class="form-group">
-            <label class="form-label" for="filterCategory">Category</label>
-            <div class="transaction-select-wrap">
-              <i class="bi bi-funnel-fill transaction-select-icon"></i>
-              <select class="form-input form-select transaction-select-with-icon" id="filterCategory" name="filterCategory">
-                <option selected>All categories</option>
-                <option>🛒 Groceries</option>
-                <option>🚗 Transport</option>
-                <option>🏠 Rent</option>
-                <option>💼 Salary</option>
-                <option>🛍 Shopping</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      typeButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+          const value = this.dataset.value;
+          typeInput.value = value;
 
-        <details class="transaction-expandable">
-          <summary class="transaction-expandable-summary">
-            <span>
-              <i class="bi bi-funnel"></i>
-              Additional filters
-            </span>
-            <span class="transaction-expandable-hint">Type, period and member</span>
-          </summary>
+          typeButtons.forEach((item) => item.classList.toggle('is-active', item === this));
+          filterCategoriesByType(value);
+        });
+      });
 
-          <div class="transaction-expandable-body">
-            <div class="transaction-filters-grid">
-              <div class="form-group">
-                <label class="form-label" for="filterType">Type</label>
-                <select class="form-input form-select" id="filterType" name="filterType">
-                  <option selected>All types</option>
-                  <option>Expenses</option>
-                  <option>Income</option>
-                </select>
-              </div>
+      categoryButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+          categorySelect.value = this.dataset.id;
 
-              <div class="form-group">
-                <label class="form-label" for="filterMember">Member</label>
-                <select class="form-input form-select" id="filterMember" name="filterMember">
-                  <option selected>All members</option>
-                  <option>Martin</option>
-                  <option>Anna</option>
-                </select>
-              </div>
+          const selectedOption = categorySelect.options[categorySelect.selectedIndex];
 
-              <div class="form-group">
-                <label class="form-label" for="filterFrom">From</label>
-                <input class="form-input" id="filterFrom" name="filterFrom" type="date" />
-              </div>
+          if (selectedOption && selectedOption.dataset.type !== typeInput.value) {
+            typeInput.value = selectedOption.dataset.type;
 
-              <div class="form-group">
-                <label class="form-label" for="filterTo">To</label>
-                <input class="form-input" id="filterTo" name="filterTo" type="date" />
-              </div>
-            </div>
-          </div>
-        </details>
+            typeButtons.forEach((item) => {
+              item.classList.toggle('is-active', item.dataset.value === selectedOption.dataset.type);
+            });
+          }
 
-        <div class="transaction-filter-actions">
-          <button class="btn btn-primary" type="submit">Apply filters</button>
-        </div>
-      </form>
-    </section>
+          filterCategoriesByType(typeInput.value);
+        });
+      });
 
-    <section class="section-card transaction-table-card">
-      <div class="section-header transaction-card-header">
-        <div>
-          <p class="section-label">Latest activity</p>
-          <h2>Transaction history</h2>
-        </div>
-        <span class="transaction-history-count">8 entries</span>
-      </div>
+      categorySelect.addEventListener('change', function () {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
 
-      <div class="transactions-table-wrap">
-        <table class="transactions-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Paid by</th>
-              <th>Type</th>
-              <th class="is-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2026-04-19</td>
-              <td>
-                <div class="transaction-category-cell">
-                  <span class="transaction-table-icon" style="background-color: #fee2e2; color: #b91c1c;">
-                    <i class="bi bi-cart3"></i>
-                  </span>
-                  <span>Groceries</span>
-                </div>
-              </td>
-              <td>Weekly supermarket visit</td>
-              <td>Martin</td>
-              <td><span class="transaction-row-badge is-expense">Expense</span></td>
-              <td class="is-right"><span class="transaction-amount is-expense">-48.90 €</span></td>
-            </tr>
+        if (selectedOption && selectedOption.dataset.type !== typeInput.value) {
+          typeInput.value = selectedOption.dataset.type;
 
-            <tr>
-              <td>2026-04-18</td>
-              <td>
-                <div class="transaction-category-cell">
-                  <span class="transaction-table-icon" style="background-color: #dbeafe; color: #1d4ed8;">
-                    <i class="bi bi-car-front"></i>
-                  </span>
-                  <span>Transport</span>
-                </div>
-              </td>
-              <td>Fuel refill</td>
-              <td>Anna</td>
-              <td><span class="transaction-row-badge is-expense">Expense</span></td>
-              <td class="is-right"><span class="transaction-amount is-expense">-35.00 €</span></td>
-            </tr>
+          typeButtons.forEach((item) => {
+            item.classList.toggle('is-active', item.dataset.value === selectedOption.dataset.type);
+          });
+        }
 
-            <tr>
-              <td>2026-04-17</td>
-              <td>
-                <div class="transaction-category-cell">
-                  <span class="transaction-table-icon" style="background-color: #ede9fe; color: #6d28d9;">
-                    <i class="bi bi-house-door"></i>
-                  </span>
-                  <span>Rent</span>
-                </div>
-              </td>
-              <td>Monthly apartment payment</td>
-              <td>Shared</td>
-              <td><span class="transaction-row-badge is-expense">Expense</span></td>
-              <td class="is-right"><span class="transaction-amount is-expense">-620.00 €</span></td>
-            </tr>
+        filterCategoriesByType(typeInput.value);
+      });
 
-            <tr>
-              <td>2026-04-16</td>
-              <td>
-                <div class="transaction-category-cell">
-                  <span class="transaction-table-icon" style="background-color: #dcfce7; color: #15803d;">
-                    <i class="bi bi-wallet2"></i>
-                  </span>
-                  <span>Salary</span>
-                </div>
-              </td>
-              <td>Main monthly salary</td>
-              <td>Martin</td>
-              <td><span class="transaction-row-badge is-income">Income</span></td>
-              <td class="is-right"><span class="transaction-amount is-income">+1800.00 €</span></td>
-            </tr>
+      filterCategoriesByType(typeInput.value);
+    }
 
-            <tr>
-              <td>2026-04-15</td>
-              <td>
-                <div class="transaction-category-cell">
-                  <span class="transaction-table-icon" style="background-color: #fef3c7; color: #b45309;">
-                    <i class="bi bi-cup-hot"></i>
-                  </span>
-                  <span>Cafes</span>
-                </div>
-              </td>
-              <td>Coffee with friends</td>
-              <td>Anna</td>
-              <td><span class="transaction-row-badge is-expense">Expense</span></td>
-              <td class="is-right"><span class="transaction-amount is-expense">-12.80 €</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-</section>
+    function initAdvancedFilters() {
+      const advancedToggle = document.querySelector('[data-advanced-filters-toggle]');
+      const advancedPanel = document.querySelector('[data-advanced-filters-panel]');
+
+      if (!advancedToggle || !advancedPanel) return;
+
+      advancedToggle.addEventListener('click', function () {
+        advancedPanel.classList.toggle('is-open');
+        advancedToggle.classList.toggle('is-open');
+
+        const expanded = advancedPanel.classList.contains('is-open');
+        advancedToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+    }
+
+    async function replaceHistoryZone(url) {
+      const historyZone = document.querySelector('[data-transactions-history-zone]');
+
+      if (!historyZone) {
+        window.location.href = url;
+        return;
+      }
+
+      historyZone.classList.add('is-loading');
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'X-Requested-With': 'fetch'
+          }
+        });
+
+        if (!response.ok) {
+          window.location.href = url;
+          return;
+        }
+
+        const html = await response.text();
+        const parser = new DOMParser();
+        const nextDocument = parser.parseFromString(html, 'text/html');
+        const nextHistoryZone = nextDocument.querySelector('[data-transactions-history-zone]');
+
+        if (!nextHistoryZone) {
+          window.location.href = url;
+          return;
+        }
+
+        historyZone.innerHTML = nextHistoryZone.innerHTML;
+        window.history.pushState({}, '', url);
+
+        initAdvancedFilters();
+        initLiveHistoryControls();
+      } catch (error) {
+        window.location.href = url;
+      } finally {
+        historyZone.classList.remove('is-loading');
+      }
+    }
+
+    function buildFilterUrl(form) {
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      formData.forEach((value, key) => {
+        const cleanValue = String(value || '').trim();
+
+        if (!cleanValue) return;
+        if (cleanValue === 'all') return;
+
+        params.set(key, cleanValue);
+      });
+
+      if (!params.has('view')) {
+        params.set('view', 'date');
+      }
+
+      const queryString = params.toString();
+
+      return queryString ? `/transactions?${queryString}` : '/transactions?view=date';
+    }
+
+    async function submitHistoryMutationForm(form) {
+      const historyZone = document.querySelector('[data-transactions-history-zone]');
+      if (!historyZone) return;
+
+      const action = form.getAttribute('action');
+      const method = form.getAttribute('method') || 'POST';
+      const formData = new FormData(form);
+
+      historyZone.classList.add('is-loading');
+
+      try {
+        const response = await fetch(action, {
+          method,
+          body: formData,
+          headers: {
+            'X-Requested-With': 'fetch'
+          },
+          redirect: 'follow'
+        });
+
+        if (!response.ok) {
+          form.submit();
+          return;
+        }
+
+        const html = await response.text();
+        const finalUrl = response.url || window.location.href;
+
+        const parser = new DOMParser();
+        const nextDocument = parser.parseFromString(html, 'text/html');
+        const nextHistoryZone = nextDocument.querySelector('[data-transactions-history-zone]');
+
+        if (!nextHistoryZone) {
+          form.submit();
+          return;
+        }
+
+        historyZone.innerHTML = nextHistoryZone.innerHTML;
+        window.history.pushState({}, '', finalUrl);
+
+        initAdvancedFilters();
+        initLiveHistoryControls();
+      } catch (error) {
+        form.submit();
+      } finally {
+        historyZone.classList.remove('is-loading');
+      }
+    }
+
+    function initLiveHistoryControls() {
+      const historyZone = document.querySelector('[data-transactions-history-zone]');
+      if (!historyZone) return;
+
+      const links = Array.from(historyZone.querySelectorAll('[data-history-link]'));
+
+      links.forEach((link) => {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+
+          const url = this.getAttribute('href');
+          if (!url) return;
+
+          replaceHistoryZone(url);
+        });
+      });
+
+      const filterForm = historyZone.querySelector('[data-history-form]');
+
+      if (filterForm) {
+        filterForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const url = buildFilterUrl(filterForm);
+          replaceHistoryZone(url);
+        });
+      }
+
+      const mutationForms = Array.from(historyZone.querySelectorAll('[data-history-mutation-form]'));
+
+      mutationForms.forEach((form) => {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          submitHistoryMutationForm(form);
+        });
+      });
+    }
+
+    window.addEventListener('popstate', function () {
+      window.location.reload();
+    });
+
+    initTransactionCreateToggle();
+    initTransactionForm();
+    initAdvancedFilters();
+    initLiveHistoryControls();
+  });
+</script>
 
 <%- include('../partials/footer') %>

@@ -1,0 +1,160 @@
+<%
+  function toPositiveAmount(value) {
+    return Math.abs(Number(value || 0)).toFixed(2);
+  }
+
+  function formatPrettyDate(value) {
+    if (!value) return '—';
+
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+
+    return new Intl.DateTimeFormat('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(date);
+  }
+%>
+
+<section class="section-card transaction-table-card">
+  <div class="section-header transaction-card-header">
+    <div>
+      <p class="section-label">History</p>
+      <h2>Saved transactions</h2>
+    </div>
+
+    <span class="transaction-history-count"><%= transactions.length %> entries</span>
+  </div>
+
+  <% if (!transactions.length) { %>
+    <div class="placeholder-box">
+      <p>No transactions match the selected filters yet.</p>
+    </div>
+  <% } else { %>
+    <div class="transactions-table-wrap">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Paid by</th>
+            <th>Scope</th>
+            <th class="is-right">Amount</th>
+            <th class="is-right">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% transactions.forEach((transaction) => { %>
+            <tr>
+              <td><span class="transaction-date-text"><%= formatPrettyDate(transaction.transaction_date) %></span></td>
+              <td>
+                <div class="transaction-category-cell">
+                  <span class="transaction-table-icon" style="background-color: <%= transaction.category_color %>22; color: <%= transaction.category_color %>;">
+                    <i class="bi bi-<%= transaction.category_icon %>"></i>
+                  </span>
+                  <div>
+                    <strong><%= transaction.category_name %></strong>
+                    <% if (transaction.description) { %>
+                      <div class="transaction-row-note"><%= transaction.description %></div>
+                    <% } %>
+                  </div>
+                </div>
+              </td>
+              <td><%= transaction.paid_by_name || '—' %></td>
+              <td>
+                <span class="category-meta-pill category-meta-pill--soft"><%= transaction.family_id ? 'Family' : 'Personal' %></span>
+              </td>
+              <td class="is-right">
+                <span class="transaction-amount <%= transaction.type === 'income' ? 'is-income' : 'is-expense' %>">
+                  <%= transaction.type === 'income' ? '+' : '-' %><%= toPositiveAmount(transaction.amount) %> €
+                </span>
+              </td>
+              <td class="is-right">
+                <details class="transaction-row-actions">
+                  <summary class="btn btn-secondary btn-small">Manage</summary>
+                  <div class="transaction-row-actions-dropdown">
+                    <form
+                        class="transaction-row-edit-form"
+                        method="POST"
+                        action="/transactions/<%= transaction.id %>/update"
+                        data-history-mutation-form
+                      >
+                      <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
+                      <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
+                      <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
+                      <input type="hidden" name="redirectType" value="<%= filters.type %>" />
+                      <input type="hidden" name="redirectScope" value="<%= filters.scope %>" />
+                      <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
+                      <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
+
+                      <div class="transaction-row-edit-grid">
+                        <div class="form-group">
+                          <label class="form-label">Type</label>
+                          <select class="form-input form-select" name="type">
+                            <option value="expense" <%= transaction.type === 'expense' ? 'selected' : '' %>>Expense</option>
+                            <option value="income" <%= transaction.type === 'income' ? 'selected' : '' %>>Income</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Amount</label>
+                          <input class="form-input" type="number" name="amount" min="0.01" step="0.01" value="<%= toPositiveAmount(transaction.amount) %>" required />
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Date</label>
+                          <input class="form-input transaction-date-input" type="date" name="transaction_date" value="<%= transaction.transaction_date %>" required />
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Category</label>
+                          <select class="form-input form-select" name="category_id" required>
+                            <% categories.forEach((category) => { %>
+                              <option value="<%= category.id %>" <%= Number(category.id) === Number(transaction.category_id) ? 'selected' : '' %>><%= category.name %></option>
+                            <% }) %>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Paid by</label>
+                          <select class="form-input form-select" name="paid_by_user_id">
+                            <% members.forEach((member) => { %>
+                              <option value="<%= member.id %>" <%= Number(member.id) === Number(transaction.paid_by_user_id) ? 'selected' : '' %>><%= member.name %></option>
+                            <% }) %>
+                          </select>
+                        </div>
+
+                        <div class="form-group transaction-row-edit-grid-wide">
+                          <label class="form-label">Description</label>
+                          <input class="form-input" type="text" name="description" value="<%= transaction.description || '' %>" />
+                        </div>
+                      </div>
+
+                      <div class="transaction-row-edit-actions">
+                        <button class="btn btn-primary btn-small" type="submit">Save</button>
+                      </div>
+                    </form>
+
+                    <form method="POST" action="/transactions/<%= transaction.id %>/delete" onsubmit="return confirm('Delete this transaction?');">
+                      <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
+                      <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
+                      <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
+                      <input type="hidden" name="redirectType" value="<%= filters.type %>" />
+                      <input type="hidden" name="redirectScope" value="<%= filters.scope %>" />
+                      <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
+                      <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
+
+                      <button class="btn btn-secondary btn-small transaction-delete-btn" type="submit">Delete</button>
+                    </form>
+                  </div>
+                </details>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>

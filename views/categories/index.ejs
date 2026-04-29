@@ -34,147 +34,189 @@
   function getTypeLabel(type) {
     return type === 'income' ? 'Income' : 'Expense';
   }
+
+  const normalizedActiveTab = typeof activeTab === 'string' ? activeTab : 'expense';
 %>
 
 <section class="container categories-shell">
   <% if (errorMessage) { %>
-    <div class="alert alert-danger mb-4" role="alert">
+    <div class="alert alert-danger rounded-3 mb-4" role="alert">
       <%= errorMessage %>
     </div>
   <% } %>
 
   <% if (successMessage) { %>
-    <div class="alert alert-success mb-4" role="alert">
+    <div class="alert alert-success rounded-3 mb-4" role="alert">
       <%= successMessage %>
     </div>
   <% } %>
 
-  <section class="section-card categories-overview-panel">
-    <div class="categories-toolbar-main">
-      <div class="categories-toolbar-copy">
-        <p class="section-label">Management</p>
-        <h2>Category overview</h2>
-        <p class="categories-toolbar-text">
-          Create and edit expense or income categories for yourself<%= family ? ' and your family' : '' %>.
-        </p>
-      </div>
-
-      <div class="categories-toolbar-actions">
-        <button
-          type="button"
-          class="btn btn-primary"
-          id="toggleCategoryCreateButton"
-          aria-expanded="false"
-          aria-controls="categoryCreatePanel"
-        >
-          <i class="bi bi-plus-lg me-2"></i>
-          <span id="toggleCategoryCreateButtonText">Add category</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="categories-stats">
-      <article class="categories-stat-chip">
-        <span class="categories-stat-value"><%= totalCount %></span>
-        <span class="categories-stat-label">Total</span>
-      </article>
-
-      <article class="categories-stat-chip">
-        <span class="categories-stat-value"><%= expenseCount %></span>
-        <span class="categories-stat-label">Expense</span>
-      </article>
-
-      <article class="categories-stat-chip">
-        <span class="categories-stat-value"><%= incomeCount %></span>
-        <span class="categories-stat-label">Income</span>
-      </article>
-
-      <article class="categories-stat-chip">
-        <span class="categories-stat-value"><%= family ? 'On' : 'Off' %></span>
-        <span class="categories-stat-label">Family mode</span>
-      </article>
-    </div>
-
-    <%- include('./_create_form', {
-      activeTab,
-      currentSearch,
-      family,
-      colorOptions,
-      iconOptions
-    }) %>
-  </section>
-
-  <section class="section-card categories-section">
-    <div class="categories-section-top">
-      <div class="categories-switcher">
-        <button type="button" class="categories-switcher-btn is-active" data-category-tab="expense" data-is-default-tab="true">
-          Expenses
-          <span><%= expenseCount %></span>
-        </button>
-
-        <button type="button" class="categories-switcher-btn" data-category-tab="income">
-          Income
-          <span><%= incomeCount %></span>
-        </button>
-      </div>
-
-      <form class="categories-search" method="GET" action="/categories">
-        <input type="hidden" name="tab" id="categoriesSearchTabInput" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
-
-        <div class="categories-search-input-wrap">
-          <i class="bi bi-search"></i>
-          <input
-            class="categories-search-input"
-            type="search"
-            name="q"
-            value="<%= currentSearch %>"
-            placeholder="Search category by name"
-            aria-label="Search category by name"
-          />
+  <section class="card border-0 shadow-sm rounded-4 section-card categories-overview-panel">
+    <div class="card-body p-4">
+      <div class="row align-items-start g-4 mb-4">
+        <div class="col-lg-8">
+          <p class="section-label">Management</p>
+          <h2 class="h3 fw-bold mb-2">Category overview</h2>
+          <p class="categories-toolbar-text">
+            Create and edit expense or income categories for yourself<%= family ? ' and your family' : '' %>.
+          </p>
         </div>
 
-        <button class="btn btn-secondary categories-search-btn" type="submit">Search</button>
+        <div class="col-lg-4 text-lg-end">
+          <button
+            type="button"
+            class="btn btn-primary rounded-pill px-4"
+            id="toggleCategoryCreateButton"
+            aria-expanded="false"
+            aria-controls="categoryCreatePanel"
+          >
+            <i class="bi bi-plus-lg me-2"></i>
+            <span id="toggleCategoryCreateButtonText">Add category</span>
+          </button>
+        </div>
+      </div>
 
-        <% if (currentSearch) { %>
-          <a class="btn btn-outline-secondary categories-search-clear" href="/categories?tab=<%= typeof activeTab === 'string' ? activeTab : 'expense' %>">Clear</a>
-        <% } %>
-      </form>
-    </div>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat">
+            <div class="card-body p-3">
+              <span class="categories-stat-value d-block"><%= totalCount %></span>
+              <span class="categories-stat-label">Total</span>
+            </div>
+          </article>
+        </div>
 
-    <div class="categories-tab-panel is-active" data-category-panel="expense">
-      <%- include('./_category_list', {
-        categories: expenseCategories,
+        <div class="col-6 col-lg-3">
+          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat">
+            <div class="card-body p-3">
+              <span class="categories-stat-value d-block"><%= expenseCount %></span>
+              <span class="categories-stat-label">Expense</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat">
+            <div class="card-body p-3">
+              <span class="categories-stat-value d-block"><%= incomeCount %></span>
+              <span class="categories-stat-label">Income</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat">
+            <div class="card-body p-3">
+              <span class="categories-stat-value d-block"><%= family ? 'On' : 'Off' %></span>
+              <span class="categories-stat-label">Family mode</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <%- include('./_create_form', {
         activeTab,
         currentSearch,
-        iconOptions,
-        typeKey: 'expense',
-        emptyTitle: 'No expense categories yet',
-        emptyText: 'Create your first expense category using the button above.',
-        addButtonTitle: 'Add expense category',
-        addButtonText: 'Create one more expense card',
-        hexToRgba,
-        getCategoryHint,
-        getScopeLabel,
-        getTypeLabel
+        family,
+        colorOptions,
+        iconOptions
       }) %>
     </div>
+  </section>
 
-    <div class="categories-tab-panel" data-category-panel="income">
-      <%- include('./_category_list', {
-        categories: incomeCategories,
-        activeTab,
-        currentSearch,
-        iconOptions,
-        typeKey: 'income',
-        emptyTitle: 'No income categories yet',
-        emptyText: 'Create your first income category using the button above.',
-        addButtonTitle: 'Add income category',
-        addButtonText: 'Create one more income card',
-        hexToRgba,
-        getCategoryHint,
-        getScopeLabel,
-        getTypeLabel
-      }) %>
+  <section class="card border-0 shadow-sm rounded-4 section-card categories-section">
+    <div class="card-body p-4">
+      <div class="row align-items-center g-3 mb-4">
+        <div class="col-lg-5">
+          <div class="categories-switcher">
+            <button
+              type="button"
+              class="categories-switcher-btn <%= normalizedActiveTab === 'expense' ? 'is-active' : '' %>"
+              data-category-tab="expense"
+              data-is-default-tab="true"
+            >
+              Expenses
+              <span><%= expenseCount %></span>
+            </button>
+
+            <button
+              type="button"
+              class="categories-switcher-btn <%= normalizedActiveTab === 'income' ? 'is-active' : '' %>"
+              data-category-tab="income"
+            >
+              Income
+              <span><%= incomeCount %></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <form class="categories-search" method="GET" action="/categories">
+            <input type="hidden" name="tab" id="categoriesSearchTabInput" value="<%= normalizedActiveTab %>" />
+
+            <div class="input-group categories-bootstrap-search">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search"></i>
+              </span>
+
+              <input
+                class="form-control border-start-0"
+                type="search"
+                name="q"
+                value="<%= currentSearch %>"
+                placeholder="Search category by name"
+                aria-label="Search category by name"
+              />
+
+              <button class="btn btn-secondary px-4" type="submit">
+                Search
+              </button>
+
+              <% if (currentSearch) { %>
+                <a class="btn btn-outline-secondary px-4" href="/categories?tab=<%= normalizedActiveTab %>">
+                  Clear
+                </a>
+              <% } %>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="categories-tab-panel <%= normalizedActiveTab === 'expense' ? 'is-active' : '' %>" data-category-panel="expense">
+        <%- include('./_category_list', {
+          categories: expenseCategories,
+          activeTab,
+          currentSearch,
+          iconOptions,
+          typeKey: 'expense',
+          emptyTitle: 'No expense categories yet',
+          emptyText: 'Create your first expense category using the button above.',
+          addButtonTitle: 'Add expense category',
+          addButtonText: 'Create one more expense card',
+          hexToRgba,
+          getCategoryHint,
+          getScopeLabel,
+          getTypeLabel
+        }) %>
+      </div>
+
+      <div class="categories-tab-panel <%= normalizedActiveTab === 'income' ? 'is-active' : '' %>" data-category-panel="income">
+        <%- include('./_category_list', {
+          categories: incomeCategories,
+          activeTab,
+          currentSearch,
+          iconOptions,
+          typeKey: 'income',
+          emptyTitle: 'No income categories yet',
+          emptyText: 'Create your first income category using the button above.',
+          addButtonTitle: 'Add income category',
+          addButtonText: 'Create one more income card',
+          hexToRgba,
+          getCategoryHint,
+          getScopeLabel,
+          getTypeLabel
+        }) %>
+      </div>
     </div>
   </section>
 </section>

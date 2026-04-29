@@ -10,75 +10,117 @@
     <input type="hidden" name="redirectTab" id="categoryRedirectTabInput" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
     <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
 
-    <div class="category-form-grid">
-      <div class="form-group">
-        <label class="form-label">Type</label>
-        <div class="form-toggle-group">
-          <button type="button" class="form-toggle-btn is-active" data-toggle-target="type" data-toggle-value="expense">Expense</button>
-          <button type="button" class="form-toggle-btn" data-toggle-target="type" data-toggle-value="income">Income</button>
+    <div class="row g-3 align-items-end category-create-top-row">
+      <div class="col-md-6 col-xl-3">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+
+          <div class="form-toggle-group">
+            <button type="button" class="form-toggle-btn is-active" data-toggle-target="type" data-toggle-value="expense">
+              Expense
+            </button>
+
+            <button type="button" class="form-toggle-btn" data-toggle-target="type" data-toggle-value="income">
+              Income
+            </button>
+          </div>
+
+          <input type="hidden" id="categoryType" name="type" value="expense" />
         </div>
-        <input type="hidden" id="categoryType" name="type" value="expense" />
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Scope</label>
-        <div class="form-toggle-group <%= family ? '' : 'is-single' %>">
-          <button type="button" class="form-toggle-btn is-active" data-toggle-target="scope" data-toggle-value="personal">Personal</button>
-          <% if (family) { %>
-            <button type="button" class="form-toggle-btn" data-toggle-target="scope" data-toggle-value="family">Family</button>
-          <% } %>
+      <div class="col-md-6 col-xl-3">
+        <div class="form-group">
+          <label class="form-label">Scope</label>
+
+          <div class="form-toggle-group <%= family ? '' : 'is-single' %>">
+            <button type="button" class="form-toggle-btn is-active" data-toggle-target="scope" data-toggle-value="personal">
+              Personal
+            </button>
+
+            <% if (family) { %>
+              <button type="button" class="form-toggle-btn" data-toggle-target="scope" data-toggle-value="family">
+                Family
+              </button>
+            <% } %>
+          </div>
+
+          <input type="hidden" id="categoryScope" name="scope" value="personal" />
         </div>
-        <input type="hidden" id="categoryScope" name="scope" value="personal" />
       </div>
 
-      <div class="form-group category-form-grid-wide">
-        <label class="form-label" for="categoryName">Category name</label>
-        <input class="form-input" id="categoryName" name="name" type="text" placeholder="For example: Groceries, Salary, Transport" required />
+      <div class="col-xl-6">
+        <div class="form-group category-name-group">
+          <label class="form-label" for="categoryName">Category name</label>
+
+          <input
+            class="form-control rounded-3 category-name-input"
+            id="categoryName"
+            name="name"
+            type="text"
+            placeholder="For example: Groceries, Salary, Transport"
+            required
+          />
+        </div>
       </div>
     </div>
 
-    <div class="category-form-tools-grid">
-      <div class="category-form-preview">
-        <span class="category-preview-icon" id="selectedCategoryIconPreview" style="background-color: rgba(239, 68, 68, 0.16); color: #ef4444;">
-          <i class="bi bi-cart3"></i>
-        </span>
+    <div class="row g-3 align-items-stretch category-create-workspace">
+      <div class="col-lg-4 category-create-preview-col">
+        <div class="category-form-preview h-100">
+          <span
+            class="category-preview-icon"
+            id="selectedCategoryIconPreview"
+            style="background-color: rgba(239, 68, 68, 0.16); color: #ef4444;"
+          >
+            <i class="bi bi-cart3"></i>
+          </span>
 
-        <div class="category-preview-text">
-          <strong id="selectedCategoryNamePreview">New category</strong>
-          <div class="category-preview-meta">
-            <span class="category-meta-pill" id="categoryModeBadge">Expense</span>
-            <span class="category-meta-pill category-meta-pill--soft" id="categoryScopeBadge">Personal</span>
-          </div>
-        </div>
-      </div>
+          <div class="category-preview-text">
+            <strong id="selectedCategoryNamePreview">New category</strong>
 
-      <div class="category-tools-side">
-        <div class="form-group">
-          <div class="category-colors-compact-row">
-            <div class="category-color-swatches-box">
-              <div class="category-color-swatches">
-                <% colorOptions.forEach((color, index) => { %>
-                  <button
-                    class="category-color-swatch <%= index === 0 ? 'is-active' : '' %>"
-                    type="button"
-                    style="background-color: <%= color %>;"
-                    aria-label="<%= color %>"
-                    data-color-value="<%= color %>"
-                  ></button>
-                <% }) %>
-              </div>
-            </div>
-
-            <div class="category-custom-color-box">
-              <input class="category-color-picker category-color-picker--rounded" id="customColor" name="color" type="color" value="#ef4444" />
-              <span class="category-color-value" id="categoryColorValue">#EF4444</span>
+            <div class="category-preview-meta">
+              <span class="category-meta-pill" id="categoryModeBadge">Expense</span>
+              <span class="category-meta-pill category-meta-pill--soft" id="categoryScopeBadge">Personal</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="category-icon-picker-wrap">
-        <div class="form-group category-form-grid-wide">
+      <div class="col-lg-4 category-create-color-col">
+        <div class="category-create-tool-card h-100">
+          <label class="form-label">Color</label>
+
+          <div class="category-color-swatches">
+            <% colorOptions.forEach((color, index) => { %>
+              <button
+                class="category-color-swatch <%= index === 0 ? 'is-active' : '' %>"
+                type="button"
+                style="background-color: <%= color %>;"
+                aria-label="<%= color %>"
+                data-color-value="<%= color %>"
+              ></button>
+            <% }) %>
+          </div>
+
+          <div class="category-custom-color-box mt-3">
+            <input
+              class="category-color-picker"
+              id="customColor"
+              name="color"
+              type="color"
+              value="#ef4444"
+            />
+
+            <span class="category-color-value" id="categoryColorValue">#EF4444</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 category-create-icons-col">
+        <div class="category-create-tool-card h-100">
+          <label class="form-label">Icon</label>
+
           <div class="category-edit-icons-grid category-create-icons-grid" data-create-icon-grid>
             <% iconOptions.forEach((iconName, index) => { %>
               <div class="category-edit-icon-cell">
@@ -100,8 +142,13 @@
     </div>
 
     <div class="category-editor-actions">
-      <button class="btn btn-primary" type="submit">Save category</button>
-      <button class="btn btn-secondary" type="reset" id="categoryFormResetButton">Reset</button>
+      <button class="btn btn-primary rounded-pill px-4" type="submit">
+        Save category
+      </button>
+
+      <button class="btn btn-secondary rounded-pill px-4" type="reset" id="categoryFormResetButton">
+        Reset
+      </button>
     </div>
   </form>
 </div>

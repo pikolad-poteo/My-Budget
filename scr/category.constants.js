@@ -89,8 +89,7 @@ const CATEGORY_COLOR_OPTIONS = [
   '#ec4899',
   '#f43f5e',
   '#6b7280',
-  '#000000',
-  '#7A4A00'
+  '#000000'
 ];
 
 module.exports = {

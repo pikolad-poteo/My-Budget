@@ -2,27 +2,47 @@
   <input type="hidden" name="redirectTab" value="<%= typeof activeTab === 'string' ? activeTab : 'expense' %>" />
   <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
 
-  <div class="category-edit-grid">
-    <div class="form-group">
+  <div class="row g-3">
+    <div class="col-md-6">
       <label class="form-label" for="<%= typeKey %>-name-<%= category.id %>">Name</label>
-      <input class="form-input" id="<%= typeKey %>-name-<%= category.id %>" name="name" type="text" value="<%= category.name %>" required />
+      <input
+        class="form-control rounded-3"
+        id="<%= typeKey %>-name-<%= category.id %>"
+        name="name"
+        type="text"
+        value="<%= category.name %>"
+        required
+      />
     </div>
 
-    <div class="form-group">
+    <div class="col-md-6">
       <label class="form-label" for="<%= typeKey %>-type-<%= category.id %>">Type</label>
-      <select class="form-input form-select" id="<%= typeKey %>-type-<%= category.id %>" name="type" required>
+      <select
+        class="form-select rounded-3"
+        id="<%= typeKey %>-type-<%= category.id %>"
+        name="type"
+        required
+      >
         <option value="expense" <%= category.type === 'expense' ? 'selected' : '' %>>Expense</option>
         <option value="income" <%= category.type === 'income' ? 'selected' : '' %>>Income</option>
       </select>
     </div>
 
-    <div class="form-group">
+    <div class="col-12">
       <label class="form-label" for="<%= typeKey %>-color-<%= category.id %>">Color</label>
-      <input class="category-color-picker category-color-picker--rounded category-edit-color-input" id="<%= typeKey %>-color-<%= category.id %>" name="color" type="color" value="<%= category.color || '#6c757d' %>" />
+      <input
+        class="form-control form-control-color category-edit-color-input rounded-3"
+        id="<%= typeKey %>-color-<%= category.id %>"
+        name="color"
+        type="color"
+        value="<%= category.color || '#6c757d' %>"
+        title="Choose category color"
+      />
     </div>
 
-    <div class="form-group category-edit-grid-wide">
+    <div class="col-12">
       <label class="form-label">Icon</label>
+
       <div class="category-edit-icons-grid" data-edit-icon-grid>
         <% iconOptions.forEach((iconName) => { %>
           <div class="category-edit-icon-cell">
@@ -37,16 +57,19 @@
           </div>
         <% }) %>
       </div>
+
       <input type="hidden" name="icon" value="<%= category.icon || 'tag' %>" data-edit-icon-input />
     </div>
   </div>
 
-  <div class="category-edit-actions">
-    <button type="submit" class="category-save-btn">Save</button>
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    <button type="submit" class="btn btn-primary rounded-pill px-4">
+      Save
+    </button>
 
     <button
       type="submit"
-      class="category-delete-btn"
+      class="btn btn-outline-danger rounded-pill px-4"
       formaction="/categories/<%= category.id %>/delete"
       formmethod="POST"
       onclick="return confirm('Delete this category?')"

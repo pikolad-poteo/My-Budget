@@ -151,7 +151,7 @@
         </div>
 
         <div class="col-lg-7">
-          <form class="categories-search" method="GET" action="/categories">
+          <form class="categories-search" id="categoriesLiveSearchForm" autocomplete="off">
             <input type="hidden" name="tab" id="categoriesSearchTabInput" value="<%= normalizedActiveTab %>" />
 
             <div class="input-group categories-bootstrap-search">
@@ -163,20 +163,22 @@
                 class="form-control border-start-0"
                 type="search"
                 name="q"
+                id="categoriesLiveSearchInput"
                 value="<%= currentSearch %>"
                 placeholder="Search category by name"
                 aria-label="Search category by name"
+                data-live-category-search
               />
 
-              <button class="btn btn-secondary px-4" type="submit">
-                Search
+              <button
+                class="btn btn-outline-secondary px-4 categories-search-clear"
+                type="button"
+                id="categoriesLiveSearchClear"
+                <%= currentSearch ? '' : 'hidden' %>
+              >
+                Clear
               </button>
 
-              <% if (currentSearch) { %>
-                <a class="btn btn-outline-secondary px-4" href="/categories?tab=<%= normalizedActiveTab %>">
-                  Clear
-                </a>
-              <% } %>
             </div>
           </form>
         </div>

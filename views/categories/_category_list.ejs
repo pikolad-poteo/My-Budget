@@ -5,9 +5,13 @@
     <p><%= emptyText %></p>
   </div>
 <% } else { %>
-  <div class="row g-3">
+  <div class="row g-3" data-category-list="<%= typeKey %>">
     <% categories.forEach((category) => { %>
-      <div class="col-md-6 col-xl-4">
+      <div
+        class="col-md-6 col-xl-4"
+        data-category-item
+        data-category-name="<%= category.name %>"
+      >
         <article class="card border-0 rounded-4 h-100 category-card">
           <div class="card-body p-3 d-flex flex-column">
             <div
@@ -53,12 +57,18 @@
       </div>
     <% }) %>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-md-6 col-xl-4" data-category-add-card>
       <button class="card border-0 rounded-4 h-100 category-card category-card-add w-100" type="button" data-add-card-type="<%= typeKey %>">
         <span class="category-add-icon"><i class="bi bi-plus-lg"></i></span>
         <strong><%= addButtonTitle %></strong>
         <span><%= addButtonText %></span>
       </button>
     </div>
+  </div>
+
+  <div class="categories-empty-state categories-empty-state--filtered" data-category-filter-empty="<%= typeKey %>" hidden>
+    <span class="categories-empty-icon"><i class="bi bi-search"></i></span>
+    <h3>No matching categories</h3>
+    <p>Try another name or clear the search field.</p>
   </div>
 <% } %>

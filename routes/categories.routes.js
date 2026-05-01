@@ -38,7 +38,7 @@ router.get('/categories', requireAuth, async (req, res) => {
     const categories = await getUserCategories(
       currentUserId,
       family ? family.id : null,
-      searchTerm
+      ''
     );
 
     const normalizedCategories = categories.map((category) => ({

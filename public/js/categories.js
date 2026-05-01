@@ -34,6 +34,13 @@
   const addCardButtons = document.querySelectorAll('[data-add-card-type]');
   const editIconGrids = document.querySelectorAll('[data-edit-icon-grid]');
 
+  const liveSearchForm = document.getElementById('categoriesLiveSearchForm');
+  const liveSearchInput = document.getElementById('categoriesLiveSearchInput');
+  const liveSearchClearButton = document.getElementById('categoriesLiveSearchClear');
+  const liveSearchGroup = liveSearchInput ? liveSearchInput.closest('.categories-bootstrap-search') : null;
+  const categoryItems = document.querySelectorAll('[data-category-item]');
+  const categoryAddCards = document.querySelectorAll('[data-category-add-card]');
+
   if (!toggleCreateButton || !createPanel) {
     return;
   }
@@ -69,6 +76,59 @@
     if (createRedirectTabInput) {
       createRedirectTabInput.value = targetTab;
     }
+  }
+
+  function normalizeSearchValue(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function applyLiveCategorySearch() {
+    if (!liveSearchInput) return;
+
+    const query = normalizeSearchValue(liveSearchInput.value);
+    const visibleByType = {
+      expense: 0,
+      income: 0
+    };
+
+    categoryAddCards.forEach(function (card) {
+      card.hidden = Boolean(query);
+    });
+
+    categoryItems.forEach(function (item) {
+      const panel = item.closest('[data-category-panel]');
+      const type = panel ? panel.dataset.categoryPanel : '';
+      const categoryName = normalizeSearchValue(item.dataset.categoryName);
+      const isVisible = !query || categoryName.startsWith(query);
+
+      item.hidden = !isVisible;
+
+      if (isVisible && Object.prototype.hasOwnProperty.call(visibleByType, type)) {
+        visibleByType[type] += 1;
+      }
+    });
+
+    document.querySelectorAll('[data-category-filter-empty]').forEach(function (emptyState) {
+      const type = emptyState.dataset.categoryFilterEmpty;
+      const hasAnyCards = document.querySelectorAll('[data-category-panel="' + type + '"] [data-category-item]').length > 0;
+      emptyState.hidden = !query || !hasAnyCards || visibleByType[type] > 0;
+    });
+
+    if (liveSearchGroup) {
+      liveSearchGroup.classList.toggle('has-live-query', Boolean(query));
+    }
+
+    if (liveSearchClearButton) {
+      liveSearchClearButton.hidden = !query;
+    }
+  }
+
+  function clearLiveCategorySearch() {
+    if (!liveSearchInput) return;
+
+    liveSearchInput.value = '';
+    applyLiveCategorySearch();
+    liveSearchInput.focus({ preventScroll: true });
   }
 
   function openCreatePanel() {
@@ -200,8 +260,28 @@
   tabButtons.forEach(function (button) {
     button.addEventListener('click', function () {
       setActiveTab(button.dataset.categoryTab);
+      applyLiveCategorySearch();
     });
   });
+
+  if (liveSearchForm) {
+    liveSearchForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      applyLiveCategorySearch();
+
+      if (liveSearchInput) {
+        liveSearchInput.focus({ preventScroll: true });
+      }
+    });
+  }
+
+  if (liveSearchInput) {
+    liveSearchInput.addEventListener('input', applyLiveCategorySearch);
+  }
+
+  if (liveSearchClearButton) {
+    liveSearchClearButton.addEventListener('click', clearLiveCategorySearch);
+  }
 
   addCardButtons.forEach(function (button) {
     button.addEventListener('click', function () {
@@ -290,4 +370,6 @@
       setActiveTab(safeTab);
     }
   })();
+
+  applyLiveCategorySearch();
 })();

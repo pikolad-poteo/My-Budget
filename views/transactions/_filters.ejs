@@ -2,18 +2,22 @@
   const currentView = filters.view || 'date';
   const currentDir = filters.dir || 'desc';
 
+  function appendSharedFilterParams(params) {
+    if (filters.from) params.set('from', filters.from);
+    if (filters.to) params.set('to', filters.to);
+    if (filters.category && filters.category !== 'all') params.set('category', filters.category);
+    if (filters.scope && filters.scope !== 'all') params.set('scope', filters.scope);
+    if (filters.member && filters.member !== 'all') params.set('member', filters.member);
+    if (filters.showAll) params.set('showAll', '1');
+  }
+
   function buildHistoryViewUrl(nextView) {
     const params = new URLSearchParams();
     const nextDir = currentView === nextView && currentDir === 'desc' ? 'asc' : 'desc';
 
     params.set('view', nextView);
     params.set('dir', nextDir);
-
-    if (filters.from) params.set('from', filters.from);
-    if (filters.to) params.set('to', filters.to);
-    if (filters.category && filters.category !== 'all') params.set('category', filters.category);
-    if (filters.scope && filters.scope !== 'all') params.set('scope', filters.scope);
-    if (filters.member && filters.member !== 'all') params.set('member', filters.member);
+    appendSharedFilterParams(params);
 
     if (nextView === 'expenses') {
       params.set('type', 'expense');
@@ -25,121 +29,150 @@
 
     return `/transactions?${params.toString()}`;
   }
+
+  function buildShowAllToggleUrl() {
+    const params = new URLSearchParams();
+
+    params.set('view', filters.view || 'date');
+    params.set('dir', filters.dir || 'desc');
+    appendSharedFilterParams(params);
+
+    if (filters.type && filters.type !== 'all') params.set('type', filters.type);
+
+    if (filters.showAll) {
+      params.delete('showAll');
+    } else {
+      params.set('showAll', '1');
+    }
+
+    return `/transactions?${params.toString()}`;
+  }
 %>
 
-<section class="section-card transaction-filters-card">
-  <div class="section-header transaction-card-header transaction-card-header--history">
-    <div>
-      <p class="section-label">History</p>
-      <h2>Transaction history</h2>
+<section class="card border-0 shadow-sm rounded-4 section-card transaction-filters-card">
+  <div class="card-body p-4">
+    <div class="transaction-filters-header">
+      <div class="transaction-filters-left">
+        <div class="transaction-filters-title">
+          <p class="section-label">Search</p>
+          <h2 class="mb-0">Filters</h2>
+        </div>
+
+        <div class="btn-group transaction-view-switch" role="group" aria-label="Transaction history view">
+          <a
+            href="<%= buildHistoryViewUrl('date') %>"
+            class="btn transaction-view-pill <%= (filters.view || 'date') === 'date' ? 'is-active' : '' %>"
+            data-history-link
+          >
+            By date
+          </a>
+
+          <a
+            href="<%= buildHistoryViewUrl('expenses') %>"
+            class="btn transaction-view-pill <%= filters.view === 'expenses' ? 'is-active' : '' %>"
+            data-history-link
+          >
+            Expenses
+          </a>
+
+          <a
+            href="<%= buildHistoryViewUrl('income') %>"
+            class="btn transaction-view-pill <%= filters.view === 'income' ? 'is-active' : '' %>"
+            data-history-link
+          >
+            Income
+          </a>
+        </div>
+      </div>
+
+      <div class="transaction-filter-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
+          <a
+            href="<%= buildShowAllToggleUrl() %>"
+            class="btn transaction-show-all-toggle <%= filters.showAll ? 'is-active' : '' %>"
+            data-history-link
+            aria-pressed="<%= filters.showAll ? 'true' : 'false' %>"
+          >
+            Show all transactions
+          </a>
+
+          <button
+            class="btn btn-link transaction-advanced-toggle"
+            type="button"
+            data-advanced-filters-toggle
+            aria-expanded="<%= filters.hasAdvancedFilters ? 'true' : 'false' %>"
+          >
+            <span>Advanced filters</span>
+          </button>
+      </div>
     </div>
 
-    <div class="transaction-history-tools">
-      <div class="transaction-view-switch">
-        <a
-          href="<%= buildHistoryViewUrl('date') %>"
-          class="transaction-view-pill <%= (filters.view || 'date') === 'date' ? 'is-active' : '' %>"
-          data-history-link
-        >
-          By date
-        </a>
+    <div class="transaction-advanced-panel <%= filters.hasAdvancedFilters ? 'is-open' : '' %>" data-advanced-filters-panel>
+      <form class="transaction-filters-form pt-4" method="GET" action="/transactions" data-history-form>
+        <input type="hidden" name="view" value="<%= filters.view || 'date' %>" />
+        <input type="hidden" name="dir" value="<%= filters.dir || 'desc' %>" />
 
-        <a
-          href="<%= buildHistoryViewUrl('expenses') %>"
-          class="transaction-view-pill <%= filters.view === 'expenses' ? 'is-active' : '' %>"
-          data-history-link
-        >
-          Expenses
-        </a>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="filterFrom">From</label>
+            <input class="form-control transaction-date-input" id="filterFrom" name="from" type="date" value="<%= filters.from %>" />
+          </div>
 
-        <a
-          href="<%= buildHistoryViewUrl('income') %>"
-          class="transaction-view-pill <%= filters.view === 'income' ? 'is-active' : '' %>"
-          data-history-link
-        >
-          Income
-        </a>
-      </div>
+          <div class="col-md-6">
+            <label class="form-label" for="filterTo">To</label>
+            <input class="form-control transaction-date-input" id="filterTo" name="to" type="date" value="<%= filters.to %>" />
+          </div>
 
-      <button
-        class="transaction-advanced-toggle"
-        type="button"
-        data-advanced-filters-toggle
-        aria-expanded="<%= filters.hasAdvancedFilters ? 'true' : 'false' %>"
-      >
-        Advanced filters
-      </button>
+          <div class="col-md-6 col-xl-3">
+            <label class="form-label" for="filterCategory">Category</label>
+            <select class="form-select" id="filterCategory" name="category">
+              <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>>All categories</option>
+              <% categories.forEach((category) => { %>
+                <option value="<%= category.id %>" <%= String(filters.category) === String(category.id) ? 'selected' : '' %>>
+                  <%= category.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="col-md-6 col-xl-3">
+            <label class="form-label" for="filterType">Type</label>
+            <select class="form-select" id="filterType" name="type">
+              <option value="all" <%= filters.type === 'all' ? 'selected' : '' %>>All</option>
+              <option value="expense" <%= filters.type === 'expense' ? 'selected' : '' %>>Expense</option>
+              <option value="income" <%= filters.type === 'income' ? 'selected' : '' %>>Income</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 col-xl-3">
+            <label class="form-label" for="filterScope">Scope</label>
+            <select class="form-select" id="filterScope" name="scope">
+              <option value="all" <%= filters.scope === 'all' ? 'selected' : '' %>>All</option>
+              <option value="personal" <%= filters.scope === 'personal' ? 'selected' : '' %>>Personal</option>
+              <option value="family" <%= filters.scope === 'family' ? 'selected' : '' %>>Family</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 col-xl-3">
+            <label class="form-label" for="filterMember">Paid by</label>
+            <select class="form-select" id="filterMember" name="member">
+              <option value="all" <%= filters.member === 'all' ? 'selected' : '' %>>All members</option>
+              <% members.forEach((member) => { %>
+                <option value="<%= member.id %>" <%= String(filters.member) === String(member.id) ? 'selected' : '' %>>
+                  <%= member.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Apply filters</button>
+
+          <a href="/transactions?view=date&dir=desc" class="btn btn-outline-secondary rounded-pill px-4" data-history-link>
+            Reset
+          </a>
+        </div>
+      </form>
     </div>
-  </div>
-
-  <div class="transaction-advanced-panel <%= filters.hasAdvancedFilters ? 'is-open' : '' %>" data-advanced-filters-panel>
-    <form class="transaction-filters-form" method="GET" action="/transactions" data-history-form>
-      <input type="hidden" name="view" value="<%= filters.view || 'date' %>" />
-      <input type="hidden" name="dir" value="<%= filters.dir || 'desc' %>" />
-
-      <div class="transaction-filters-main-grid">
-        <div class="form-group">
-          <label class="form-label" for="filterFrom">From</label>
-          <input class="form-input transaction-date-input" id="filterFrom" name="from" type="date" value="<%= filters.from %>" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="filterTo">To</label>
-          <input class="form-input transaction-date-input" id="filterTo" name="to" type="date" value="<%= filters.to %>" />
-        </div>
-      </div>
-
-      <div class="transaction-filters-grid transaction-filters-grid--three">
-        <div class="form-group">
-          <label class="form-label" for="filterCategory">Category</label>
-          <select class="form-input form-select" id="filterCategory" name="category">
-            <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>>All categories</option>
-            <% categories.forEach((category) => { %>
-              <option value="<%= category.id %>" <%= String(filters.category) === String(category.id) ? 'selected' : '' %>>
-                <%= category.name %>
-              </option>
-            <% }) %>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="filterType">Type</label>
-          <select class="form-input form-select" id="filterType" name="type">
-            <option value="all" <%= filters.type === 'all' ? 'selected' : '' %>>All</option>
-            <option value="expense" <%= filters.type === 'expense' ? 'selected' : '' %>>Expense</option>
-            <option value="income" <%= filters.type === 'income' ? 'selected' : '' %>>Income</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="filterScope">Scope</label>
-          <select class="form-input form-select" id="filterScope" name="scope">
-            <option value="all" <%= filters.scope === 'all' ? 'selected' : '' %>>All</option>
-            <option value="personal" <%= filters.scope === 'personal' ? 'selected' : '' %>>Personal</option>
-            <option value="family" <%= filters.scope === 'family' ? 'selected' : '' %>>Family</option>
-          </select>
-        </div>
-
-        <div class="form-group transaction-filter-member">
-          <label class="form-label" for="filterMember">Paid by</label>
-          <select class="form-input form-select" id="filterMember" name="member">
-            <option value="all" <%= filters.member === 'all' ? 'selected' : '' %>>All members</option>
-            <% members.forEach((member) => { %>
-              <option value="<%= member.id %>" <%= String(filters.member) === String(member.id) ? 'selected' : '' %>>
-                <%= member.name %>
-              </option>
-            <% }) %>
-          </select>
-        </div>
-      </div>
-
-      <div class="transaction-filter-actions">
-        <button class="btn btn-primary" type="submit">Apply filters</button>
-
-        <a href="/transactions?view=date&dir=desc" class="transaction-reset-button" data-history-link>
-          Reset
-        </a>
-      </div>
-    </form>
   </div>
 </section>

@@ -68,7 +68,8 @@ function buildTransactionsRedirect(req) {
     ['scope', req.body.redirectScope || req.query.scope || 'all'],
     ['member', req.body.redirectMember || req.query.member || 'all'],
     ['view', req.body.redirectView || req.query.view || 'date'],
-    ['dir', req.body.redirectDir || req.query.dir || 'desc']
+    ['dir', req.body.redirectDir || req.query.dir || 'desc'],
+    ['showAll', req.body.redirectShowAll || req.query.showAll || '']
   ];
 
   for (const [key, rawValue] of fields) {
@@ -88,13 +89,14 @@ function setTransactionFlash(req, type, message) {
 }
 
 function getDefaultTransactionDates() {
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const today = new Date();
+  const fromDate = new Date();
+
+  fromDate.setDate(today.getDate() - 30);
 
   return {
-    from: firstDay.toISOString().slice(0, 10),
-    to: lastDay.toISOString().slice(0, 10)
+    from: fromDate.toISOString().slice(0, 10),
+    to: today.toISOString().slice(0, 10)
   };
 }
 

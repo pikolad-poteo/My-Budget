@@ -33,6 +33,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
     const requestedView = sanitizeTransactionView(req.query.view);
     const requestedDir = sanitizeTransactionSortDir(req.query.dir);
     const requestedType = sanitizeTransactionFilterType(req.query.type);
+    const showAllTransactions = req.query.showAll === '1';
 
     let resolvedType = requestedType;
     if (requestedView === 'expenses') {
@@ -50,7 +51,8 @@ router.get('/transactions', requireAuth, async (req, res) => {
       scope: sanitizeTransactionFilterScope(req.query.scope),
       member: String(req.query.member || 'all').trim(),
       view: requestedView,
-      dir: requestedDir
+      dir: requestedDir,
+      showAll: showAllTransactions
     };
 
     const categories = await getAvailableTransactionCategories(currentUserId, family ? family.id : null);
@@ -69,8 +71,8 @@ router.get('/transactions', requireAuth, async (req, res) => {
       userId: currentUserId,
       familyId: family ? family.id : null,
       filters: {
-        from: normalizedFilters.from,
-        to: normalizedFilters.to,
+        from: normalizedFilters.showAll ? null : normalizedFilters.from,
+        to: normalizedFilters.showAll ? null : normalizedFilters.to,
         categoryId: normalizedFilters.category !== 'all' ? Number(normalizedFilters.category) : null,
         type: normalizedFilters.type,
         scope: normalizedFilters.scope,
@@ -146,6 +148,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
         member: 'all',
         view: 'date',
         dir: 'desc',
+        showAll: false,
         hasAdvancedFilters: false
       },
       summary: {
@@ -180,7 +183,7 @@ router.post('/transactions/create', requireAuth, async (req, res) => {
     }
 
     const categoryRows = await getAvailableTransactionCategories(currentUserId, family ? family.id : null);
-    const category = categoryRows.find((item) => item.id === categoryId);
+    const category = categoryRows.find((item) => Number(item.id) === Number(categoryId));
 
     if (!category) {
       setTransactionFlash(req, 'error', 'Selected category is not available.');
@@ -188,7 +191,7 @@ router.post('/transactions/create', requireAuth, async (req, res) => {
     }
 
     const members = await getAvailableTransactionMembers(currentUserId, family);
-    const memberExists = members.some((member) => member.id === paidByUserId);
+    const memberExists = members.some((member) => Number(member.id) === Number(paidByUserId));
 
     if (!memberExists) {
       setTransactionFlash(req, 'error', 'Selected payer is not available.');
@@ -265,7 +268,7 @@ router.post('/transactions/:id/update', requireAuth, async (req, res) => {
     }
 
     const categoryRows = await getAvailableTransactionCategories(currentUserId, family ? family.id : null);
-    const category = categoryRows.find((item) => item.id === categoryId);
+    const category = categoryRows.find((item) => Number(item.id) === Number(categoryId));
 
     if (!category) {
       setTransactionFlash(req, 'error', 'Selected category is not available.');
@@ -273,7 +276,7 @@ router.post('/transactions/:id/update', requireAuth, async (req, res) => {
     }
 
     const members = await getAvailableTransactionMembers(currentUserId, family);
-    const memberExists = members.some((member) => member.id === paidByUserId);
+    const memberExists = members.some((member) => Number(member.id) === Number(paidByUserId));
 
     if (!memberExists) {
       setTransactionFlash(req, 'error', 'Selected payer is not available.');
@@ -283,7 +286,7 @@ router.post('/transactions/:id/update', requireAuth, async (req, res) => {
     const signedAmount = type === 'income' ? amount : -amount;
     const familyId = category.family_id ? category.family_id : null;
 
-    await db.query(
+    const [updateResult] = await db.query(
       `
       UPDATE transactions
       SET category_id = ?, type = ?, amount = ?, description = ?, transaction_date = ?, paid_by_user_id = ?, family_id = ?
@@ -301,6 +304,11 @@ router.post('/transactions/:id/update', requireAuth, async (req, res) => {
         transactionId
       ]
     );
+
+    if (!updateResult || updateResult.affectedRows !== 1) {
+      setTransactionFlash(req, 'error', 'Transaction was not updated.');
+      return res.redirect(redirectUrl);
+    }
 
     setTransactionFlash(req, 'success', 'Transaction updated successfully.');
     return res.redirect(redirectUrl);

@@ -1,0 +1,194 @@
+<section class="row g-4 wishlist-cards-grid">
+  <% if (wishlistItems.length === 0) { %>
+    <div class="col-12">
+      <article class="card border-0 shadow-sm rounded-4 section-card wishlist-empty-card">
+        <div class="card-body p-5 text-center wishlist-empty-content">
+          <div class="wishlist-empty-icon"><i class="bi bi-bag-heart"></i></div>
+          <h3 class="h4 fw-bold mb-2"><%= hasActiveFilters ? 'No items found' : 'No wishlist items yet' %></h3>
+          <p class="wishlist-toolbar-text mb-4">
+            <%= hasActiveFilters ? 'Change filters or add a new planned purchase right here.' : 'Create your first planned purchase right here.' %>
+          </p>
+
+          <button type="button" class="wishlist-empty-add-button" data-wishlist-open-add-choice>
+            <span class="wishlist-add-card-icon"><i class="bi bi-plus-lg"></i></span>
+            <strong>Add item</strong>
+            <small>Create new or add existing card</small>
+          </button>
+        </div>
+      </article>
+    </div>
+  <% } %>
+
+  <% wishlistItems.forEach((item) => { %>
+    <div class="col-md-6 col-xl-4">
+      <article class="card border-0 shadow-sm rounded-4 section-card wishlist-item-card h-100">
+        <div class="wishlist-item-media">
+          <% if (item.image_url) { %>
+            <img src="<%= item.image_url %>" alt="<%= item.title %>" />
+          <% } else { %>
+            <div class="wishlist-image-placeholder"><i class="bi bi-bag-heart"></i></div>
+          <% } %>
+          <span class="wishlist-card-status is-<%= item.status %>">
+            <i class="bi <%= statusIcons[item.status] || 'bi-circle' %>"></i>
+            <%= statusLabels[item.status] || item.status %>
+          </span>
+        </div>
+
+        <div class="card-body wishlist-item-body">
+          <div class="wishlist-item-top">
+            <div class="wishlist-item-title-wrap">
+              <p class="wishlist-item-folder"><i class="bi bi-folder2"></i> <%= item.folder || 'No folder' %></p>
+              <h3 title="<%= item.title %>"><%= item.title %></h3>
+            </div>
+
+            <div class="wishlist-item-actions">
+              <button class="btn btn-light btn-sm rounded-3 wishlist-icon-btn" type="button" data-wishlist-edit-open="<%= item.id %>" aria-controls="wishlistEdit<%= item.id %>" aria-label="Edit item">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="btn btn-light btn-sm rounded-3 text-danger wishlist-icon-btn wishlist-icon-btn-danger" data-wishlist-delete-open="<%= item.id %>" data-wishlist-delete-title="<%= item.title %>" data-wishlist-delete-action="/wishlist/<%= item.id %>/delete?<%= keepQuery %>" aria-label="Delete item">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+
+          <p class="wishlist-item-description mb-0"><%= item.description || 'No description added yet.' %></p>
+
+          <div class="wishlist-item-meta">
+            <div>
+              <span class="wishlist-meta-label">Price</span>
+              <strong><%= formatMoney(item.amount) %></strong>
+            </div>
+            <div>
+              <span class="wishlist-meta-label">Desired by</span>
+              <strong><%= item.desired_date ? String(item.desired_date).slice(0, 10) : 'No date' %></strong>
+            </div>
+          </div>
+
+          <% if (item.product_url || item.image_url || item.folder) { %>
+            <div class="wishlist-item-links">
+              <% if (item.product_url) { %>
+                <a href="<%= item.product_url %>" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> Product</a>
+              <% } %>
+              <% if (item.image_url) { %>
+                <button type="button" class="wishlist-link-button" data-wishlist-image-open="<%= item.image_url %>" data-wishlist-image-title="<%= item.title %>" data-wishlist-image-edit="<%= item.id %>"><i class="bi bi-image"></i> Image</button>
+              <% } %>
+              <% if (item.folder) { %>
+                <a class="wishlist-folder-pill-link" href="/wishlist?folder=<%= encodeURIComponent(item.folder) %>&status=<%= encodeURIComponent(activeStatus) %>&sort=<%= encodeURIComponent(activeSort) %>&q=<%= encodeURIComponent(searchQuery) %>"><i class="bi bi-folder2-open"></i> <%= item.folder %></a>
+              <% } %>
+            </div>
+          <% } %>
+
+          <form class="wishlist-status-actions" action="/wishlist/<%= item.id %>/status?<%= keepQuery %>" method="POST">
+            <button class="btn btn-outline-secondary wishlist-status-option <%= item.status === 'planned' ? 'is-active is-planned' : '' %>" name="status" value="planned" type="submit">Planned</button>
+            <button class="btn btn-outline-secondary wishlist-status-option <%= item.status === 'postponed' ? 'is-active is-postponed' : '' %>" name="status" value="postponed" type="submit">Postponed</button>
+            <button class="btn btn-outline-secondary wishlist-status-option <%= item.status === 'bought' ? 'is-active is-bought' : '' %>" name="status" value="bought" type="submit">Bought</button>
+          </form>
+
+        </div>
+      </article>
+    </div>
+  <% }) %>
+
+  <% if (wishlistItems.length > 0) { %>
+    <div class="col-md-6 col-xl-4">
+      <button type="button" class="card border-0 shadow-sm rounded-4 section-card wishlist-add-card w-100 h-100" data-wishlist-open-add-choice>
+        <span class="wishlist-add-card-icon"><i class="bi bi-plus-lg"></i></span>
+        <strong>Add item</strong>
+        <small>Create new or add existing card</small>
+      </button>
+    </div>
+  <% } %>
+</section>
+
+<% wishlistItems.forEach((item) => { %>
+          <div class="wishlist-modal wishlist-item-edit-modal" id="wishlistEdit<%= item.id %>" hidden>
+            <div class="wishlist-modal-backdrop" data-wishlist-item-modal-close></div>
+            <form class="wishlist-modal-card wishlist-edit-panel card border-0 rounded-4" action="/wishlist/<%= item.id %>/update?<%= keepQuery %>" method="POST" enctype="multipart/form-data">
+              <div class="wishlist-modal-header">
+                <div>
+                  <p class="section-label">Edit wishlist item</p>
+                  <h3>Edit <%= item.title %></h3>
+                </div>
+                <button type="button" class="wishlist-modal-close" data-wishlist-item-modal-close aria-label="Close edit form"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+              <div class="wishlist-edit-grid wishlist-edit-layout">
+                <div class="form-group wishlist-form-preview-field wishlist-edit-preview-slot">
+                  <label class="form-label">Current photo preview</label>
+                  <div class="wishlist-photo-preview wishlist-photo-preview-wide" id="wishlistEditImagePreview<%= item.id %>" data-current-src="<%= item.image_url || '' %>" data-empty-label="No image">
+                    <% if (item.image_url) { %>
+                      <img src="<%= item.image_url %>" alt="<%= item.title %> preview" />
+                    <% } else { %>
+                      <i class="bi bi-image"></i>
+                      <span>No image</span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="wishlist-edit-main-fields">
+                  <div class="form-group">
+                    <label class="form-label" for="editTitle<%= item.id %>">Item name</label>
+                    <input class="form-control" id="editTitle<%= item.id %>" name="title" value="<%= item.title %>" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="editFolder<%= item.id %>">Folder</label>
+                    <select class="form-select" id="editFolder<%= item.id %>" name="folder">
+                      <option value="" <%= !item.folder ? 'selected' : '' %>>No folder</option>
+                      <% folders.forEach((folder) => { %>
+                        <option value="<%= folder %>" <%= item.folder === folder ? 'selected' : '' %>><%= folder %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editAmount<%= item.id %>">Target price</label>
+                  <input class="form-control" id="editAmount<%= item.id %>" name="amount" type="number" step="0.01" min="0.01" value="<%= Number(item.amount || 0).toFixed(2) %>" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editStatus<%= item.id %>">Status</label>
+                  <select class="form-select" id="editStatus<%= item.id %>" name="status">
+                    <option value="planned" <%= item.status === 'planned' ? 'selected' : '' %>>Planned</option>
+                    <option value="postponed" <%= item.status === 'postponed' ? 'selected' : '' %>>Postponed</option>
+                    <option value="bought" <%= item.status === 'bought' ? 'selected' : '' %>>Bought</option>
+                    <option value="cancelled" <%= item.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editDate<%= item.id %>">Desired by</label>
+                  <input class="form-control" id="editDate<%= item.id %>" name="desired_date" type="date" value="<%= item.desired_date ? String(item.desired_date).slice(0, 10) : '' %>" />
+                </div>
+
+                <div class="form-group wishlist-form-grid-wide">
+                  <label class="form-label" for="editDescription<%= item.id %>">Description</label>
+                  <textarea class="form-control" id="editDescription<%= item.id %>" name="description" rows="3"><%= item.description || '' %></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editProduct<%= item.id %>">Product link</label>
+                  <input class="form-control" id="editProduct<%= item.id %>" name="product_url" type="url" value="<%= item.product_url || '' %>" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editImage<%= item.id %>">Image link</label>
+                  <input class="form-control" id="editImage<%= item.id %>" name="image_url" type="text" value="<%= item.image_url || '' %>" data-wishlist-image-url-preview="wishlistEditImagePreview<%= item.id %>" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="editLocalImage<%= item.id %>">Local photo</label>
+                  <input class="form-control wishlist-file-input" id="editLocalImage<%= item.id %>" name="local_image" type="file" accept="image/*" data-wishlist-image-file-preview="wishlistEditImagePreview<%= item.id %>" />
+                </div>
+              </div>
+
+              <div class="wishlist-form-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+                <button class="btn btn-outline-secondary rounded-pill px-4" type="button" data-wishlist-item-modal-close>Cancel</button>
+                <button class="btn btn-primary rounded-pill px-4" type="submit">Save changes</button>
+              </div>
+            </form>
+          </div>
+
+<% }) %>
+

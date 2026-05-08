@@ -1,0 +1,86 @@
+<div class="wishlist-create-panel-inline border-top pt-4" id="wishlistCreatePanel" hidden>
+      <form class="wishlist-form wishlist-create-form" action="/wishlist/create?<%= keepQuery %>" method="POST" enctype="multipart/form-data">
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+          <div>
+            <p class="section-label">Create</p>
+            <h2 class="h4 mb-0">New wishlist item</h2>
+      </div>
+        </div>
+        <div class="wishlist-form-grid wishlist-create-layout">
+          <div class="form-group wishlist-form-preview-field wishlist-create-preview-slot">
+            <label class="form-label">Photo preview</label>
+            <div class="wishlist-photo-preview" id="wishlistCreateImagePreview" data-empty-label="Preview">
+              <i class="bi bi-image"></i>
+              <span>Preview</span>
+            </div>
+          </div>
+
+          <div class="wishlist-create-main-fields">
+            <div class="form-group">
+              <label class="form-label" for="wishlistTitle">Item name</label>
+              <input class="form-control" id="wishlistTitle" name="title" type="text" placeholder="New headphones" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="wishlistFolder">Folder</label>
+              <select class="form-select" id="wishlistFolder" name="folder">
+                <option value="">No folder</option>
+                <% folders.forEach((folder) => { %>
+                  <option value="<%= folder %>"><%= folder %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistPrice">Target price</label>
+            <div class="wishlist-price-field">
+              <span>€</span>
+              <input class="form-control" id="wishlistPrice" name="amount" type="number" step="0.01" min="0.01" placeholder="0.00" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistStatus">Status</label>
+            <select class="form-select" id="wishlistStatus" name="status">
+              <option value="planned" selected>Planned</option>
+              <option value="postponed">Postponed</option>
+              <option value="bought">Bought</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistDeadline">Desired by</label>
+            <input class="form-control" id="wishlistDeadline" name="desired_date" type="date" />
+          </div>
+
+          <div class="form-group wishlist-form-grid-wide">
+            <label class="form-label" for="wishlistDescription">Description</label>
+            <textarea class="form-control" id="wishlistDescription" name="description" rows="3" placeholder="Short note about the item"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistProductUrl">Product link</label>
+            <input class="form-control" id="wishlistProductUrl" name="product_url" type="url" placeholder="https://store.example/item" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistImageUrl">Image link</label>
+            <input class="form-control" id="wishlistImageUrl" name="image_url" type="text" placeholder="https://images.example/item.jpg" data-wishlist-image-url-preview="wishlistCreateImagePreview" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wishlistLocalImage">Local photo</label>
+            <input class="form-control wishlist-file-input" id="wishlistLocalImage" name="local_image" type="file" accept="image/*" data-wishlist-image-file-preview="wishlistCreateImagePreview" />
+          </div>
+
+        </div>
+
+        <div class="wishlist-form-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Save item</button>
+          <button class="btn btn-outline-secondary rounded-pill px-4" type="reset">Clear form</button>
+        </div>
+      </form>
+    </div>

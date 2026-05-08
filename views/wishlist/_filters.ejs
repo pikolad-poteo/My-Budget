@@ -1,0 +1,155 @@
+<section class="card border-0 shadow-sm rounded-4 section-card wishlist-filters-card">
+  <div class="card-body p-4">
+    <div class="row align-items-center g-3 mb-4">
+      <div class="col-lg-7">
+        <p class="section-label">Organization</p>
+        <h2 class="h3 fw-bold mb-1">Folders and filters</h2>
+        <p class="wishlist-toolbar-text mb-0">Keep planned purchases grouped and quickly find the item you need.</p>
+      </div>
+
+      <div class="col-lg-5 d-grid d-sm-flex justify-content-lg-end gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary rounded-pill px-4"
+          id="toggleWishlistFoldersButton"
+          aria-expanded="<%= shouldShowFolders || !hasFoldersToShow ? 'true' : 'false' %>"
+          aria-controls="wishlistFoldersPanel"
+        >
+          <i class="bi bi-folder2-open me-2"></i>
+          <span id="toggleWishlistFoldersText"><%= shouldShowFolders || !hasFoldersToShow ? 'Hide folders' : 'Show folders' %></span>
+        </button>
+
+        <% if (hasActiveFilters) { %>
+          <a href="/wishlist" class="btn btn-outline-secondary rounded-pill px-4 wishlist-reset-btn">Clear filters</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="wishlist-folders-panel mb-4" id="wishlistFoldersPanel" <%= shouldShowFolders || !hasFoldersToShow ? '' : 'hidden' %>>
+      <form class="row g-2 align-items-center mb-3 wishlist-folder-create-form" action="/wishlist/folders/create?<%= keepQuery %>" method="POST">
+        <input type="hidden" name="status" value="<%= activeStatus %>" />
+        <input type="hidden" name="folder" value="<%= activeFolder %>" />
+        <input type="hidden" name="sort" value="<%= activeSort %>" />
+        <input type="hidden" name="q" value="<%= searchQuery %>" />
+        <div class="col-sm-8 col-lg-5">
+          <div class="input-group input-group-sm wishlist-folder-create-input">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-folder-plus"></i></span>
+            <input class="form-control border-start-0" name="name" type="text" maxlength="100" placeholder="New folder name" required />
+          </div>
+        </div>
+        <div class="col-sm-auto">
+          <button class="btn btn-primary rounded-pill px-4 w-100" type="submit">
+            <i class="bi bi-plus-lg me-1"></i>Create folder
+          </button>
+        </div>
+      </form>
+
+      <% if (!hasFoldersToShow) { %>
+        <div class="card border-0 rounded-4 bg-light wishlist-folder-empty">
+          <div class="card-body p-4 d-flex flex-column flex-md-row align-items-md-center gap-3">
+            <span class="wishlist-folder-empty-icon"><i class="bi bi-folder2-open"></i></span>
+            <div>
+              <h3 class="h5 fw-bold mb-1">No folders yet</h3>
+              <p class="wishlist-toolbar-text mb-0">Create folders like Tech, Home or Travel to organize future purchases.</p>
+            </div>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="row g-3 wishlist-folder-grid">
+          <div class="col-md-6 col-xl-4">
+            <a class="card border-0 rounded-4 bg-light h-100 wishlist-folder-card <%= activeFolder === 'all' ? 'is-active' : '' %>" href="/wishlist?status=<%= encodeURIComponent(activeStatus) %>&sort=<%= encodeURIComponent(activeSort) %>&q=<%= encodeURIComponent(searchQuery) %>">
+              <div class="card-body p-3 d-flex align-items-center gap-3">
+                <span class="wishlist-folder-icon"><i class="bi bi-grid"></i></span>
+                <span class="wishlist-folder-main flex-grow-1">
+                  <strong>All items</strong>
+                  <small><%= summary.totalItems %> items</small>
+                </span>
+                <span class="wishlist-folder-amount"><%= formatMoney(summary.plannedTotal + summary.postponedTotal + summary.boughtTotal) %></span>
+              </div>
+            </a>
+          </div>
+
+          <% folders.forEach((folder) => { %>
+            <% const folderInfo = folderStats && folderStats[folder] ? folderStats[folder] : { count: 0, total: 0 }; %>
+            <div class="col-md-6 col-xl-4">
+              <article class="card border-0 rounded-4 bg-light h-100 wishlist-folder-card wishlist-folder-card-manageable <%= activeFolder === folder ? 'is-active' : '' %>">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                  <a class="wishlist-folder-card-link flex-grow-1" href="/wishlist?folder=<%= encodeURIComponent(folder) %>&status=<%= encodeURIComponent(activeStatus) %>&sort=<%= encodeURIComponent(activeSort) %>&q=<%= encodeURIComponent(searchQuery) %>">
+                    <span class="wishlist-folder-icon"><i class="bi bi-folder"></i></span>
+                    <span class="wishlist-folder-main">
+                      <strong title="<%= folder %>"><%= folder %></strong>
+                      <small><%= folderInfo.count %> items</small>
+                    </span>
+                    <span class="wishlist-folder-amount"><%= formatMoney(folderInfo.total) %></span>
+                  </a>
+
+                  <div class="btn-group btn-group-sm wishlist-folder-actions" role="group" aria-label="Folder actions">
+                    <button type="button" class="btn btn-light rounded-3" data-wishlist-add-existing-folder="<%= folder %>" <%= allWishlistItems.length === 0 ? 'disabled' : '' %> aria-label="Add existing items to folder">
+                      <i class="bi bi-plus-lg"></i>
+                    </button>
+                    <button type="button" class="btn btn-light rounded-3" data-folder-rename-open="<%= folder %>" aria-label="Rename folder">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-light rounded-3 text-danger" data-folder-delete-open="<%= folder %>" data-folder-count="<%= folderInfo.count %>" aria-label="Delete folder">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <form class="wishlist-advanced-filters" id="wishlistAdvancedFilters" action="/wishlist" method="GET">
+      <input type="hidden" name="folder" value="<%= activeFolder %>" />
+
+      <div class="row g-3 align-items-center wishlist-filter-row">
+        <div class="col-lg-5 col-xl-5">
+          <div class="input-group wishlist-bootstrap-search <%= searchQuery ? 'has-live-query' : '' %>">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+            <input
+              type="search"
+              class="form-control border-start-0"
+              id="wishlistLiveSearchInput"
+              name="q"
+              value="<%= searchQuery %>"
+              placeholder="Search wishlist"
+              autocomplete="off"
+              aria-label="Search wishlist"
+              data-wishlist-hot-search
+            />
+            <button
+              class="btn btn-outline-secondary px-4 wishlist-search-clear"
+              type="button"
+              id="wishlistLiveSearchClear"
+              <%= searchQuery ? '' : 'hidden' %>
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-5 col-xl-5">
+          <input type="hidden" name="status" value="<%= activeStatus %>" />
+          <div class="btn-group wishlist-filter-status-buttons wishlist-view-switch" role="group" aria-label="Filter by status">
+            <button class="btn wishlist-view-pill <%= activeStatus === 'all' ? 'is-active' : '' %>" type="button" data-wishlist-status-filter="all">All</button>
+            <button class="btn wishlist-view-pill <%= activeStatus === 'planned' ? 'is-active' : '' %>" type="button" data-wishlist-status-filter="planned">Planned</button>
+            <button class="btn wishlist-view-pill <%= activeStatus === 'postponed' ? 'is-active' : '' %>" type="button" data-wishlist-status-filter="postponed">Postponed</button>
+            <button class="btn wishlist-view-pill <%= activeStatus === 'bought' ? 'is-active' : '' %>" type="button" data-wishlist-status-filter="bought">Bought</button>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-xl-2">
+          <select class="form-select wishlist-sort-select" name="sort" data-wishlist-auto-filter aria-label="Sort wishlist">
+          <option value="newest" <%= activeSort === 'newest' ? 'selected' : '' %>>Newest first</option>
+          <option value="oldest" <%= activeSort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+          <option value="price_desc" <%= activeSort === 'price_desc' ? 'selected' : '' %>>Price high to low</option>
+          <option value="price_asc" <%= activeSort === 'price_asc' ? 'selected' : '' %>>Price low to high</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

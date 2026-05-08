@@ -18,14 +18,6 @@ router.get('/dashboard', requireAuth, (req, res) => {
   });
 });
 
-
-router.get('/wishlist', requireAuth, (req, res) => {
-  res.render('wishlist/index', {
-    title: 'Wishlist',
-    activePage: 'wishlist'
-  });
-});
-
 router.get('/calendar', requireAuth, (req, res) => {
   res.render('calendar/index', {
     title: 'Calendar',

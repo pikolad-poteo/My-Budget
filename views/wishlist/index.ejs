@@ -1,474 +1,76 @@
 <%- include('../partials/header') %>
 
-<section class="container page-heading">
-  <div class="wishlist-page-intro">
-    <p class="eyebrow">Future spending</p>
-    <h1 class="page-title">Wishlist</h1>
-    <p class="page-text">
-      Track planned purchases, organize items into folders and keep an eye on how wishlist plans affect your budget.
-    </p>
-  </div>
+<%
+  const pageFilters = typeof filters !== 'undefined' ? filters : {};
+  const pageFolders = (typeof folders !== 'undefined' && Array.isArray(folders)) ? folders : [];
+  const pageFolderStats = typeof folderStats !== 'undefined' ? folderStats : {};
+  const pageWishlistItems = (typeof wishlistItems !== 'undefined' && Array.isArray(wishlistItems)) ? wishlistItems : [];
+  const pageAllWishlistItems = (typeof allWishlistItems !== 'undefined' && Array.isArray(allWishlistItems)) ? allWishlistItems : [];
+  const pageSummary = typeof summary !== 'undefined' ? summary : {
+    balance: 0,
+    plannedTotal: 0,
+    postponedTotal: 0,
+    boughtTotal: 0,
+    balanceAfterPlans: 0,
+    totalItems: 0
+  };
+  const pageErrorMessage = typeof errorMessage !== 'undefined' ? errorMessage : null;
+  const pageSuccessMessage = typeof successMessage !== 'undefined' ? successMessage : null;
+
+  const formatMoney = (value) => `${Number(value || 0).toFixed(2)} €`;
+  const activeStatus = pageFilters.status || 'all';
+  const activeFolder = pageFilters.folder || 'all';
+  const activeSort = pageFilters.sort || 'newest';
+  const searchQuery = pageFilters.q || '';
+  const hasFoldersToShow = Array.isArray(pageFolders) && pageFolders.length > 0;
+  const hasActiveFilters = activeStatus !== 'all' || activeFolder !== 'all' || activeSort !== 'newest' || Boolean(searchQuery);
+  const shouldShowFolders = hasFoldersToShow && activeFolder !== 'all';
+  const currentFolderName = activeFolder !== 'all' ? activeFolder : '';
+  const keepQuery = `status=${encodeURIComponent(activeStatus)}&folder=${encodeURIComponent(activeFolder)}&sort=${encodeURIComponent(activeSort)}&q=${encodeURIComponent(searchQuery)}`;
+  const statusLabels = {
+    planned: 'Planned',
+    postponed: 'Postponed',
+    bought: 'Bought',
+    cancelled: 'Cancelled'
+  };
+  const statusIcons = {
+    planned: 'bi-calendar-check',
+    postponed: 'bi-pause-circle',
+    bought: 'bi-check2-circle',
+    cancelled: 'bi-x-circle'
+  };
+
+  const wishlistView = {
+    formatMoney,
+    activeStatus,
+    activeFolder,
+    activeSort,
+    searchQuery,
+    hasFoldersToShow,
+    hasActiveFilters,
+    shouldShowFolders,
+    currentFolderName,
+    keepQuery,
+    statusLabels,
+    statusIcons,
+    errorMessage: pageErrorMessage,
+    successMessage: pageSuccessMessage,
+    summary: pageSummary,
+    folders: pageFolders,
+    folderStats: pageFolderStats,
+    wishlistItems: pageWishlistItems,
+    allWishlistItems: pageAllWishlistItems
+  };
+%>
+
+<section class="container wishlist-shell">
+  <%- include('./_flash', wishlistView) %>
+  <%- include('./_overview', wishlistView) %>
+  <%- include('./_filters', wishlistView) %>
+  <%- include('./_shared_modals', wishlistView) %>
+  <%- include('./_cards', wishlistView) %>
 </section>
 
-<section class="container wishlist-layout">
-  <section class="wishlist-top-grid">
-    <article class="section-card wishlist-quick-add-card">
-      <div class="section-header wishlist-card-header">
-        <div>
-          <p class="section-label">Quick add</p>
-          <h2>Add wishlist item</h2>
-        </div>
-      </div>
-
-      <form class="wishlist-quick-form">
-        <div class="wishlist-quick-main-grid">
-          <div class="form-group">
-            <label class="form-label" for="wishlistTitle">Item name</label>
-            <input
-              class="form-input"
-              id="wishlistTitle"
-              name="wishlistTitle"
-              type="text"
-              placeholder="New headphones"
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wishlistPrice">Target price</label>
-            <div class="wishlist-price-field">
-              <span>€</span>
-              <input
-                class="form-input"
-                id="wishlistPrice"
-                name="wishlistPrice"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="wishlist-quick-main-grid">
-          <div class="form-group">
-            <label class="form-label" for="wishlistFolder">Folder</label>
-            <select class="form-input form-select" id="wishlistFolder" name="wishlistFolder">
-              <option selected>Gifts</option>
-              <option>Home appliances</option>
-              <option>Cosmetics</option>
-              <option>Personal tech</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wishlistStatus">Status</label>
-            <div class="wishlist-status-switch" role="group" aria-label="Wishlist status">
-              <button class="wishlist-status-option is-active is-planned" type="button">Planned</button>
-              <button class="wishlist-status-option is-postponed" type="button">Postponed</button>
-              <button class="wishlist-status-option is-bought" type="button">Bought</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="wishlistDescription">Description</label>
-          <input
-            class="form-input"
-            id="wishlistDescription"
-            name="wishlistDescription"
-            type="text"
-            placeholder="Short note about the item"
-          />
-        </div>
-
-        <details class="wishlist-expandable">
-          <summary class="wishlist-expandable-summary">
-            <span>
-              <i class="bi bi-sliders"></i>
-              Additional parameters
-            </span>
-            <span class="wishlist-expandable-hint">Image and advanced fields</span>
-          </summary>
-
-          <div class="wishlist-expandable-body">
-            <div class="wishlist-expandable-grid">
-              <div class="form-group">
-                <label class="form-label" for="wishlistProductUrl">Product link</label>
-                <input
-                  class="form-input"
-                  id="wishlistProductUrl"
-                  name="wishlistProductUrl"
-                  type="url"
-                  placeholder="https://store.example/item"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="wishlistDeadline">Desired by</label>
-                <input
-                  class="form-input"
-                  id="wishlistDeadline"
-                  name="wishlistDeadline"
-                  type="date"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="wishlistImageUrl">Image link</label>
-                <input
-                  class="form-input"
-                  id="wishlistImageUrl"
-                  name="wishlistImageUrl"
-                  type="url"
-                  placeholder="https://images.example/item.jpg"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="wishlistImageUpload">Upload image</label>
-                <input
-                  class="form-input"
-                  id="wishlistImageUpload"
-                  name="wishlistImageUpload"
-                  type="file"
-                />
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <div class="wishlist-form-actions">
-          <button class="btn btn-primary" type="submit">Save item</button>
-          <button class="btn btn-secondary" type="button">Clear form</button>
-        </div>
-      </form>
-    </article>
-
-    <article class="section-card wishlist-summary-card">
-      <div class="section-header wishlist-card-header">
-        <div>
-          <p class="section-label">Budget preview</p>
-          <h2>Wishlist summary</h2>
-        </div>
-      </div>
-
-      <div class="wishlist-summary-grid">
-        <div class="wishlist-summary-box">
-          <span class="wishlist-summary-label">Current balance</span>
-          <strong class="wishlist-summary-value">2 460.00 €</strong>
-        </div>
-
-        <div class="wishlist-summary-box">
-          <span class="wishlist-summary-label">Planned spending</span>
-          <strong class="wishlist-summary-value is-warning">684.00 €</strong>
-        </div>
-
-        <div class="wishlist-summary-box">
-          <span class="wishlist-summary-label">Balance after plans</span>
-          <strong class="wishlist-summary-value is-success">1 776.00 €</strong>
-        </div>
-      </div>
-
-      <div class="wishlist-summary-meta">
-        <div class="wishlist-mini-stat">
-          <span class="wishlist-mini-stat-label">Planned items</span>
-          <strong>6</strong>
-        </div>
-
-        <div class="wishlist-mini-stat">
-          <span class="wishlist-mini-stat-label">Bought this month</span>
-          <strong>2</strong>
-        </div>
-
-        <div class="wishlist-mini-stat">
-          <span class="wishlist-mini-stat-label">Folders</span>
-          <strong>4</strong>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <section class="section-card wishlist-folders-card">
-    <div class="section-header wishlist-card-header">
-      <div>
-        <p class="section-label">Organization</p>
-        <h2>Folders and filters</h2>
-      </div>
-      <a href="#" class="wishlist-clear-link">Manage folders</a>
-    </div>
-
-    <div class="wishlist-folders-toolbar">
-      <div class="wishlist-folder-chips">
-        <button class="wishlist-folder-chip is-active" type="button">All items</button>
-        <button class="wishlist-folder-chip" type="button">Gifts</button>
-        <button class="wishlist-folder-chip" type="button">Home appliances</button>
-        <button class="wishlist-folder-chip" type="button">Cosmetics</button>
-        <button class="wishlist-folder-chip" type="button">Personal tech</button>
-        <button class="wishlist-folder-chip is-add" type="button">
-          <i class="bi bi-plus-lg"></i>
-          <span>New folder</span>
-        </button>
-      </div>
-
-      <div class="wishlist-filters-inline">
-        <div class="wishlist-filter-field">
-          <i class="bi bi-search"></i>
-          <input type="text" class="form-input" placeholder="Search wishlist" />
-        </div>
-
-        <select class="form-input form-select wishlist-sort-select">
-          <option selected>Sort by newest</option>
-          <option>Sort by price</option>
-          <option>Sort by status</option>
-          <option>Sort by folder</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <section class="wishlist-cards-grid">
-    <article class="section-card wishlist-item-card">
-      <div class="wishlist-item-media">
-        <img
-          src="https://images.pexels.com/photos/30428610/pexels-photo-30428610.jpeg"
-          alt="Wireless headphones"
-        />
-        <span class="wishlist-card-status is-planned">Planned</span>
-      </div>
-
-      <div class="wishlist-item-body">
-        <div class="wishlist-item-top">
-          <div>
-            <p class="wishlist-item-folder">Personal tech</p>
-            <h3>Wireless headphones</h3>
-          </div>
-
-          <div class="wishlist-item-actions">
-            <button type="button" class="wishlist-icon-btn" aria-label="Edit item">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button type="button" class="wishlist-icon-btn" aria-label="Delete item">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </div>
-        </div>
-
-        <p class="wishlist-item-description">
-          Noise cancelling headphones for work and travel.
-        </p>
-
-        <div class="wishlist-item-meta">
-          <div>
-            <span class="wishlist-meta-label">Price</span>
-            <strong>219.00 €</strong>
-          </div>
-
-          <div>
-            <span class="wishlist-meta-label">Desired by</span>
-            <strong>2026-05-15</strong>
-          </div>
-        </div>
-
-        <div class="wishlist-item-links">
-          <a href="#">Product link</a>
-          <a href="#">Image source</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="section-card wishlist-item-card">
-      <div class="wishlist-item-media">
-        <img
-          src="https://images.pexels.com/photos/16284350/pexels-photo-16284350.jpeg"
-          alt="Coffee machine"
-        />
-        <span class="wishlist-card-status is-postponed">Postponed</span>
-      </div>
-
-      <div class="wishlist-item-body">
-        <div class="wishlist-item-top">
-          <div>
-            <p class="wishlist-item-folder">Home appliances</p>
-            <h3>Coffee machine</h3>
-          </div>
-
-          <div class="wishlist-item-actions">
-            <button type="button" class="wishlist-icon-btn" aria-label="Edit item">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button type="button" class="wishlist-icon-btn" aria-label="Delete item">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </div>
-        </div>
-
-        <p class="wishlist-item-description">
-          Compact machine for home use, currently postponed until next month.
-        </p>
-
-        <div class="wishlist-item-meta">
-          <div>
-            <span class="wishlist-meta-label">Price</span>
-            <strong>145.00 €</strong>
-          </div>
-
-          <div>
-            <span class="wishlist-meta-label">Desired by</span>
-            <strong>2026-06-01</strong>
-          </div>
-        </div>
-
-        <div class="wishlist-item-links">
-          <a href="#">Product link</a>
-          <a href="#">Image source</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="section-card wishlist-item-card">
-      <div class="wishlist-item-media">
-        <img
-          src="https://images.pexels.com/photos/33678429/pexels-photo-33678429.png"
-          alt="Table lamp"
-        />
-        <span class="wishlist-card-status is-planned">Planned</span>
-      </div>
-
-      <div class="wishlist-item-body">
-        <div class="wishlist-item-top">
-          <div>
-            <p class="wishlist-item-folder">Home appliances</p>
-            <h3>Minimal table lamp</h3>
-          </div>
-
-          <div class="wishlist-item-actions">
-            <button type="button" class="wishlist-icon-btn" aria-label="Edit item">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button type="button" class="wishlist-icon-btn" aria-label="Delete item">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </div>
-        </div>
-
-        <p class="wishlist-item-description">
-          Warm light desk lamp for the workspace corner.
-        </p>
-
-        <div class="wishlist-item-meta">
-          <div>
-            <span class="wishlist-meta-label">Price</span>
-            <strong>79.00 €</strong>
-          </div>
-
-          <div>
-            <span class="wishlist-meta-label">Desired by</span>
-            <strong>2026-05-10</strong>
-          </div>
-        </div>
-
-        <div class="wishlist-item-links">
-          <a href="#">Product link</a>
-          <a href="#">Image source</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="section-card wishlist-add-card">
-      <div class="wishlist-add-card-inner">
-        <div class="wishlist-add-icon">
-          <i class="bi bi-plus-lg"></i>
-        </div>
-
-        <h3>Add new item</h3>
-        <p>
-          Quick creation card for a new wishlist item with optional advanced fields.
-        </p>
-
-        <details class="wishlist-expandable wishlist-add-expandable">
-          <summary class="wishlist-expandable-summary">
-            <span>
-              <i class="bi bi-lightning-charge"></i>
-              Quick add
-            </span>
-            <span class="wishlist-expandable-hint">Expand form</span>
-          </summary>
-
-          <div class="wishlist-expandable-body">
-            <form class="wishlist-add-mini-form">
-              <div class="form-group">
-                <label class="form-label" for="miniWishlistTitle">Item name</label>
-                <input
-                  class="form-input"
-                  id="miniWishlistTitle"
-                  type="text"
-                  placeholder="New item"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="miniWishlistPrice">Price</label>
-                <div class="wishlist-price-field">
-                  <span>€</span>
-                  <input
-                    class="form-input"
-                    id="miniWishlistPrice"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              <details class="wishlist-expandable wishlist-nested-expandable">
-                <summary class="wishlist-expandable-summary">
-                  <span>
-                    <i class="bi bi-sliders"></i>
-                    More options
-                  </span>
-                  <span class="wishlist-expandable-hint">Status and image</span>
-                </summary>
-
-                <div class="wishlist-expandable-body">
-                  <div class="form-group">
-                    <label class="form-label" for="miniWishlistFolder">Folder</label>
-                    <select class="form-input form-select" id="miniWishlistFolder">
-                      <option selected>Gifts</option>
-                      <option>Home appliances</option>
-                      <option>Cosmetics</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="miniWishlistStatus">Status</label>
-                    <select class="form-input form-select" id="miniWishlistStatus">
-                      <option selected>Planned</option>
-                      <option>Postponed</option>
-                      <option>Bought</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="miniWishlistProductLink">Product link</label>
-                    <input
-                      class="form-input"
-                      id="miniWishlistProductLink"
-                      type="url"
-                      placeholder="https://store.example/item"
-                    />
-                  </div>
-                </div>
-              </details>
-
-              <div class="wishlist-form-actions">
-                <button class="btn btn-primary" type="submit">Create item</button>
-              </div>
-            </form>
-          </div>
-        </details>
-      </div>
-    </article>
-  </section>
-</section>
+<script src="/js/wishlist.js"></script>
 
 <%- include('../partials/footer') %>

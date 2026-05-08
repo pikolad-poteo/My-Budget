@@ -1,0 +1,13 @@
+<% if (errorMessage) { %>
+  <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-0 d-flex align-items-start gap-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <div><%= errorMessage %></div>
+  </div>
+<% } %>
+
+<% if (successMessage) { %>
+  <div class="alert alert-success rounded-4 border-0 shadow-sm mb-0 d-flex align-items-start gap-2" role="alert">
+    <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+    <div><%= successMessage %></div>
+  </div>
+<% } %>

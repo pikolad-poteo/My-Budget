@@ -1,0 +1,181 @@
+<div class="wishlist-modal" id="wishlistFolderRenameModal" hidden>
+  <div class="wishlist-modal-backdrop" data-folder-modal-close></div>
+  <form class="wishlist-modal-card card border-0 rounded-4" action="/wishlist/folders/rename?<%= keepQuery %>" method="POST">
+    <div class="wishlist-modal-header">
+      <div>
+        <p class="section-label">Rename folder</p>
+        <h3>Edit folder name</h3>
+      </div>
+      <button type="button" class="wishlist-modal-close" data-folder-modal-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <input type="hidden" name="old_name" id="wishlistRenameOldName" />
+
+    <label class="form-label" for="wishlistRenameNewName">New folder name</label>
+    <input class="form-control" name="new_name" id="wishlistRenameNewName" maxlength="100" required />
+
+    <div class="wishlist-modal-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+      <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-folder-modal-close>Cancel</button>
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Save name</button>
+    </div>
+  </form>
+</div>
+
+<div class="wishlist-modal" id="wishlistFolderDeleteModal" hidden>
+  <div class="wishlist-modal-backdrop" data-folder-modal-close></div>
+  <form class="wishlist-modal-card card border-0 rounded-4" action="/wishlist/folders/delete?<%= keepQuery %>" method="POST">
+    <div class="wishlist-modal-header">
+      <div>
+        <p class="section-label">Delete folder</p>
+        <h3 id="wishlistDeleteModalTitle">Delete folder?</h3>
+      </div>
+      <button type="button" class="wishlist-modal-close" data-folder-modal-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <input type="hidden" name="name" id="wishlistDeleteFolderName" />
+
+    <p class="wishlist-modal-text" id="wishlistDeleteModalText">
+      Choose what should happen with the items inside this folder.
+    </p>
+
+    <label class="wishlist-delete-option">
+      <input type="radio" name="delete_action" value="move_to_general" checked />
+      <span>
+        <strong>Delete only folder</strong>
+        <small>Remove folder from these items. They will stay visible in All items.</small>
+      </span>
+    </label>
+
+    <label class="wishlist-delete-option is-danger">
+      <input type="radio" name="delete_action" value="delete_items" />
+      <span>
+        <strong>Delete folder and items</strong>
+        <small>Remove this folder and all wishlist items inside it.</small>
+      </span>
+    </label>
+
+    <div class="wishlist-modal-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+      <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-folder-modal-close>Cancel</button>
+      <button type="submit" class="btn btn-danger rounded-pill px-4">Delete folder</button>
+    </div>
+  </form>
+</div>
+
+<div class="wishlist-modal" id="wishlistItemDeleteModal" hidden>
+  <div class="wishlist-modal-backdrop" data-wishlist-item-modal-close></div>
+  <form class="wishlist-modal-card card border-0 rounded-4 wishlist-delete-item-modal" id="wishlistItemDeleteForm" action="/wishlist" method="POST">
+    <div class="wishlist-modal-header">
+      <div>
+        <p class="section-label">Delete wishlist item</p>
+        <h3 id="wishlistItemDeleteTitle">Delete item?</h3>
+      </div>
+      <button type="button" class="wishlist-modal-close" data-wishlist-item-modal-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <p class="wishlist-modal-text">This action will permanently remove the item from your wishlist.</p>
+
+    <div class="wishlist-modal-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+      <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-wishlist-item-modal-close>Cancel</button>
+      <button type="submit" class="btn btn-danger rounded-pill px-4">Delete item</button>
+    </div>
+  </form>
+</div>
+
+<div class="wishlist-modal" id="wishlistAddChoiceModal" hidden>
+  <div class="wishlist-modal-backdrop" data-wishlist-add-modal-close></div>
+  <div class="wishlist-modal-card card border-0 rounded-4 wishlist-add-choice-modal-card">
+    <div class="wishlist-modal-header">
+      <div>
+        <p class="section-label">Add item</p>
+        <h3>What do you want to add?</h3>
+      </div>
+      <button type="button" class="wishlist-modal-close" data-wishlist-add-modal-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="wishlist-add-choice-grid">
+      <button type="button" class="wishlist-add-choice-card" data-wishlist-add-new>
+        <span><i class="bi bi-plus-lg"></i></span>
+        <strong>Create new item</strong>
+        <small>Open the compact form and add a new wishlist card.</small>
+      </button>
+
+      <button type="button" class="wishlist-add-choice-card" data-wishlist-add-existing <%= folders.length === 0 || allWishlistItems.length === 0 ? 'disabled' : '' %>>
+        <span><i class="bi bi-collection"></i></span>
+        <strong>Add existing card</strong>
+        <small>Choose existing wishlist cards and move them into a folder.</small>
+      </button>
+    </div>
+
+    <% if (folders.length === 0) { %>
+      <p class="wishlist-modal-hint mt-3 mb-0">Create a folder first to add existing cards into a folder.</p>
+    <% } else if (allWishlistItems.length === 0) { %>
+      <p class="wishlist-modal-hint mt-3 mb-0">There are no existing cards yet. Create a new wishlist item first.</p>
+    <% } %>
+  </div>
+</div>
+
+<div class="wishlist-modal wishlist-existing-items-modal" id="wishlistExistingItemsModal" hidden>
+  <div class="wishlist-modal-backdrop" data-wishlist-add-modal-close></div>
+  <form class="wishlist-modal-card card border-0 rounded-4 wishlist-existing-items-card" action="/wishlist/folders/add-items?<%= keepQuery %>" method="POST">
+    <div class="wishlist-modal-header">
+      <div>
+        <p class="section-label">Existing cards</p>
+        <h3>Add cards to folder</h3>
+      </div>
+      <button type="button" class="wishlist-modal-close" data-wishlist-add-modal-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <input type="hidden" name="status" value="<%= activeStatus %>" />
+    <input type="hidden" name="folder" value="<%= activeFolder %>" />
+    <input type="hidden" name="sort" value="<%= activeSort %>" />
+    <input type="hidden" name="q" value="<%= searchQuery %>" />
+
+    <div class="form-group wishlist-existing-target mb-3">
+      <label class="form-label" for="wishlistExistingTargetFolder">Target folder</label>
+      <select class="form-select" id="wishlistExistingTargetFolder" name="target_folder" required>
+        <option value="" disabled <%= currentFolderName ? '' : 'selected' %>>Choose folder</option>
+        <% folders.forEach((folder) => { %>
+          <option value="<%= folder %>" <%= currentFolderName === folder ? 'selected' : '' %>><%= folder %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="wishlist-existing-items-list">
+      <% allWishlistItems.forEach((item) => { %>
+        <% const alreadyInCurrentFolder = currentFolderName && item.folder === currentFolderName; %>
+        <label class="wishlist-existing-item-card <%= alreadyInCurrentFolder ? 'is-already-added' : '' %>">
+          <input type="checkbox" name="item_ids" value="<%= item.id %>" <%= alreadyInCurrentFolder ? 'disabled' : '' %> />
+          <span class="wishlist-existing-check"><i class="bi bi-check-lg"></i></span>
+          <span class="wishlist-existing-media">
+            <% if (item.image_url) { %>
+              <img src="<%= item.image_url %>" alt="<%= item.title %>" />
+            <% } else { %>
+              <i class="bi bi-bag-heart"></i>
+            <% } %>
+          </span>
+          <span class="wishlist-existing-content">
+            <strong title="<%= item.title %>"><%= item.title %></strong>
+            <small><%= item.folder || 'No folder' %> · <%= formatMoney(item.amount) %></small>
+          </span>
+        </label>
+      <% }) %>
+    </div>
+
+    <div class="wishlist-modal-actions d-flex flex-wrap gap-2 justify-content-end mt-3">
+      <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-wishlist-add-modal-close>Cancel</button>
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Add selected</button>
+    </div>
+  </form>
+</div>
+
+<div class="wishlist-modal wishlist-image-modal" id="wishlistImageModal" hidden>
+  <div class="wishlist-modal-backdrop" data-wishlist-image-close></div>
+  <div class="wishlist-modal-card card border-0 rounded-4 wishlist-image-modal-card">
+    <button type="button" class="wishlist-modal-close wishlist-image-modal-close" data-wishlist-image-close aria-label="Close image"><i class="bi bi-x-lg"></i></button>
+    <img id="wishlistImageModalImg" src="" alt="Wishlist item image" />
+    <div class="wishlist-image-modal-footer">
+      <strong id="wishlistImageModalTitle">Item image</strong>
+      <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" id="wishlistImageModalEditButton">Edit item</button>
+    </div>
+  </div>
+</div>

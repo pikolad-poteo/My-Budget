@@ -359,3 +359,50 @@
   height: 38px;
   font-size: 18px;
 }
+/* Reusable overview block for Categories, Transactions, Wishlist and Calendar */
+.overview-panel {
+  padding: 0;
+}
+
+.overview-toolbar-text {
+  max-width: 720px;
+  margin: 0;
+  color: var(--app-muted);
+  line-height: 1.6;
+}
+
+.overview-action-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.5;
+}
+
+.overview-stat-card {
+  border: 1px solid var(--app-border) !important;
+  box-shadow: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.overview-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.overview-stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--app-heading);
+  line-height: 1;
+}
+
+.overview-stat-label {
+  margin-top: 8px;
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--app-muted);
+}

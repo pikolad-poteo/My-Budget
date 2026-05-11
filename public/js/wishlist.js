@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function scrollToCreatePanel() {
     const panel = getCreatePanel();
-    const target = panel ? panel.closest('.wishlist-overview-panel') || panel : document.querySelector('.wishlist-shell');
+    const target = panel ? panel.closest('.overview-panel') || panel : document.querySelector('.wishlist-shell');
 
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });

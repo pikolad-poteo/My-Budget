@@ -1,0 +1,61 @@
+<%
+  const overviewStats = (typeof stats !== 'undefined' && Array.isArray(stats)) ? stats : [];
+  const overviewButtonIcon = (typeof buttonIcon !== 'undefined' && buttonIcon) ? buttonIcon : 'bi bi-plus-lg';
+  const overviewCreateContent = (typeof createContent !== 'undefined' && typeof createContent === 'string') ? createContent : '';
+  const overviewEyebrow = (typeof eyebrow !== 'undefined' && eyebrow) ? eyebrow : 'Management';
+  const overviewHeading = (typeof heading !== 'undefined' && heading) ? heading : '';
+  const overviewDescription = (typeof description !== 'undefined' && description) ? description : '';
+  const overviewButtonId = (typeof buttonId !== 'undefined' && buttonId) ? buttonId : '';
+  const overviewButtonTextId = (typeof buttonTextId !== 'undefined' && buttonTextId) ? buttonTextId : '';
+  const overviewControlsId = (typeof controlsId !== 'undefined' && controlsId) ? controlsId : '';
+  const overviewButtonLabel = (typeof buttonLabel !== 'undefined' && buttonLabel) ? buttonLabel : 'Add item';
+  const overviewShowButton = Boolean(overviewButtonId);
+%>
+
+<section class="card border-0 shadow-sm rounded-4 section-card overview-panel">
+  <div class="card-body p-4">
+    <div class="row align-items-start g-4 mb-4">
+      <div class="col-lg-8">
+        <p class="section-label"><%= overviewEyebrow %></p>
+        <h2 class="h3 fw-bold mb-2"><%= overviewHeading %></h2>
+        <p class="overview-toolbar-text">
+          <%= overviewDescription %>
+        </p>
+      </div>
+
+      <% if (overviewShowButton) { %>
+        <div class="col-lg-4 text-lg-end">
+          <button
+            type="button"
+            class="btn btn-primary rounded-pill px-4 overview-action-btn"
+            id="<%= overviewButtonId %>"
+            aria-expanded="false"
+            <% if (overviewControlsId) { %>aria-controls="<%= overviewControlsId %>"<% } %>
+          >
+            <i class="<%= overviewButtonIcon %> me-2"></i>
+            <% if (overviewButtonTextId) { %>
+              <span id="<%= overviewButtonTextId %>"><%= overviewButtonLabel %></span>
+            <% } else { %>
+              <span><%= overviewButtonLabel %></span>
+            <% } %>
+          </button>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <% overviewStats.forEach(function (stat) { %>
+        <div class="col-6 col-lg-3">
+          <article class="card border-0 rounded-4 bg-light h-100 overview-stat-card">
+            <div class="card-body p-3">
+              <span class="overview-stat-value d-block"><%= stat.value %></span>
+              <span class="overview-stat-label"><%= stat.label %></span>
+            </div>
+          </article>
+        </div>
+      <% }) %>
+    </div>
+
+    <%- overviewCreateContent %>
+  </div>
+</section>

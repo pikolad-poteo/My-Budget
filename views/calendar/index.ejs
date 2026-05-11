@@ -8,74 +8,22 @@
     <div class="alert alert-danger rounded-3 mb-0" role="alert"><%= errorMessage %></div>
   <% } %>
 
-  <section class="card border-0 shadow-sm rounded-4 section-card calendar-overview-panel">
-    <div class="card-body p-4">
-      <div class="row align-items-start g-4 mb-4">
-        <div class="col-lg-8">
-          <p class="section-label">Management</p>
-          <h2 class="h3 fw-bold mb-2">Calendar overview</h2>
-          <p class="calendar-toolbar-text">
-            Manage family events, reminders, tasks, and important dates in one clean workspace.
-          </p>
-        </div>
-
-        <div class="col-lg-4 text-lg-end">
-          <button
-            type="button"
-            class="btn btn-primary rounded-pill px-4"
-            id="toggleCalendarCreateButton"
-            aria-expanded="false"
-            aria-controls="calendarCreatePanel"
-          >
-            <i class="bi bi-plus-lg me-2"></i>
-            <span id="toggleCalendarCreateButtonText">Add event</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat calendar-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.monthTotal %></span>
-              <span class="categories-stat-label">Month events</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat calendar-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.dayTotal %></span>
-              <span class="categories-stat-label">Selected day</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat calendar-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.important %></span>
-              <span class="categories-stat-label">Important</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat calendar-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= family ? 'On' : 'Off' %></span>
-              <span class="categories-stat-label">Family mode</span>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <div class="calendar-create-panel-inline" id="calendarCreatePanel" hidden>
-        <%- include('_form_new', { members, selectedDate, calendarView, family }) %>
-      </div>
-    </div>
-  </section>
+  <%- include('../partials/page-overview', {
+    eyebrow: 'Management',
+    heading: 'Calendar overview',
+    description: 'Manage family events, reminders, tasks, and important dates in one clean workspace.',
+    buttonId: 'toggleCalendarCreateButton',
+    buttonTextId: 'toggleCalendarCreateButtonText',
+    controlsId: 'calendarCreatePanel',
+    buttonLabel: 'Add event',
+    stats: [
+      { value: summary.monthTotal, label: 'Month events' },
+      { value: summary.dayTotal, label: 'Selected day' },
+      { value: summary.important, label: 'Important' },
+      { value: family ? 'On' : 'Off', label: 'Family mode' }
+    ],
+    createContent: `<div class="calendar-create-panel-inline" id="calendarCreatePanel" hidden>${include('_form_new', { members, selectedDate, calendarView, family })}</div>`
+  }) %>
 
   <section id="calendarWorkArea" class="card border-0 shadow-sm rounded-4 section-card calendar-controls-panel">
     <div class="card-body p-4">

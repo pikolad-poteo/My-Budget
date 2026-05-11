@@ -8,37 +8,8 @@
   gap: 24px;
 }
 
-.categories-overview-panel,
 .categories-section {
   padding: 0;
-}
-
-.categories-toolbar-text {
-  max-width: 720px;
-  margin: 0;
-  color: var(--app-muted);
-  line-height: 1.6;
-}
-
-/* Stats */
-
-.categories-bootstrap-stat {
-  border: 1px solid var(--app-border) !important;
-}
-
-.categories-stat-value {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--app-heading);
-  line-height: 1;
-}
-
-.categories-stat-label {
-  margin-top: 8px;
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--app-muted);
 }
 
 /* Search */

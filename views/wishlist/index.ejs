@@ -65,7 +65,22 @@
 
 <section class="container wishlist-shell">
   <%- include('./_flash', wishlistView) %>
-  <%- include('./_overview', wishlistView) %>
+  <%- include('../partials/page-overview', {
+    eyebrow: 'Management',
+    heading: 'Wishlist overview',
+    description: 'Plan future purchases, sort them by folders and check how your planned spending affects the current budget.',
+    buttonId: 'toggleWishlistCreateButton',
+    buttonTextId: 'toggleWishlistCreateButtonText',
+    controlsId: 'wishlistCreatePanel',
+    buttonLabel: 'Add item',
+    stats: [
+      { value: formatMoney(pageSummary.balance), label: 'Current balance' },
+      { value: formatMoney(pageSummary.plannedTotal), label: 'Planned spending' },
+      { value: formatMoney(pageSummary.balanceAfterPlans), label: 'Balance after plans' },
+      { value: pageSummary.totalItems, label: 'Wishlist items' }
+    ],
+    createContent: include('./_create_modal', wishlistView)
+  }) %>
   <%- include('./_filters', wishlistView) %>
   <%- include('./_shared_modals', wishlistView) %>
   <%- include('./_cards', wishlistView) %>

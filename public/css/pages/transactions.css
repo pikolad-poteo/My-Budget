@@ -4,20 +4,10 @@
   gap: 24px;
 }
 
-.transactions-toolbar-text,
 .transaction-helper-text,
 .transaction-row-note,
 .transaction-history-count {
   color: #6b7280;
-}
-
-.transactions-bootstrap-stat {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.transactions-bootstrap-stat:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .transactions-history-zone {
@@ -481,22 +471,9 @@
 }
 
 /* Align transaction page visuals with categories page */
-.transactions-overview-panel,
 .transaction-filters-card,
 .transaction-table-card {
   padding: 0;
-}
-
-.transactions-toolbar-text {
-  max-width: 720px;
-  margin: 0;
-  color: var(--app-muted);
-  line-height: 1.6;
-}
-
-.transactions-bootstrap-stat {
-  border: 1px solid var(--app-border) !important;
-  box-shadow: none;
 }
 
 .transaction-create-panel-inline {

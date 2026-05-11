@@ -13,72 +13,22 @@
     </div>
   <% } %>
 
-  <section class="card border-0 shadow-sm rounded-4 section-card transactions-overview-panel">
-    <div class="card-body p-4">
-      <div class="row align-items-start g-4 mb-4">
-        <div class="col-lg-8">
-          <p class="section-label">Management</p>
-          <h2 class="h3 fw-bold mb-2">Transaction overview</h2>
-          <p class="transactions-toolbar-text">
-            Track personal and family income or expenses in one clean workspace.
-          </p>
-        </div>
-
-        <div class="col-lg-4 text-lg-end">
-          <button
-            type="button"
-            class="btn btn-primary rounded-pill px-4"
-            id="toggleTransactionCreateButton"
-            aria-expanded="false"
-            aria-controls="transactionCreatePanel"
-          >
-            <i class="bi bi-plus-lg me-2"></i>
-            <span id="toggleTransactionCreateButtonText">Add transaction</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat transactions-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.total %></span>
-              <span class="categories-stat-label">Total</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat transactions-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.expenseCount %></span>
-              <span class="categories-stat-label">Expenses</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat transactions-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= summary.incomeCount %></span>
-              <span class="categories-stat-label">Income</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="col-6 col-lg-3">
-          <article class="card border-0 rounded-4 bg-light h-100 categories-bootstrap-stat transactions-bootstrap-stat">
-            <div class="card-body p-3">
-              <span class="categories-stat-value d-block"><%= family ? 'On' : 'Off' %></span>
-              <span class="categories-stat-label">Family mode</span>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <%- include('./_form_new', { categories, members, filters }) %>
-    </div>
-  </section>
+  <%- include('../partials/page-overview', {
+    eyebrow: 'Management',
+    heading: 'Transaction overview',
+    description: 'Track personal and family income or expenses in one clean workspace.',
+    buttonId: 'toggleTransactionCreateButton',
+    buttonTextId: 'toggleTransactionCreateButtonText',
+    controlsId: 'transactionCreatePanel',
+    buttonLabel: 'Add transaction',
+    stats: [
+      { value: summary.total, label: 'Total' },
+      { value: summary.expenseCount, label: 'Expenses' },
+      { value: summary.incomeCount, label: 'Income' },
+      { value: family ? 'On' : 'Off', label: 'Family mode' }
+    ],
+    createContent: include('./_form_new', { categories, members, filters })
+  }) %>
 
   <div class="transactions-history-zone" data-transactions-history-zone>
     <%- include('./_filters', { categories, members, filters }) %>

@@ -9,30 +9,11 @@
   margin-bottom: 0;
 }
 
-.calendar-overview-panel,
 .calendar-controls-panel,
 .calendar-board-panel,
 .calendar-selected-panel {
   padding: 0;
   background: #ffffff;
-}
-
-.calendar-toolbar-text {
-  max-width: 720px;
-  margin: 0;
-  color: var(--app-muted, #6b7280);
-  line-height: 1.6;
-}
-
-.calendar-bootstrap-stat {
-  border: 1px solid var(--app-border, #e5e7eb) !important;
-  box-shadow: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.calendar-bootstrap-stat:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .calendar-create-panel-inline {

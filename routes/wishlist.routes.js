@@ -10,6 +10,7 @@ const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { getUserFamily } = require('../scr/family.service');
+const { getCanEditBudget, requireBudgetEditor } = require('../scr/budget.permissions');
 const {
   sanitizeWishlistText,
   normalizeWishlistFolderName,
@@ -82,6 +83,7 @@ router.get('/wishlist', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
+    const canEditBudget = getCanEditBudget(family);
     const filters = {
       status: sanitizeWishlistFilterStatus(req.query.status),
       folder: (() => { const rawFolder = sanitizeWishlistText(req.query.folder || 'all', 100) || 'all'; if (rawFolder.toLowerCase() === 'all') return 'all'; return normalizeWishlistFolderName(rawFolder) || 'all'; })(),
@@ -96,14 +98,14 @@ router.get('/wishlist', requireAuth, async (req, res) => {
     const summary = buildWishlistSummary(summaryItems, balance);
     const flash = req.session.wishlistFlash || null;
     delete req.session.wishlistFlash;
-    return res.render('wishlist/index', { title: 'Wishlist', activePage: 'wishlist', family, wishlistItems, allWishlistItems: summaryItems, folders, folderStats, filters, summary, errorMessage: flash && flash.type === 'error' ? flash.message : '', successMessage: flash && flash.type === 'success' ? flash.message : '' });
+    return res.render('wishlist/index', { title: 'Wishlist', activePage: 'wishlist', family, canEditBudget, wishlistItems, allWishlistItems: summaryItems, folders, folderStats, filters, summary, errorMessage: flash && flash.type === 'error' ? flash.message : '', successMessage: flash && flash.type === 'success' ? flash.message : '' });
   } catch (error) {
     console.error('Wishlist page error:', error.message);
-    return res.render('wishlist/index', { title: 'Wishlist', activePage: 'wishlist', family: null, wishlistItems: [], allWishlistItems: [], folders: [], folderStats: {}, filters: { status: 'all', folder: 'all', q: '', sort: 'newest' }, summary: { balance: 0, totalItems: 0, plannedTotal: 0, postponedTotal: 0, boughtTotal: 0, plannedCount: 0, boughtCount: 0, balanceAfterPlans: 0 }, errorMessage: 'Failed to load wishlist.', successMessage: '' });
+    return res.render('wishlist/index', { title: 'Wishlist', activePage: 'wishlist', family: null, canEditBudget: true, wishlistItems: [], allWishlistItems: [], folders: [], folderStats: {}, filters: { status: 'all', folder: 'all', q: '', sort: 'newest' }, summary: { balance: 0, totalItems: 0, plannedTotal: 0, postponedTotal: 0, boughtTotal: 0, plannedCount: 0, boughtCount: 0, balanceAfterPlans: 0 }, errorMessage: 'Failed to load wishlist.', successMessage: '' });
   }
 });
 
-router.post('/wishlist/folders/create', requireAuth, async (req, res) => {
+router.post('/wishlist/folders/create', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -122,7 +124,7 @@ router.post('/wishlist/folders/create', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/wishlist/folders/rename', requireAuth, async (req, res) => {
+router.post('/wishlist/folders/rename', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -142,7 +144,7 @@ router.post('/wishlist/folders/rename', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/wishlist/folders/delete', requireAuth, async (req, res) => {
+router.post('/wishlist/folders/delete', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -163,7 +165,7 @@ router.post('/wishlist/folders/delete', requireAuth, async (req, res) => {
 });
 
 
-router.post('/wishlist/folders/add-items', requireAuth, async (req, res) => {
+router.post('/wishlist/folders/add-items', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -202,7 +204,7 @@ router.post('/wishlist/folders/add-items', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/wishlist/create', requireAuth, uploadWishlistImage, async (req, res) => {
+router.post('/wishlist/create', requireAuth, requireBudgetEditor('wishlist'), uploadWishlistImage, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -230,7 +232,7 @@ router.post('/wishlist/create', requireAuth, uploadWishlistImage, async (req, re
   }
 });
 
-router.post('/wishlist/:id/update', requireAuth, uploadWishlistImage, async (req, res) => {
+router.post('/wishlist/:id/update', requireAuth, requireBudgetEditor('wishlist'), uploadWishlistImage, async (req, res) => {
   const itemId = Number(req.params.id);
   try {
     const currentUserId = req.session.user.id;
@@ -269,7 +271,7 @@ router.post('/wishlist/:id/update', requireAuth, uploadWishlistImage, async (req
   }
 });
 
-router.post('/wishlist/:id/status', requireAuth, async (req, res) => {
+router.post('/wishlist/:id/status', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   const itemId = Number(req.params.id);
   try {
     const currentUserId = req.session.user.id;
@@ -291,7 +293,7 @@ router.post('/wishlist/:id/status', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/wishlist/:id/delete', requireAuth, async (req, res) => {
+router.post('/wishlist/:id/delete', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   const itemId = Number(req.params.id);
   try {
     const currentUserId = req.session.user.id;

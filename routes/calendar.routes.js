@@ -4,6 +4,7 @@ const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { getUserFamily } = require('../scr/family.service');
+const { getCanEditBudget, requireBudgetEditor } = require('../scr/budget.permissions');
 
 function pad2(value) {
   return String(value).padStart(2, '0');
@@ -177,6 +178,7 @@ router.get('/calendar', requireAuth, async (req, res) => {
     const currentUser = req.session.user;
     const currentUserId = currentUser.id;
     const family = await getUserFamily(currentUserId);
+    const canEditBudget = getCanEditBudget(family);
     const familyId = family ? family.id : null;
     const members = await getCalendarMembers(familyId, currentUser);
 
@@ -229,6 +231,7 @@ router.get('/calendar', requireAuth, async (req, res) => {
       title: 'Calendar',
       activePage: 'calendar',
       family,
+      canEditBudget,
       members,
       calendarView,
       selectedDate: selectedDateSafe,
@@ -258,6 +261,7 @@ router.get('/calendar', requireAuth, async (req, res) => {
       title: 'Calendar',
       activePage: 'calendar',
       family: null,
+      canEditBudget: true,
       members: [],
       calendarView: 'month',
       selectedDate: formatDateLocal(new Date()),
@@ -279,7 +283,7 @@ router.get('/calendar', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/calendar/create', requireAuth, async (req, res) => {
+router.post('/calendar/create', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -331,7 +335,7 @@ router.post('/calendar/create', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/calendar/update', requireAuth, async (req, res) => {
+router.post('/calendar/update', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -399,7 +403,7 @@ router.post('/calendar/update', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/calendar/complete', requireAuth, async (req, res) => {
+router.post('/calendar/complete', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -430,7 +434,7 @@ router.post('/calendar/complete', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/calendar/delete', requireAuth, async (req, res) => {
+router.post('/calendar/delete', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);

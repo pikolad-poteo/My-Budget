@@ -10,6 +10,7 @@ const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { getUserFamily } = require('../scr/family.service');
+const { getCanEditBudget, requireBudgetEditor } = require('../scr/budget.permissions');
 const {
   sanitizeCategoryName,
   sanitizeCategoryType,
@@ -32,6 +33,7 @@ router.get('/categories', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
+    const canEditBudget = getCanEditBudget(family);
     const searchTerm = (req.query.q || '').trim();
     const activeTab = req.query.tab === 'income' ? 'income' : 'expense';
 
@@ -62,6 +64,7 @@ router.get('/categories', requireAuth, async (req, res) => {
       title: 'Categories',
       activePage: 'categories',
       family,
+      canEditBudget,
       categories: normalizedCategories,
       incomeCategories,
       expenseCategories,
@@ -79,6 +82,7 @@ router.get('/categories', requireAuth, async (req, res) => {
       title: 'Categories',
       activePage: 'categories',
       family: null,
+      canEditBudget: true,
       categories: [],
       incomeCategories: [],
       expenseCategories: [],
@@ -92,7 +96,7 @@ router.get('/categories', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/categories/create', requireAuth, async (req, res) => {
+router.post('/categories/create', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -144,7 +148,7 @@ router.post('/categories/create', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/categories/:id/update', requireAuth, async (req, res) => {
+router.post('/categories/:id/update', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   const categoryId = Number(req.params.id);
 
   try {
@@ -206,7 +210,7 @@ router.post('/categories/:id/update', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/categories/:id/delete', requireAuth, async (req, res) => {
+router.post('/categories/:id/delete', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   const categoryId = Number(req.params.id);
 
   try {

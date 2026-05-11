@@ -4,6 +4,7 @@ const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { getUserFamily } = require('../scr/family.service');
+const { getCanEditBudget, requireBudgetEditor } = require('../scr/budget.permissions');
 const {
   sanitizeTransactionType,
   sanitizeTransactionDescription,
@@ -28,6 +29,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
+    const canEditBudget = getCanEditBudget(family);
     const defaultDates = getDefaultTransactionDates();
 
     const requestedView = sanitizeTransactionView(req.query.view);
@@ -119,6 +121,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
       title: 'Transactions',
       activePage: 'transactions',
       family,
+      canEditBudget,
       categories,
       members,
       transactions,
@@ -137,6 +140,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
       title: 'Transactions',
       activePage: 'transactions',
       family: null,
+      canEditBudget: true,
       categories: [],
       members: [],
       transactions: [],
@@ -164,7 +168,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/transactions/create', requireAuth, async (req, res) => {
+router.post('/transactions/create', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
     const family = await getUserFamily(currentUserId);
@@ -236,7 +240,7 @@ router.post('/transactions/create', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/transactions/:id/update', requireAuth, async (req, res) => {
+router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   const transactionId = Number(req.params.id);
 
   try {
@@ -319,7 +323,7 @@ router.post('/transactions/:id/update', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/transactions/:id/delete', requireAuth, async (req, res) => {
+router.post('/transactions/:id/delete', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   const transactionId = Number(req.params.id);
 
   try {

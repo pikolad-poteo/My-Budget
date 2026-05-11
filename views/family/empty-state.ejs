@@ -1,0 +1,22 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm rounded-4 section-card family-create-card">
+      <div class="card-body p-4 p-lg-5">
+        <p class="eyebrow">Shared budget workspace</p>
+        <h1 class="page-title">Create your family workspace</h1>
+        <p class="page-text mb-4">
+          Start with one shared family space. After that, the owner can invite registered users and assign Owner, Editor or Viewer roles.
+        </p>
+
+        <form action="/family/create" method="POST">
+          <div class="mb-3">
+            <label class="form-label" for="familyName">Family name</label>
+            <input class="form-control rounded-3" id="familyName" name="familyName" type="text" placeholder="Enter family name" required />
+          </div>
+
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Create family</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

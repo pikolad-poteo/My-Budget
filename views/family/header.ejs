@@ -1,0 +1,43 @@
+<%
+  const ownerMember = familyMembers.find((member) => member.role === 'owner');
+  const ownerName = ownerMember ? ownerMember.name : (currentUser ? currentUser.name : 'Current user');
+  const currentMember = familyMembers.find((member) => Number(member.id) === currentUserId);
+  const currentRoleLabel = currentMember ? currentMember.role : 'viewer';
+%>
+
+<div class="card border-0 shadow-sm rounded-4 section-card family-overview-card">
+  <div class="card-body p-4">
+    <div class="section-header family-section-header">
+      <div>
+        <p class="section-label">Shared budget workspace</p>
+        <h2>Overview</h2>
+      </div>
+      <span class="status-badge status-badge-active">Active</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="family-stat-box h-100">
+          <span class="family-stat-label">Family name</span>
+          <strong class="family-stat-value"><%= currentFamily.name %></strong>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="family-stat-box h-100">
+          <span class="family-stat-label">Members</span>
+          <strong class="family-stat-value"><%= familyMembers.length %></strong>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="family-stat-box h-100">
+          <span class="family-stat-label">Your role</span>
+          <strong class="family-stat-value"><%= currentRoleLabel.charAt(0).toUpperCase() + currentRoleLabel.slice(1) %></strong>
+        </div>
+      </div>
+    </div>
+
+    <p class="family-description">
+      Owner: <strong><%= ownerName %></strong>. This workspace connects shared categories, transactions, calendar events and wishlist data for the family budget.
+    </p>
+  </div>
+</div>

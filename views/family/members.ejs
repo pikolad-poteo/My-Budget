@@ -1,0 +1,55 @@
+<div class="card border-0 shadow-sm rounded-4 section-card family-members-card">
+  <div class="card-body p-4">
+    <div class="section-header family-section-header">
+      <div>
+        <p class="section-label">Members</p>
+        <h2>Current family members</h2>
+      </div>
+      <span class="status-badge status-badge-active">Connected</span>
+    </div>
+
+    <div class="family-members-list">
+      <% familyMembers.forEach((member) => { %>
+        <article class="family-member-item">
+          <div class="family-member-info">
+            <div class="family-member-avatar <%= member.role === 'owner' ? '' : 'family-member-avatar-soft' %>">
+              <% if (member.role === 'owner') { %>
+                <i class="bi bi-crown-fill"></i>
+              <% } else { %>
+                <%= member.name ? member.name.charAt(0).toUpperCase() : '?' %>
+              <% } %>
+            </div>
+
+            <div>
+              <h3><%= member.name %></h3>
+              <p><%= member.email %></p>
+            </div>
+          </div>
+
+          <div class="family-member-meta">
+            <span class="role-badge <%= member.role === 'owner' ? 'role-badge-owner' : '' %>">
+              <%= member.role.charAt(0).toUpperCase() + member.role.slice(1) %>
+            </span>
+
+            <% if (familyPermissions.canManageMembers) { %>
+              <form action="/family/members/<%= member.id %>/role" method="POST" class="d-flex gap-2 align-items-center">
+                <select class="form-select form-select-sm rounded-pill" name="role">
+                  <option value="owner" <%= member.role === 'owner' ? 'selected' : '' %>>Owner</option>
+                  <option value="editor" <%= member.role === 'editor' ? 'selected' : '' %>>Editor</option>
+                  <option value="viewer" <%= member.role === 'viewer' ? 'selected' : '' %>>Viewer</option>
+                </select>
+                <button class="btn btn-secondary btn-small" type="submit">Save</button>
+              </form>
+
+              <% if (Number(member.id) !== currentUserId) { %>
+                <form action="/family/members/<%= member.id %>/remove" method="POST">
+                  <button class="btn btn-outline-danger btn-small" type="submit">Remove</button>
+                </form>
+              <% } %>
+            <% } %>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</div>

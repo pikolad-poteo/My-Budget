@@ -1,0 +1,76 @@
+<div class="d-flex flex-column gap-4">
+  <div class="card border-0 shadow-sm rounded-4 section-card family-invite-card">
+    <div class="card-body p-4">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Settings</p>
+          <h2>Family details</h2>
+        </div>
+      </div>
+
+      <form action="/family/update" method="POST">
+        <label class="form-label" for="familyName">Family name</label>
+        <input class="form-control rounded-3 mb-3" id="familyName" name="familyName" type="text" value="<%= currentFamily.name %>" <%= !familyPermissions.canManageFamily ? 'disabled' : '' %> required />
+        <button class="btn btn-primary rounded-pill w-100" type="submit" <%= !familyPermissions.canManageFamily ? 'disabled' : '' %>>Update family</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 section-card family-invite-card">
+    <div class="card-body p-4">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Invitation</p>
+          <h2>Add member</h2>
+        </div>
+      </div>
+
+      <form action="/family/members/add" method="POST">
+        <label class="form-label" for="email">Email address</label>
+        <input class="form-control rounded-3 mb-3" id="email" name="email" type="email" placeholder="Enter registered user email" <%= !familyPermissions.canManageMembers ? 'disabled' : '' %> required />
+
+        <label class="form-label" for="role">Role</label>
+        <select class="form-select rounded-3 mb-3" id="role" name="role" <%= !familyPermissions.canManageMembers ? 'disabled' : '' %>>
+          <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
+          <option value="owner">Owner</option>
+        </select>
+
+        <button class="btn btn-primary rounded-pill w-100" type="submit" <%= !familyPermissions.canManageMembers ? 'disabled' : '' %>>Add member</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 section-card family-permissions-card">
+    <div class="card-body p-4">
+      <div class="section-header family-section-header">
+        <div>
+          <p class="section-label">Permissions</p>
+          <h2>Access summary</h2>
+        </div>
+      </div>
+
+      <ul class="family-permissions-list">
+        <li><strong>Owner</strong> — can manage family settings, members and roles.</li>
+        <li><strong>Editor</strong> — can create, edit and delete shared budget data.</li>
+        <li><strong>Viewer</strong> — can only view shared budget data.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 section-card family-rules-card">
+    <div class="card-body p-4">
+      <form action="/family/leave" method="POST" class="mb-3">
+        <button class="btn btn-secondary rounded-pill w-100" type="submit">Leave family</button>
+      </form>
+
+      <% if (familyPermissions.canDeleteFamily) { %>
+        <form action="/family/delete" method="POST">
+          <label class="form-label" for="confirmation">Type Delete to confirm</label>
+          <input class="form-control rounded-3 mb-3" id="confirmation" name="confirmation" type="text" placeholder="Delete" />
+          <button class="btn btn-outline-danger rounded-pill w-100" type="submit">Delete family</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>

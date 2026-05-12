@@ -56,6 +56,10 @@ function sanitizeCategoryIcon(value = '') {
   return ALLOWED_CATEGORY_ICONS.has(icon) ? icon : 'tag';
 }
 
+function sanitizeCategoryDashboardFeatured(value = '') {
+  return value === '1' || value === 'on' || value === true ? 1 : 0;
+}
+
 function buildCategoriesRedirect(req, fallbackTab = 'expense') {
   const params = new URLSearchParams();
 
@@ -84,7 +88,7 @@ async function getUserCategories(userId, familyId = null, searchTerm = '') {
   const params = [...workspace.params];
 
   let query = `
-    SELECT id, user_id, family_id, name, type, color, icon
+    SELECT id, user_id, family_id, name, type, color, icon, dashboard_featured
     FROM categories
     WHERE ${workspace.clause}
   `;
@@ -111,7 +115,7 @@ async function getCategoryByIdForUser(categoryId, userId, familyId = null) {
 
   const [rows] = await db.query(
     `
-    SELECT id, user_id, family_id, name, type, color, icon
+    SELECT id, user_id, family_id, name, type, color, icon, dashboard_featured
     FROM categories
     WHERE id = ?
       AND ${workspace.clause}
@@ -159,6 +163,7 @@ module.exports = {
   getWorkspaceCondition,
   sanitizeCategoryColor,
   sanitizeCategoryIcon,
+  sanitizeCategoryDashboardFeatured,
   buildCategoriesRedirect,
   setCategoryFlash,
   getUserCategories,

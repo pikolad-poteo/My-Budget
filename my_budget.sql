@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 11 2026 г., 22:27
+-- Время создания: Май 12 2026 г., 19:28
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.0.30
 
@@ -75,6 +75,7 @@ CREATE TABLE `categories` (
   `type` enum('income','expense') NOT NULL,
   `color` varchar(20) DEFAULT '#6c757d',
   `icon` varchar(50) DEFAULT 'tag',
+  `dashboard_featured` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -82,31 +83,31 @@ CREATE TABLE `categories` (
 -- Дамп данных таблицы `categories`
 --
 
-INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`, `icon`, `created_at`) VALUES
-(1, 1, 1, 'Groceries', 'expense', '#22c55e', 'basket', '2026-05-08 08:01:22'),
-(2, 1, 1, 'Transport', 'expense', '#3b82f6', 'car-front', '2026-05-08 08:01:22'),
-(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', '2026-05-08 08:01:22'),
-(4, 1, 1, 'Shopping', 'expense', '#ec4899', 'bag', '2026-05-08 08:01:22'),
-(5, 1, 1, 'Health', 'expense', '#ef4444', 'heart-pulse', '2026-05-08 08:01:22'),
-(6, 1, 1, 'Education', 'expense', '#8b5cf6', 'book', '2026-05-08 08:01:22'),
-(7, 1, 1, 'Entertainment', 'expense', '#f97316', 'controller', '2026-05-08 08:01:22'),
-(8, 1, 1, 'Subscriptions', 'expense', '#64748b', 'credit-card', '2026-05-08 08:01:22'),
-(9, 1, 1, 'Salary', 'income', '#16a34a', 'cash-stack', '2026-05-08 08:01:22'),
-(10, 1, 1, 'Freelance', 'income', '#06b6d4', 'laptop', '2026-05-08 08:01:22'),
-(11, 1, 1, 'Refund', 'income', '#84cc16', 'arrow-counterclockwise', '2026-05-08 08:01:22'),
-(12, 1, 1, 'Gift', 'income', '#f59e0b', 'gift', '2026-05-08 08:01:22'),
-(13, 1, 1, 'Home Bills', 'expense', '#6366f1', 'house', '2026-05-08 08:01:22'),
-(14, 1, 1, 'Family Food', 'expense', '#10b981', 'cart', '2026-05-08 08:01:22'),
-(15, 1, 1, 'Kids', 'expense', '#f59e0b', 'emoji-smile', '2026-05-08 08:01:22'),
-(16, 1, 1, 'Car Service', 'expense', '#0f766e', 'tag', '2026-05-08 08:01:22'),
-(17, 1, 1, 'Family Income', 'income', '#8b5cf6', 'piggy-bank', '2026-05-08 08:01:22'),
-(18, 1, 1, 'Shared Refund', 'income', '#65a30d', 'wallet2', '2026-05-08 08:01:22'),
-(19, 2, 1, 'Bank', 'income', '#2563eb', 'bank', '2026-05-08 08:01:22'),
-(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'speaker', '2026-05-08 08:01:22'),
-(21, 2, 1, 'Family Groceries', 'expense', '#22c55e', 'basket2', '2026-05-08 08:01:22'),
-(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', '2026-05-08 08:01:22'),
-(29, 5, NULL, 'food', 'expense', '#22c55e', 'cart3', '2026-05-11 19:57:55'),
-(30, 5, NULL, 'car', 'expense', '#f43f5e', 'car-front', '2026-05-11 19:58:55');
+INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`, `icon`, `dashboard_featured`, `created_at`) VALUES
+(1, 1, 1, 'Groceries', 'expense', '#22c55e', 'basket', 0, '2026-05-08 08:01:22'),
+(2, 1, 1, 'Transport', 'expense', '#3b82f6', 'car-front', 0, '2026-05-08 08:01:22'),
+(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', 0, '2026-05-08 08:01:22'),
+(4, 1, 1, 'Shopping', 'expense', '#ec4899', 'bag', 0, '2026-05-08 08:01:22'),
+(5, 1, 1, 'Health', 'expense', '#ef4444', 'heart-pulse', 0, '2026-05-08 08:01:22'),
+(6, 1, 1, 'Education', 'expense', '#8b5cf6', 'book', 0, '2026-05-08 08:01:22'),
+(7, 1, 1, 'Entertainment', 'expense', '#f97316', 'controller', 0, '2026-05-08 08:01:22'),
+(8, 1, 1, 'Subscriptions', 'expense', '#64748b', 'credit-card', 0, '2026-05-08 08:01:22'),
+(9, 1, 1, 'Salary', 'income', '#16a34a', 'cash-stack', 0, '2026-05-08 08:01:22'),
+(10, 1, 1, 'Freelance', 'income', '#06b6d4', 'laptop', 0, '2026-05-08 08:01:22'),
+(11, 1, 1, 'Refund', 'income', '#84cc16', 'arrow-counterclockwise', 0, '2026-05-08 08:01:22'),
+(12, 1, 1, 'Gift', 'income', '#f59e0b', 'gift', 0, '2026-05-08 08:01:22'),
+(13, 1, 1, 'Home Bills', 'expense', '#6366f1', 'house', 0, '2026-05-08 08:01:22'),
+(14, 1, 1, 'Family Food', 'expense', '#10b981', 'cart', 0, '2026-05-08 08:01:22'),
+(15, 1, 1, 'Kids', 'expense', '#f59e0b', 'emoji-smile', 0, '2026-05-08 08:01:22'),
+(16, 1, 1, 'Car Service', 'expense', '#0f766e', 'tag', 0, '2026-05-08 08:01:22'),
+(17, 1, 1, 'Family Income', 'income', '#8b5cf6', 'piggy-bank', 0, '2026-05-08 08:01:22'),
+(18, 1, 1, 'Shared Refund', 'income', '#65a30d', 'wallet2', 0, '2026-05-08 08:01:22'),
+(19, 2, 1, 'Bank', 'income', '#2563eb', 'bank', 0, '2026-05-08 08:01:22'),
+(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'speaker', 0, '2026-05-08 08:01:22'),
+(21, 2, 1, 'Family Groceries', 'expense', '#22c55e', 'basket2', 0, '2026-05-08 08:01:22'),
+(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', 0, '2026-05-08 08:01:22'),
+(29, 5, NULL, 'food', 'expense', '#22c55e', 'cart3', 0, '2026-05-11 19:57:55'),
+(30, 5, NULL, 'car', 'expense', '#f43f5e', 'car-front', 0, '2026-05-11 19:58:55');
 
 -- --------------------------------------------------------
 
@@ -227,7 +228,10 @@ INSERT INTO `family_activity_logs` (`id`, `family_id`, `actor_user_id`, `target_
 (83, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 19:54:50'),
 (84, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-11 19:56:51'),
 (87, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:59:54'),
-(88, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 20:27:35');
+(88, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 20:27:35'),
+(89, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 06:55:09'),
+(92, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-12 14:43:23'),
+(93, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 15:12:42');
 
 -- --------------------------------------------------------
 
@@ -250,8 +254,7 @@ CREATE TABLE `family_members` (
 
 INSERT INTO `family_members` (`id`, `family_id`, `user_id`, `role`, `joined_at`, `updated_at`) VALUES
 (2, 1, 1, 'owner', '2026-04-21 15:24:26', '2026-05-10 12:41:35'),
-(3, 1, 2, 'editor', '2026-04-21 15:25:16', '2026-05-10 16:59:42'),
-(15, 1, 5, 'viewer', '2026-05-11 19:59:54', '2026-05-11 19:59:54');
+(3, 1, 2, 'editor', '2026-04-21 15:25:16', '2026-05-10 16:59:42');
 
 -- --------------------------------------------------------
 
@@ -320,7 +323,11 @@ INSERT INTO `transactions` (`id`, `user_id`, `family_id`, `category_id`, `type`,
 (41, 1, 1, 13, 'expense', -500.00, 'March rent part', '2026-03-20', 1, '2026-05-08 08:01:22'),
 (42, 1, 1, 17, 'income', 120.00, 'March shared income', '2026-03-22', 1, '2026-05-08 08:01:22'),
 (43, 2, 1, 20, 'expense', -200.00, 'Old speaker test', '2026-03-31', 2, '2026-05-08 08:01:22'),
-(44, 2, 1, 21, 'expense', -120.00, 'Family shopping test', '2026-03-19', 2, '2026-05-08 08:01:22');
+(44, 2, 1, 21, 'expense', -120.00, 'Family shopping test', '2026-03-19', 2, '2026-05-08 08:01:22'),
+(49, 1, 1, 5, 'expense', -5.00, NULL, '2026-05-12', 1, '2026-05-12 15:33:40'),
+(51, 1, 1, 4, 'expense', -1000.00, NULL, '2026-05-12', 1, '2026-05-12 16:53:21'),
+(53, 1, 1, 14, 'expense', -15.00, NULL, '2026-05-12', 1, '2026-05-12 16:59:48'),
+(56, 1, 1, 10, 'income', 2650.00, NULL, '2026-05-12', 1, '2026-05-12 17:15:45');
 
 -- --------------------------------------------------------
 
@@ -342,9 +349,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `avatar_url`, `password_hash`, `created_at`) VALUES
-(1, 'Violetta Owner', 'admin@test.local', '/uploads/users/user-1778529390688-627922413.jpg', '$2b$10$xWhfACccFASXRSlZazuahuo.Pa.uO94dQUa4HXzPNPz.mUJ7eP4me', '2026-04-21 14:59:58'),
+(1, 'Violetta Owner', 'admin@test.local', NULL, '$2b$10$xWhfACccFASXRSlZazuahuo.Pa.uO94dQUa4HXzPNPz.mUJ7eP4me', '2026-04-21 14:59:58'),
 (2, 'Vladislav Editor', 'admin@myshop.local', NULL, '$2b$10$xNEaQNhWxaNaqX7u174A6ONpeCONdEnm8L7HaQ2aQHXb/017weKWS', '2026-04-21 15:05:23'),
-(5, 'Dasha', 'pikoladgame2004@gmail.com', '/uploads/users/user-1778527362269-682795987.jpg', '$2b$10$y0k1d.OIWiZDw2zNRyecEudsi.NNkG7QAMMMSTkKhRUqNBqVuItKG', '2026-05-11 19:22:32');
+(5, 'Dasha', 'pikoladgame2004@gmail.com', NULL, '$2b$10$y0k1d.OIWiZDw2zNRyecEudsi.NNkG7QAMMMSTkKhRUqNBqVuItKG', '2026-05-11 19:22:32');
 
 -- --------------------------------------------------------
 
@@ -533,25 +540,25 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT для таблицы `families`
 --
 ALTER TABLE `families`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `family_activity_logs`
 --
 ALTER TABLE `family_activity_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT для таблицы `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT для таблицы `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

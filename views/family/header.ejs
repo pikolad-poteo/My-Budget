@@ -117,9 +117,13 @@
       </div>
       <form action="/family/members/add" method="POST" class="family-preserve-scroll-form">
         <div class="modal-body pt-3">
-          <p class="family-modal-note">
-            Enter the email address of an existing registered user. If this email is not found, the page will show a warning.
-          </p>
+          <div class="family-warning-box mb-3">
+            <i class="bi bi-info-circle"></i>
+            <div>
+              <strong>The invited user will join this shared workspace.</strong>
+              <p>Their old personal data will not be moved into your family. While they are a family member, they will work only with shared family categories, transactions, wishlist and calendar.</p>
+            </div>
+          </div>
 
           <div class="mb-3">
             <label class="form-label" for="familyMemberEmail">Email address</label>

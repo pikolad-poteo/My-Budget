@@ -69,20 +69,18 @@
                   <option value="viewer" <%= member.role === 'viewer' ? 'selected' : '' %>>Viewer</option>
                 </select>
               </form>
+            <% } %>
 
-              <% if (isCurrentMember) { %>
-                <form action="/family/leave" method="POST" class="family-remove-member-form family-preserve-scroll-form" onsubmit="return confirm('Leave this family workspace?');">
-                  <button class="btn btn-secondary btn-small family-remove-member-btn" type="submit">
-                    <i class="bi bi-person-dash me-2"></i>Leave family
-                  </button>
-                </form>
-              <% } else { %>
-                <form action="/family/members/<%= member.id %>/remove" method="POST" class="family-remove-member-form family-preserve-scroll-form" onsubmit="return confirm('Remove this user from the family?');">
-                  <button class="btn btn-secondary btn-small family-remove-member-btn" type="submit">
-                    <i class="bi bi-trash me-2"></i>Remove
-                  </button>
-                </form>
-              <% } %>
+            <% if (isCurrentMember) { %>
+              <button class="btn btn-secondary btn-small family-remove-member-btn" type="button" data-bs-toggle="modal" data-bs-target="#leaveFamilyModal">
+                <i class="bi bi-person-dash me-2"></i>Leave family
+              </button>
+            <% } else if (familyPermissions.canManageMembers) { %>
+              <form action="/family/members/<%= member.id %>/remove" method="POST" class="family-remove-member-form family-preserve-scroll-form" onsubmit="return confirm('Remove this user from the family? Their personal data will not be changed.');">
+                <button class="btn btn-secondary btn-small family-remove-member-btn" type="submit">
+                  <i class="bi bi-trash me-2"></i>Remove
+                </button>
+              </form>
             <% } %>
           </div>
         </article>
@@ -99,6 +97,40 @@
   </div>
 </div>
 
+<div class="modal fade" id="leaveFamilyModal" tabindex="-1" aria-labelledby="leaveFamilyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content family-modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <p class="section-label mb-1">Workspace change</p>
+          <h2 class="modal-title family-modal-title" id="leaveFamilyModalLabel">Leave family workspace</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="/family/leave" method="POST" class="family-preserve-scroll-form">
+        <div class="modal-body pt-3">
+          <div class="family-warning-box mb-3">
+            <i class="bi bi-box-arrow-right"></i>
+            <div>
+              <strong>You will lose access to shared family data.</strong>
+              <p>Categories, transactions, wishlist items and calendar events created inside the family will stay in the family workspace. If you had personal data before joining, it will become visible to you again after leaving.</p>
+            </div>
+          </div>
+          <label class="family-checkbox-confirm">
+            <input type="checkbox" required>
+            <span>I understand that family data stays with the family after I leave.</span>
+          </label>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4">Leave family</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="deleteFamilyModal" tabindex="-1" aria-labelledby="deleteFamilyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content family-modal-content family-delete-modal-content">
@@ -112,9 +144,22 @@
 
       <form action="/family/delete" method="POST" class="family-preserve-scroll-form">
         <div class="modal-body pt-3">
-          <p class="family-modal-note">
-            This action will delete the family workspace for all members and remove the family connection from shared data. This cannot be undone.
-          </p>
+          <div class="family-danger-box mb-3">
+            <i class="bi bi-exclamation-triangle"></i>
+            <div>
+              <strong>This action deletes the family workspace.</strong>
+              <p>By default, all shared family categories, transactions, wishlist folders, wishlist items and calendar events will be permanently deleted for every member. This cannot be undone.</p>
+            </div>
+          </div>
+
+          <label class="family-transfer-option mb-3">
+            <input type="checkbox" name="keepSharedDataAsPersonal">
+            <span>
+              <strong>Move shared family data back to my personal workspace</strong>
+              <small>Use this if you created a family from your personal data and want to keep the budget after deleting the family. The data will become visible only to your account.</small>
+            </span>
+          </label>
+
           <p class="family-modal-note mb-3">
             Type <strong>Delete</strong> to confirm.
           </p>

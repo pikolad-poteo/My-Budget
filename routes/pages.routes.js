@@ -18,11 +18,4 @@ router.get('/dashboard', requireAuth, (req, res) => {
   });
 });
 
-router.get('/calendar', requireAuth, (req, res) => {
-  res.render('calendar/index', {
-    title: 'Calendar',
-    activePage: 'calendar'
-  });
-});
-
 module.exports = router;

@@ -1,5 +1,5 @@
 const db = require('./db');
-const { getUserCategories, sanitizeCategoryType } = require('./category.utils');
+const { getUserCategories, sanitizeCategoryType, getWorkspaceCondition } = require('./category.utils');
 
 function sanitizeTransactionType(value = '') {
   return sanitizeCategoryType(value);
@@ -139,7 +139,10 @@ async function getAvailableTransactionMembers(userId, family = null) {
 }
 
 async function getTransactionByIdForUser(transactionId, userId, familyId = null) {
-  let query = `
+  const workspace = getWorkspaceCondition(userId, familyId, 't');
+
+  const [rows] = await db.query(
+    `
     SELECT
       t.id,
       t.user_id,
@@ -152,20 +155,12 @@ async function getTransactionByIdForUser(transactionId, userId, familyId = null)
       t.paid_by_user_id
     FROM transactions t
     WHERE t.id = ?
-      AND (
-        t.user_id = ?
-  `;
+      AND ${workspace.clause}
+    LIMIT 1
+    `,
+    [transactionId, ...workspace.params]
+  );
 
-  const params = [transactionId, userId];
-
-  if (familyId) {
-    query += ' OR t.family_id = ?';
-    params.push(familyId);
-  }
-
-  query += ') LIMIT 1';
-
-  const [rows] = await db.query(query, params);
   return rows[0] || null;
 }
 
@@ -174,7 +169,8 @@ async function getTransactionsForUser({
   familyId = null,
   filters
 }) {
-  const params = [userId];
+  const workspace = getWorkspaceCondition(userId, familyId, 't');
+  const params = [...workspace.params];
 
   let query = `
     SELECT
@@ -195,16 +191,8 @@ async function getTransactionsForUser({
     FROM transactions t
     INNER JOIN categories c ON c.id = t.category_id
     LEFT JOIN users u ON u.id = t.paid_by_user_id
-    WHERE (
-      t.user_id = ?
+    WHERE ${workspace.clause}
   `;
-
-  if (familyId) {
-    query += ' OR t.family_id = ?';
-    params.push(familyId);
-  }
-
-  query += ')';
 
   if (filters.from) {
     query += ' AND t.transaction_date >= ?';
@@ -224,12 +212,6 @@ async function getTransactionsForUser({
   if (filters.type !== 'all') {
     query += ' AND t.type = ?';
     params.push(filters.type);
-  }
-
-  if (filters.scope === 'family') {
-    query += ' AND t.family_id IS NOT NULL';
-  } else if (filters.scope === 'personal') {
-    query += ' AND t.family_id IS NULL';
   }
 
   if (filters.memberId) {

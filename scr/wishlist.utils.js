@@ -1,4 +1,5 @@
 const db = require('./db');
+const { getWorkspaceCondition } = require('./category.utils');
 
 const WISHLIST_STATUSES = ['planned', 'postponed', 'bought', 'cancelled'];
 const WISHLIST_SORTS = ['newest', 'oldest', 'price_desc', 'price_asc'];
@@ -26,10 +27,9 @@ function buildWishlistRedirect(req, fallback = '/wishlist') { const params = new
 function getWishlistOrderBy(sort) { switch (sort) { case 'oldest': return 'w.created_at ASC'; case 'price_desc': return 'w.amount DESC, w.created_at DESC'; case 'price_asc': return 'w.amount ASC, w.created_at DESC'; default: return 'w.created_at DESC'; } }
 
 async function getWishlistItemsForUser({ userId, familyId, filters }) {
-  const params = [userId];
-  let query = `SELECT w.* FROM wishlist_items w WHERE (w.user_id = ?`;
-  if (familyId) { query += ' OR w.family_id = ?'; params.push(familyId); }
-  query += ')';
+  const workspace = getWorkspaceCondition(userId, familyId, 'w');
+  const params = [...workspace.params];
+  let query = `SELECT w.* FROM wishlist_items w WHERE ${workspace.clause}`;
   if (filters.status !== 'all') { query += ' AND w.status = ?'; params.push(filters.status); }
   if (filters.folder !== 'all') { query += ' AND w.folder = ?'; params.push(filters.folder); }
   if (filters.q) { query += ' AND (w.title LIKE ? OR w.description LIKE ? OR w.folder LIKE ?)'; params.push(`%${filters.q}%`, `%${filters.q}%`, `%${filters.q}%`); }
@@ -39,27 +39,26 @@ async function getWishlistItemsForUser({ userId, familyId, filters }) {
 }
 
 async function getWishlistItemByIdForUser(itemId, userId, familyId) {
-  const params = [itemId, userId];
-  let query = `SELECT * FROM wishlist_items WHERE id = ? AND (user_id = ?`;
-  if (familyId) { query += ' OR family_id = ?'; params.push(familyId); }
-  query += ') LIMIT 1';
-  const [rows] = await db.query(query, params);
+  const workspace = getWorkspaceCondition(userId, familyId);
+  const [rows] = await db.query(
+    `SELECT * FROM wishlist_items WHERE id = ? AND ${workspace.clause} LIMIT 1`,
+    [itemId, ...workspace.params]
+  );
   return rows[0] || null;
 }
 
 async function getWishlistFoldersForUser(userId, familyId) {
-  const params = [userId];
-  let itemsQuery = `SELECT DISTINCT folder AS name FROM wishlist_items WHERE folder IS NOT NULL AND folder != '' AND (user_id = ?`;
-  if (familyId) { itemsQuery += ' OR family_id = ?'; params.push(familyId); }
-  itemsQuery += ')';
-  const [itemRows] = await db.query(itemsQuery, params);
+  const workspace = getWorkspaceCondition(userId, familyId);
+  const [itemRows] = await db.query(
+    `SELECT DISTINCT folder AS name FROM wishlist_items WHERE folder IS NOT NULL AND folder != '' AND ${workspace.clause}`,
+    workspace.params
+  );
   let folderRows = [];
   try {
-    const folderParams = [userId];
-    let foldersQuery = `SELECT DISTINCT name FROM wishlist_folders WHERE name IS NOT NULL AND name != '' AND (user_id = ?`;
-    if (familyId) { foldersQuery += ' OR family_id = ?'; folderParams.push(familyId); }
-    foldersQuery += ')';
-    const [rows] = await db.query(foldersQuery, folderParams);
+    const [rows] = await db.query(
+      `SELECT DISTINCT name FROM wishlist_folders WHERE name IS NOT NULL AND name != '' AND ${workspace.clause}`,
+      workspace.params
+    );
     folderRows = rows;
   } catch (error) { folderRows = []; }
   const folderSet = new Set();
@@ -80,50 +79,47 @@ async function renameWishlistFolder({ userId, familyId, oldName, newName }) {
   const cleanOldName = normalizeWishlistFolderName(oldName);
   const cleanNewName = normalizeWishlistFolderName(newName);
   await ensureWishlistFolder(userId, familyId, cleanNewName);
-  const itemParams = [cleanNewName, cleanOldName, userId];
-  let itemQuery = 'UPDATE wishlist_items SET folder = ? WHERE folder = ? AND (user_id = ?';
-  if (familyId) { itemQuery += ' OR family_id = ?'; itemParams.push(familyId); }
-  itemQuery += ')';
-  await db.query(itemQuery, itemParams);
+  const workspace = getWorkspaceCondition(userId, familyId);
+  await db.query(
+    `UPDATE wishlist_items SET folder = ? WHERE folder = ? AND ${workspace.clause}`,
+    [cleanNewName, cleanOldName, ...workspace.params]
+  );
   try {
-    const deleteParams = [cleanOldName, userId];
-    let deleteQuery = 'DELETE FROM wishlist_folders WHERE name = ? AND (user_id = ?';
-    if (familyId) { deleteQuery += ' OR family_id = ?'; deleteParams.push(familyId); }
-    deleteQuery += ')';
-    await db.query(deleteQuery, deleteParams);
+    await db.query(
+      `DELETE FROM wishlist_folders WHERE name = ? AND ${workspace.clause}`,
+      [cleanOldName, ...workspace.params]
+    );
   } catch (error) {}
 }
 
 async function deleteWishlistFolder({ userId, familyId, folderName, deleteAction }) {
   const cleanFolderName = normalizeWishlistFolderName(folderName);
+  const workspace = getWorkspaceCondition(userId, familyId);
   if (deleteAction === 'delete_items') {
-    const params = [cleanFolderName, userId];
-    let query = 'DELETE FROM wishlist_items WHERE folder = ? AND (user_id = ?';
-    if (familyId) { query += ' OR family_id = ?'; params.push(familyId); }
-    query += ')';
-    await db.query(query, params);
+    await db.query(
+      `DELETE FROM wishlist_items WHERE folder = ? AND ${workspace.clause}`,
+      [cleanFolderName, ...workspace.params]
+    );
   } else {
-    const params = [null, cleanFolderName, userId];
-    let query = 'UPDATE wishlist_items SET folder = ? WHERE folder = ? AND (user_id = ?';
-    if (familyId) { query += ' OR family_id = ?'; params.push(familyId); }
-    query += ')';
-    await db.query(query, params);
+    await db.query(
+      `UPDATE wishlist_items SET folder = ? WHERE folder = ? AND ${workspace.clause}`,
+      [null, cleanFolderName, ...workspace.params]
+    );
   }
   try {
-    const params = [cleanFolderName, userId];
-    let query = 'DELETE FROM wishlist_folders WHERE name = ? AND (user_id = ?';
-    if (familyId) { query += ' OR family_id = ?'; params.push(familyId); }
-    query += ')';
-    await db.query(query, params);
+    await db.query(
+      `DELETE FROM wishlist_folders WHERE name = ? AND ${workspace.clause}`,
+      [cleanFolderName, ...workspace.params]
+    );
   } catch (error) {}
 }
 
 async function getCurrentBalanceForUser(userId, familyId) {
-  const params = [userId];
-  let query = 'SELECT COALESCE(SUM(amount), 0) AS balance FROM transactions WHERE (user_id = ?';
-  if (familyId) { query += ' OR family_id = ?'; params.push(familyId); }
-  query += ')';
-  const [rows] = await db.query(query, params);
+  const workspace = getWorkspaceCondition(userId, familyId);
+  const [rows] = await db.query(
+    `SELECT COALESCE(SUM(amount), 0) AS balance FROM transactions WHERE ${workspace.clause}`,
+    workspace.params
+  );
   return Number(rows[0].balance || 0);
 }
 

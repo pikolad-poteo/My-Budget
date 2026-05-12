@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 11 2026 г., 14:57
+-- Время создания: Май 11 2026 г., 22:27
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.0.30
 
@@ -54,9 +54,9 @@ CREATE TABLE `calendar_events` (
 --
 
 INSERT INTO `calendar_events` (`id`, `user_id`, `family_id`, `title`, `event_date`, `event_time`, `end_time`, `type`, `member_name`, `description`, `color`, `is_all_day`, `is_important`, `is_recurring`, `recurring_type`, `is_completed`, `completed_at`, `created_at`, `updated_at`) VALUES
-(1, 1, NULL, 'Pay personal subscription', '2026-05-15', '10:00:00', NULL, 'reminder', NULL, 'Check monthly subscriptions and cancel unused services.', '#0d6efd', 0, 1, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-09 19:54:07'),
+(1, 1, 1, 'Pay personal subscription', '2026-05-15', '10:00:00', NULL, 'reminder', NULL, 'Check monthly subscriptions and cancel unused services.', '#0d6efd', 0, 1, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-11 18:44:22'),
 (2, 1, 1, 'Family budget review', '2026-05-18', '19:00:00', NULL, 'event', NULL, 'Review family expenses and wishlist priorities.', '#198754', 0, 1, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-09 19:54:07'),
-(3, 1, NULL, 'Course deadline', '2026-05-22', NULL, NULL, 'task', NULL, 'Finish planned study task.', '#6f42c1', 1, 0, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-09 19:54:07'),
+(3, 1, 1, 'Course deadline', '2026-05-22', NULL, NULL, 'task', NULL, 'Finish planned study task.', '#6f42c1', 1, 0, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-11 18:44:22'),
 (4, 2, 1, 'Car audio installation', '2026-05-25', '14:30:00', NULL, 'event', 'Vladislav', 'Install and test new audio components.', '#fd7e14', 0, 1, 0, 'none', 0, '2026-05-09 20:00:51', '2026-05-08 08:01:22', '2026-05-09 20:00:51'),
 (5, 1, 1, 'Birthday reminder', '2026-06-02', NULL, NULL, 'birthday', 'Family member', 'Prepare small gift and dinner plan.', '#dc3545', 1, 1, 0, 'none', 0, NULL, '2026-05-08 08:01:22', '2026-05-09 19:54:07'),
 (6, 2, 1, 'Europa Päev', '2026-05-09', NULL, NULL, 'event', NULL, NULL, '#0d6efd', 1, 0, 0, 'none', 0, NULL, '2026-05-09 20:01:35', '2026-05-09 20:34:54');
@@ -83,28 +83,30 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`, `icon`, `created_at`) VALUES
-(1, 1, NULL, 'Groceries', 'expense', '#22c55e', 'basket', '2026-05-08 08:01:22'),
-(2, 1, NULL, 'Transport', 'expense', '#3b82f6', 'car-front', '2026-05-08 08:01:22'),
-(3, 1, NULL, 'Coffee', 'expense', '#a16207', 'cup-hot', '2026-05-08 08:01:22'),
-(4, 1, NULL, 'Shopping', 'expense', '#ec4899', 'bag', '2026-05-08 08:01:22'),
-(5, 1, NULL, 'Health', 'expense', '#ef4444', 'heart-pulse', '2026-05-08 08:01:22'),
-(6, 1, NULL, 'Education', 'expense', '#8b5cf6', 'book', '2026-05-08 08:01:22'),
-(7, 1, NULL, 'Entertainment', 'expense', '#f97316', 'controller', '2026-05-08 08:01:22'),
-(8, 1, NULL, 'Subscriptions', 'expense', '#64748b', 'credit-card', '2026-05-08 08:01:22'),
-(9, 1, NULL, 'Salary', 'income', '#16a34a', 'cash-stack', '2026-05-08 08:01:22'),
-(10, 1, NULL, 'Freelance', 'income', '#06b6d4', 'laptop', '2026-05-08 08:01:22'),
-(11, 1, NULL, 'Refund', 'income', '#84cc16', 'arrow-counterclockwise', '2026-05-08 08:01:22'),
-(12, 1, NULL, 'Gift', 'income', '#f59e0b', 'gift', '2026-05-08 08:01:22'),
+(1, 1, 1, 'Groceries', 'expense', '#22c55e', 'basket', '2026-05-08 08:01:22'),
+(2, 1, 1, 'Transport', 'expense', '#3b82f6', 'car-front', '2026-05-08 08:01:22'),
+(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', '2026-05-08 08:01:22'),
+(4, 1, 1, 'Shopping', 'expense', '#ec4899', 'bag', '2026-05-08 08:01:22'),
+(5, 1, 1, 'Health', 'expense', '#ef4444', 'heart-pulse', '2026-05-08 08:01:22'),
+(6, 1, 1, 'Education', 'expense', '#8b5cf6', 'book', '2026-05-08 08:01:22'),
+(7, 1, 1, 'Entertainment', 'expense', '#f97316', 'controller', '2026-05-08 08:01:22'),
+(8, 1, 1, 'Subscriptions', 'expense', '#64748b', 'credit-card', '2026-05-08 08:01:22'),
+(9, 1, 1, 'Salary', 'income', '#16a34a', 'cash-stack', '2026-05-08 08:01:22'),
+(10, 1, 1, 'Freelance', 'income', '#06b6d4', 'laptop', '2026-05-08 08:01:22'),
+(11, 1, 1, 'Refund', 'income', '#84cc16', 'arrow-counterclockwise', '2026-05-08 08:01:22'),
+(12, 1, 1, 'Gift', 'income', '#f59e0b', 'gift', '2026-05-08 08:01:22'),
 (13, 1, 1, 'Home Bills', 'expense', '#6366f1', 'house', '2026-05-08 08:01:22'),
 (14, 1, 1, 'Family Food', 'expense', '#10b981', 'cart', '2026-05-08 08:01:22'),
 (15, 1, 1, 'Kids', 'expense', '#f59e0b', 'emoji-smile', '2026-05-08 08:01:22'),
 (16, 1, 1, 'Car Service', 'expense', '#0f766e', 'tag', '2026-05-08 08:01:22'),
 (17, 1, 1, 'Family Income', 'income', '#8b5cf6', 'piggy-bank', '2026-05-08 08:01:22'),
 (18, 1, 1, 'Shared Refund', 'income', '#65a30d', 'wallet2', '2026-05-08 08:01:22'),
-(19, 2, NULL, 'Bank', 'income', '#2563eb', 'bank', '2026-05-08 08:01:22'),
-(20, 2, NULL, 'Car Audio', 'expense', '#7c3aed', 'speaker', '2026-05-08 08:01:22'),
+(19, 2, 1, 'Bank', 'income', '#2563eb', 'bank', '2026-05-08 08:01:22'),
+(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'speaker', '2026-05-08 08:01:22'),
 (21, 2, 1, 'Family Groceries', 'expense', '#22c55e', 'basket2', '2026-05-08 08:01:22'),
-(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', '2026-05-08 08:01:22');
+(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', '2026-05-08 08:01:22'),
+(29, 5, NULL, 'food', 'expense', '#22c55e', 'cart3', '2026-05-11 19:57:55'),
+(30, 5, NULL, 'car', 'expense', '#f43f5e', 'car-front', '2026-05-11 19:58:55');
 
 -- --------------------------------------------------------
 
@@ -126,7 +128,7 @@ CREATE TABLE `families` (
 --
 
 INSERT INTO `families` (`id`, `name`, `avatar_url`, `owner_user_id`, `created_at`, `updated_at`) VALUES
-(1, 'Dudins', NULL, 1, '2026-04-21 15:24:14', '2026-05-11 12:52:06');
+(1, 'Dudins', NULL, 1, '2026-04-21 15:24:14', '2026-05-11 20:27:35');
 
 -- --------------------------------------------------------
 
@@ -153,27 +155,26 @@ CREATE TABLE `family_activity_logs` (
 INSERT INTO `family_activity_logs` (`id`, `family_id`, `actor_user_id`, `target_user_id`, `action`, `entity_type`, `entity_id`, `description`, `created_at`) VALUES
 (1, 1, 1, 1, 'member_existing', 'member', 1, 'Test is an existing family member with role viewer.', '2026-05-10 12:23:11'),
 (2, 1, 2, 2, 'member_existing', 'member', 2, 'Test2 is an existing family member with role viewer.', '2026-05-10 12:23:11'),
-(3, 1, 3, 3, 'member_existing', 'member', 3, 'Vladislav is an existing family member with role owner.', '2026-05-10 12:23:11'),
 (4, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-10 12:52:29'),
-(5, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 12:53:05'),
+(5, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 12:53:05'),
 (6, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudins\" to \"Dudin\".', '2026-05-10 12:53:20'),
 (7, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudin\" to \"Dudins\".', '2026-05-10 12:53:25'),
-(8, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:50:36'),
-(9, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:50:37'),
-(10, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:50:38'),
-(11, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:50:39'),
-(12, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to viewer.', '2026-05-10 15:50:40'),
+(8, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:50:36'),
+(9, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:50:37'),
+(10, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:50:38'),
+(11, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:50:39'),
+(12, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to viewer.', '2026-05-10 15:50:40'),
 (13, 1, 1, 2, 'member_role_updated', 'member', 2, 'Changed Test2 role from viewer to editor.', '2026-05-10 15:50:40'),
 (14, 1, 1, 2, 'member_role_updated', 'member', 2, 'Changed Test2 role from editor to viewer.', '2026-05-10 15:50:43'),
-(15, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from viewer to editor.', '2026-05-10 15:50:45'),
-(16, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:54:31'),
-(17, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:54:32'),
+(15, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from viewer to editor.', '2026-05-10 15:50:45'),
+(16, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to owner.', '2026-05-10 15:54:31'),
+(17, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from owner to editor.', '2026-05-10 15:54:32'),
 (18, 1, 1, 2, 'member_role_updated', 'member', 2, 'Changed Test2 role from viewer to owner.', '2026-05-10 16:05:04'),
 (19, 1, 1, 2, 'member_role_updated', 'member', 2, 'Changed Test2 role from owner to viewer.', '2026-05-10 16:05:12'),
 (20, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudins\" to \"Dudinsыыы\".', '2026-05-10 16:56:46'),
 (21, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudinsыыы\" to \"Dudinssss\".', '2026-05-10 16:56:50'),
 (22, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudinssss\" to \"Dudins\".', '2026-05-10 16:56:52'),
-(23, 1, 1, 3, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to viewer.', '2026-05-10 16:59:40'),
+(23, 1, 1, NULL, 'member_role_updated', 'member', 3, 'Changed Vladislav role from editor to viewer.', '2026-05-10 16:59:40'),
 (24, 1, 1, 2, 'member_role_updated', 'member', 2, 'Changed Test2 role from viewer to editor.', '2026-05-10 16:59:42'),
 (25, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-10 16:59:54'),
 (26, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-10 17:00:03'),
@@ -197,11 +198,36 @@ INSERT INTO `family_activity_logs` (`id`, `family_id`, `actor_user_id`, `target_
 (44, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 12:47:46'),
 (45, 1, 2, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 12:49:34'),
 (46, 1, 2, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 12:49:39'),
-(47, 1, 1, 3, 'member_removed', 'member', 3, 'Removed Vladislav from the family.', '2026-05-11 12:50:48'),
-(48, 1, 1, 3, 'member_added', 'member', 3, 'Added Vladislav as viewer.', '2026-05-11 12:50:54'),
+(47, 1, 1, NULL, 'member_removed', 'member', 3, 'Removed Vladislav from the family.', '2026-05-11 12:50:48'),
+(48, 1, 1, NULL, 'member_added', 'member', 3, 'Added Vladislav as viewer.', '2026-05-11 12:50:54'),
 (49, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 12:51:58'),
 (50, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 12:52:03'),
-(51, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 12:52:06');
+(51, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 12:52:06'),
+(52, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 13:14:33'),
+(53, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 13:14:55'),
+(54, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 13:38:10'),
+(55, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 15:02:05'),
+(56, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 15:02:25'),
+(57, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 17:41:19'),
+(58, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudins\" to \"Dudinss\".', '2026-05-11 17:41:48'),
+(59, 1, 1, NULL, 'family_name_updated', 'family', 1, 'Changed family name from \"Dudinss\" to \"Dudins\".', '2026-05-11 17:41:50'),
+(60, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 18:31:37'),
+(61, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 18:32:00'),
+(62, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 18:33:02'),
+(63, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 18:35:40'),
+(64, 1, 1, NULL, 'member_removed', 'member', 3, 'Removed Dasha from the family.', '2026-05-11 18:49:37'),
+(65, 1, 1, NULL, 'member_added', 'member', 3, 'Added Dasha as viewer.', '2026-05-11 18:55:03'),
+(67, 1, 1, NULL, 'member_added', 'member', 3, 'Added Dasha as viewer.', '2026-05-11 18:56:27'),
+(68, 1, 2, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 18:59:47'),
+(69, 1, 2, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 18:59:49'),
+(70, 1, 1, NULL, 'member_removed', 'member', 3, 'Removed Dasha from the family.', '2026-05-11 19:00:23'),
+(75, 1, 1, NULL, 'member_added', 'member', 4, 'Added Dasha as viewer.', '2026-05-11 19:08:50'),
+(76, 1, 1, NULL, 'member_removed', 'member', 4, 'Removed Dasha from the family.', '2026-05-11 19:12:05'),
+(82, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:23:42'),
+(83, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 19:54:50'),
+(84, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-11 19:56:51'),
+(87, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:59:54'),
+(88, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 20:27:35');
 
 -- --------------------------------------------------------
 
@@ -225,7 +251,7 @@ CREATE TABLE `family_members` (
 INSERT INTO `family_members` (`id`, `family_id`, `user_id`, `role`, `joined_at`, `updated_at`) VALUES
 (2, 1, 1, 'owner', '2026-04-21 15:24:26', '2026-05-10 12:41:35'),
 (3, 1, 2, 'editor', '2026-04-21 15:25:16', '2026-05-10 16:59:42'),
-(4, 1, 3, 'viewer', '2026-05-11 12:50:54', '2026-05-11 12:50:54');
+(15, 1, 5, 'viewer', '2026-05-11 19:59:54', '2026-05-11 19:59:54');
 
 -- --------------------------------------------------------
 
@@ -251,26 +277,26 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`id`, `user_id`, `family_id`, `category_id`, `type`, `amount`, `description`, `transaction_date`, `paid_by_user_id`, `created_at`) VALUES
-(1, 1, NULL, 9, 'income', 1850.00, 'Monthly salary', '2026-05-01', 1, '2026-05-08 08:01:22'),
-(2, 1, NULL, 1, 'expense', -54.35, 'Weekly supermarket shopping', '2026-05-02', 1, '2026-05-08 08:01:22'),
-(3, 1, NULL, 2, 'expense', -2.50, 'Bus ticket', '2026-05-02', 1, '2026-05-08 08:01:22'),
-(4, 1, NULL, 3, 'expense', -4.80, 'Morning coffee', '2026-05-03', 1, '2026-05-08 08:01:22'),
-(5, 1, NULL, 4, 'expense', -89.99, 'New jeans', '2026-05-04', 1, '2026-05-08 08:01:22'),
-(6, 1, NULL, 10, 'income', 320.00, 'Small landing page task', '2026-05-05', 1, '2026-05-08 08:01:22'),
-(7, 1, NULL, 5, 'expense', -18.20, 'Pharmacy purchase', '2026-05-05', 1, '2026-05-08 08:01:22'),
-(8, 1, NULL, 6, 'expense', -39.99, 'Online course materials', '2026-05-06', 1, '2026-05-08 08:01:22'),
-(9, 1, NULL, 7, 'expense', -14.50, 'Cinema ticket', '2026-05-07', 1, '2026-05-08 08:01:22'),
-(10, 1, NULL, 8, 'expense', -9.99, 'Music subscription', '2026-05-08', 1, '2026-05-08 08:01:22'),
-(11, 1, NULL, 11, 'income', 24.90, 'Returned order refund', '2026-05-08', 1, '2026-05-08 08:01:22'),
-(12, 1, NULL, 12, 'income', 50.00, 'Birthday gift', '2026-05-09', 1, '2026-05-08 08:01:22'),
-(13, 1, NULL, 1, 'expense', -41.10, 'Fresh food market', '2026-05-10', 1, '2026-05-08 08:01:22'),
-(14, 1, NULL, 2, 'expense', -16.00, 'Taxi ride', '2026-05-11', 1, '2026-05-08 08:01:22'),
-(15, 1, NULL, 3, 'expense', -6.20, 'Coffee with colleague', '2026-05-12', 1, '2026-05-08 08:01:22'),
-(16, 1, NULL, 4, 'expense', -129.00, 'Spring clothes order', '2026-05-13', 1, '2026-05-08 08:01:22'),
-(17, 1, NULL, 5, 'expense', -32.70, 'Vitamins', '2026-05-14', 1, '2026-05-08 08:01:22'),
-(18, 1, NULL, 6, 'expense', -12.99, 'Programming book discount', '2026-05-15', 1, '2026-05-08 08:01:22'),
-(19, 1, NULL, 7, 'expense', -59.99, 'Game purchase', '2026-05-16', 1, '2026-05-08 08:01:22'),
-(20, 1, NULL, 8, 'expense', -14.99, 'Cloud storage', '2026-05-17', 1, '2026-05-08 08:01:22'),
+(1, 1, 1, 9, 'income', 1850.00, 'Monthly salary', '2026-05-01', 1, '2026-05-08 08:01:22'),
+(2, 1, 1, 1, 'expense', -54.35, 'Weekly supermarket shopping', '2026-05-02', 1, '2026-05-08 08:01:22'),
+(3, 1, 1, 2, 'expense', -2.50, 'Bus ticket', '2026-05-02', 1, '2026-05-08 08:01:22'),
+(4, 1, 1, 3, 'expense', -4.80, 'Morning coffee', '2026-05-03', 1, '2026-05-08 08:01:22'),
+(5, 1, 1, 4, 'expense', -89.99, 'New jeans', '2026-05-04', 1, '2026-05-08 08:01:22'),
+(6, 1, 1, 10, 'income', 320.00, 'Small landing page task', '2026-05-05', 1, '2026-05-08 08:01:22'),
+(7, 1, 1, 5, 'expense', -18.20, 'Pharmacy purchase', '2026-05-05', 1, '2026-05-08 08:01:22'),
+(8, 1, 1, 6, 'expense', -39.99, 'Online course materials', '2026-05-06', 1, '2026-05-08 08:01:22'),
+(9, 1, 1, 7, 'expense', -14.50, 'Cinema ticket', '2026-05-07', 1, '2026-05-08 08:01:22'),
+(10, 1, 1, 8, 'expense', -9.99, 'Music subscription', '2026-05-08', 1, '2026-05-08 08:01:22'),
+(11, 1, 1, 11, 'income', 24.90, 'Returned order refund', '2026-05-08', 1, '2026-05-08 08:01:22'),
+(12, 1, 1, 12, 'income', 50.00, 'Birthday gift', '2026-05-09', 1, '2026-05-08 08:01:22'),
+(13, 1, 1, 1, 'expense', -41.10, 'Fresh food market', '2026-05-10', 1, '2026-05-08 08:01:22'),
+(14, 1, 1, 2, 'expense', -16.00, 'Taxi ride', '2026-05-11', 1, '2026-05-08 08:01:22'),
+(15, 1, 1, 3, 'expense', -6.20, 'Coffee with colleague', '2026-05-12', 1, '2026-05-08 08:01:22'),
+(16, 1, 1, 4, 'expense', -129.00, 'Spring clothes order', '2026-05-13', 1, '2026-05-08 08:01:22'),
+(17, 1, 1, 5, 'expense', -32.70, 'Vitamins', '2026-05-14', 1, '2026-05-08 08:01:22'),
+(18, 1, 1, 6, 'expense', -12.99, 'Programming book discount', '2026-05-15', 1, '2026-05-08 08:01:22'),
+(19, 1, 1, 7, 'expense', -59.99, 'Game purchase', '2026-05-16', 1, '2026-05-08 08:01:22'),
+(20, 1, 1, 8, 'expense', -14.99, 'Cloud storage', '2026-05-17', 1, '2026-05-08 08:01:22'),
 (21, 1, 1, 13, 'expense', -95.00, 'Electricity bill', '2026-05-03', 1, '2026-05-08 08:01:22'),
 (22, 1, 1, 14, 'expense', -88.60, 'Family dinner groceries', '2026-05-04', 1, '2026-05-08 08:01:22'),
 (23, 1, 1, 15, 'expense', -41.30, 'School supplies', '2026-05-05', 1, '2026-05-08 08:01:22'),
@@ -281,19 +307,19 @@ INSERT INTO `transactions` (`id`, `user_id`, `family_id`, `category_id`, `type`,
 (28, 1, 1, 14, 'expense', -64.25, 'Weekend family groceries', '2026-05-10', 1, '2026-05-08 08:01:22'),
 (29, 1, 1, 15, 'expense', -27.00, 'Kids entertainment', '2026-05-11', 1, '2026-05-08 08:01:22'),
 (30, 1, 1, 16, 'expense', -72.40, 'Fuel refill', '2026-05-12', 1, '2026-05-08 08:01:22'),
-(31, 2, NULL, 19, 'income', 1275.00, 'Bank transfer income', '2026-05-01', 2, '2026-05-08 08:01:22'),
-(32, 2, NULL, 20, 'expense', -349.00, 'Car amplifier', '2026-05-02', 2, '2026-05-08 08:01:22'),
-(33, 2, NULL, 20, 'expense', -89.99, 'Audio cables', '2026-05-03', 2, '2026-05-08 08:01:22'),
+(31, 2, 1, 19, 'income', 1275.00, 'Bank transfer income', '2026-05-01', 2, '2026-05-08 08:01:22'),
+(32, 2, 1, 20, 'expense', -349.00, 'Car amplifier', '2026-05-02', 2, '2026-05-08 08:01:22'),
+(33, 2, 1, 20, 'expense', -89.99, 'Audio cables', '2026-05-03', 2, '2026-05-08 08:01:22'),
 (34, 2, 1, 21, 'expense', -55.40, 'Shared groceries', '2026-05-04', 2, '2026-05-08 08:01:22'),
 (35, 2, 1, 22, 'income', 410.00, 'Shared salary part', '2026-05-05', 2, '2026-05-08 08:01:22'),
-(36, 2, NULL, 20, 'expense', -129.00, NULL, '2026-05-06', 2, '2026-05-08 08:01:22'),
+(36, 2, 1, 20, 'expense', -129.00, NULL, '2026-05-06', 2, '2026-05-08 08:01:22'),
 (37, 2, 1, 21, 'expense', -22.75, 'Milk and bread', '2026-05-07', 2, '2026-05-08 08:01:22'),
-(38, 2, NULL, 19, 'income', 18.79, 'Small bank interest', '2026-05-08', 2, '2026-05-08 08:01:22'),
-(39, 1, NULL, 1, 'expense', -61.75, 'April grocery refill', '2026-04-18', 1, '2026-05-08 08:01:22'),
-(40, 1, NULL, 9, 'income', 1850.00, 'April salary', '2026-04-01', 1, '2026-05-08 08:01:22'),
+(38, 2, 1, 19, 'income', 18.79, 'Small bank interest', '2026-05-08', 2, '2026-05-08 08:01:22'),
+(39, 1, 1, 1, 'expense', -61.75, 'April grocery refill', '2026-04-18', 1, '2026-05-08 08:01:22'),
+(40, 1, 1, 9, 'income', 1850.00, 'April salary', '2026-04-01', 1, '2026-05-08 08:01:22'),
 (41, 1, 1, 13, 'expense', -500.00, 'March rent part', '2026-03-20', 1, '2026-05-08 08:01:22'),
 (42, 1, 1, 17, 'income', 120.00, 'March shared income', '2026-03-22', 1, '2026-05-08 08:01:22'),
-(43, 2, NULL, 20, 'expense', -200.00, 'Old speaker test', '2026-03-31', 2, '2026-05-08 08:01:22'),
+(43, 2, 1, 20, 'expense', -200.00, 'Old speaker test', '2026-03-31', 2, '2026-05-08 08:01:22'),
 (44, 2, 1, 21, 'expense', -120.00, 'Family shopping test', '2026-03-19', 2, '2026-05-08 08:01:22');
 
 -- --------------------------------------------------------
@@ -306,6 +332,7 @@ CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `avatar_url` varchar(255) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -314,10 +341,10 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `created_at`) VALUES
-(1, 'Test', 'admin@test.local', '$2b$10$8rK/mx1D3638jwDTcMuHwOUxC/.eYaaiQAY4E7wlkwCI75fRnDynS', '2026-04-21 14:59:58'),
-(2, 'Test2', 'admin@myshop.local', '$2b$10$xNEaQNhWxaNaqX7u174A6ONpeCONdEnm8L7HaQ2aQHXb/017weKWS', '2026-04-21 15:05:23'),
-(3, 'Vladislav', 'pikoladgame2004@gmail.com', '$2b$10$hlcsuKTAS7NKMJbSIdZuXOm.WKroa1S8DKUZEktEV7BC81ajoxGNS', '2026-04-21 15:23:08');
+INSERT INTO `users` (`id`, `name`, `email`, `avatar_url`, `password_hash`, `created_at`) VALUES
+(1, 'Violetta Owner', 'admin@test.local', '/uploads/users/user-1778529390688-627922413.jpg', '$2b$10$xWhfACccFASXRSlZazuahuo.Pa.uO94dQUa4HXzPNPz.mUJ7eP4me', '2026-04-21 14:59:58'),
+(2, 'Vladislav Editor', 'admin@myshop.local', NULL, '$2b$10$xNEaQNhWxaNaqX7u174A6ONpeCONdEnm8L7HaQ2aQHXb/017weKWS', '2026-04-21 15:05:23'),
+(5, 'Dasha', 'pikoladgame2004@gmail.com', '/uploads/users/user-1778527362269-682795987.jpg', '$2b$10$y0k1d.OIWiZDw2zNRyecEudsi.NNkG7QAMMMSTkKhRUqNBqVuItKG', '2026-05-11 19:22:32');
 
 -- --------------------------------------------------------
 
@@ -376,7 +403,7 @@ CREATE TABLE `wishlist_items` (
 
 INSERT INTO `wishlist_items` (`id`, `user_id`, `family_id`, `title`, `amount`, `folder`, `status`, `description`, `product_url`, `image_url`, `desired_date`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 'MacBook Air for Study', 1199.00, 'Education', 'planned', 'Laptop for university, development and diploma work.', 'https://example.com/macbook-air', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=MacBook+Air', '2026-06-10', '2026-05-08 08:01:22', '2026-05-08 08:01:22'),
-(2, 1, 1, 'JavaScript Architecture Book', 44.99, 'Education', 'planned', 'Book about modern JavaScript architecture and frontend patterns.', 'https://example.com/javascript-book', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=JavaScript+Book', '2026-05-20', '2026-05-08 08:01:22', '2026-05-08 08:01:22'),
+(2, 1, 1, 'JavaScript Architecture Book', 44.99, 'Education', 'planned', 'Book about modern JavaScript architecture and frontend patterns.', 'https://example.com/javascript-book', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=JavaScript+Book', '2026-05-20', '2026-05-08 08:01:22', '2026-05-11 19:51:50'),
 (3, 1, 1, 'SQL Practice Platform', 19.99, 'Education', 'bought', 'Monthly subscription for SQL practice tasks.', 'https://example.com/sql-practice', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=SQL+Practice', '2026-05-12', '2026-05-08 08:01:22', '2026-05-08 08:01:22'),
 (4, 1, 1, 'English Speaking Course', 149.00, 'Education', 'postponed', 'Course for improving speaking practice.', 'https://example.com/english-course', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=English+Course', '2026-08-15', '2026-05-08 08:01:22', '2026-05-08 08:01:22'),
 (5, 1, 1, 'Running Shoes', 139.99, 'Clothes', 'planned', 'Comfortable shoes for walking and running.', 'https://example.com/running-shoes', 'https://dummyimage.com/900x600/e5e7eb/111827.png&text=Running+Shoes', '2026-06-05', '2026-05-08 08:01:22', '2026-05-08 08:01:22'),
@@ -494,43 +521,43 @@ ALTER TABLE `wishlist_items`
 -- AUTO_INCREMENT для таблицы `calendar_events`
 --
 ALTER TABLE `calendar_events`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT для таблицы `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT для таблицы `families`
 --
 ALTER TABLE `families`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `family_activity_logs`
 --
 ALTER TABLE `family_activity_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT для таблицы `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT для таблицы `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `wishlist_folders`
@@ -542,11 +569,18 @@ ALTER TABLE `wishlist_folders`
 -- AUTO_INCREMENT для таблицы `wishlist_items`
 --
 ALTER TABLE `wishlist_items`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
+
+--
+-- Ограничения внешнего ключа таблицы `calendar_events`
+--
+ALTER TABLE `calendar_events`
+  ADD CONSTRAINT `fk_calendar_events_family` FOREIGN KEY (`family_id`) REFERENCES `families` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_calendar_events_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `categories`

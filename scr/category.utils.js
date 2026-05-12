@@ -18,11 +18,32 @@ function sanitizeCategoryType(value = '') {
 }
 
 function sanitizeCategoryScope(value = '', family) {
-  if (value === 'family' && family) {
-    return 'family';
+  return family ? 'family' : 'personal';
+}
+
+function getWorkspaceClause(alias = '') {
+  const prefix = alias ? `${alias}.` : '';
+
+  return {
+    family: `${prefix}family_id = ?`,
+    personal: `${prefix}user_id = ? AND ${prefix}family_id IS NULL`
+  };
+}
+
+function getWorkspaceCondition(userId, familyId = null, alias = '') {
+  const clauses = getWorkspaceClause(alias);
+
+  if (familyId) {
+    return {
+      clause: clauses.family,
+      params: [familyId]
+    };
   }
 
-  return 'personal';
+  return {
+    clause: clauses.personal,
+    params: [userId]
+  };
 }
 
 function sanitizeCategoryColor(value = '') {
@@ -59,20 +80,14 @@ function setCategoryFlash(req, type, message) {
 }
 
 async function getUserCategories(userId, familyId = null, searchTerm = '') {
-  const params = [userId];
+  const workspace = getWorkspaceCondition(userId, familyId);
+  const params = [...workspace.params];
 
   let query = `
     SELECT id, user_id, family_id, name, type, color, icon
     FROM categories
-    WHERE (user_id = ?
+    WHERE ${workspace.clause}
   `;
-
-  if (familyId) {
-    query += ' OR family_id = ?';
-    params.push(familyId);
-  }
-
-  query += ')';
 
   const normalizedSearch = (searchTerm || '').trim();
 
@@ -92,23 +107,19 @@ async function getUserCategories(userId, familyId = null, searchTerm = '') {
 }
 
 async function getCategoryByIdForUser(categoryId, userId, familyId = null) {
-  let query = `
+  const workspace = getWorkspaceCondition(userId, familyId);
+
+  const [rows] = await db.query(
+    `
     SELECT id, user_id, family_id, name, type, color, icon
     FROM categories
     WHERE id = ?
-      AND (
-        user_id = ?
-  `;
-  const params = [categoryId, userId];
+      AND ${workspace.clause}
+    LIMIT 1
+    `,
+    [categoryId, ...workspace.params]
+  );
 
-  if (familyId) {
-    query += ' OR family_id = ?';
-    params.push(familyId);
-  }
-
-  query += ') LIMIT 1';
-
-  const [rows] = await db.query(query, params);
   return rows[0] || null;
 }
 
@@ -119,21 +130,16 @@ async function findDuplicateCategory({
   type,
   excludeId = null
 }) {
-  const params = [name, type];
+  const workspace = getWorkspaceCondition(userId, familyId);
+  const params = [name, type, ...workspace.params];
+
   let query = `
     SELECT id
     FROM categories
     WHERE LOWER(name) = LOWER(?)
       AND type = ?
+      AND ${workspace.clause}
   `;
-
-  if (familyId) {
-    query += ' AND family_id = ?';
-    params.push(familyId);
-  } else {
-    query += ' AND user_id = ? AND family_id IS NULL';
-    params.push(userId);
-  }
 
   if (excludeId) {
     query += ' AND id <> ?';
@@ -150,6 +156,7 @@ module.exports = {
   sanitizeCategoryName,
   sanitizeCategoryType,
   sanitizeCategoryScope,
+  getWorkspaceCondition,
   sanitizeCategoryColor,
   sanitizeCategoryIcon,
   buildCategoriesRedirect,

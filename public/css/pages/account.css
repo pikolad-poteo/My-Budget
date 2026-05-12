@@ -1,0 +1,539 @@
+/* Account page */
+
+.account-page {
+  max-width: 1140px;
+  padding-bottom: 36px;
+}
+
+.account-overview-card,
+.account-settings-card,
+.account-danger-card {
+  border: 1px solid var(--app-border);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: var(--app-shadow);
+}
+
+.account-overview-card {
+  margin-bottom: 26px;
+  padding: 30px 38px;
+}
+
+.account-overview-card .section-label {
+  margin-bottom: 8px;
+}
+
+.account-title {
+  margin: 0 0 8px;
+  color: var(--app-heading, #111827);
+  font-size: calc(1.3rem + 0.6vw);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 1200px) {
+  .account-title {
+    font-size: 1.75rem;
+  }
+}
+
+.account-overview-description {
+  max-width: 760px;
+  margin: 0;
+  color: var(--app-muted, #6b7280);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.account-alert {
+  margin-bottom: 20px;
+}
+
+.account-settings-card {
+  margin-bottom: 28px;
+  padding: 34px 38px;
+}
+
+.account-settings-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 330px) 1px minmax(0, 1fr);
+  gap: 38px;
+  align-items: stretch;
+}
+
+.account-left-column,
+.account-right-column {
+  min-width: 0;
+}
+
+.account-panel h2,
+.account-danger-card h2 {
+  margin: 0 0 18px;
+  color: var(--app-heading, #111827);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.account-avatar-panel {
+  text-align: center;
+}
+
+.account-avatar-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.account-avatar-shell,
+.account-avatar-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.account-avatar-button {
+  cursor: pointer;
+}
+
+.account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.account-avatar-xl {
+  width: 126px;
+  height: 126px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 0 0 8px #f9fafb;
+}
+
+.account-avatar-fallback {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.account-avatar-fallback-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 54%;
+  line-height: 1;
+}
+
+.account-avatar-edit-hint {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #111827;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.account-avatar-user-preview {
+  width: 100%;
+  max-width: 282px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.account-avatar-user-preview h3 {
+  margin: 0 0 4px;
+  overflow: hidden;
+  color: var(--app-heading, #111827);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-avatar-user-preview p,
+.account-avatar-user-preview span {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  color: var(--app-muted, #6b7280);
+  font-size: 14px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-avatar-help {
+  max-width: 282px;
+  margin: 0;
+  color: var(--app-muted, #6b7280);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.account-avatar-delete-form {
+  margin: 18px 0 0;
+}
+
+.account-inner-divider {
+  height: 1px;
+  margin: 30px 0 24px;
+  background: #e5e7eb;
+}
+
+.account-vertical-divider {
+  width: 1px;
+  min-height: 100%;
+  background: #e5e7eb;
+}
+
+.account-summary-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 282px;
+  margin: 0 auto;
+}
+
+.account-role-panel,
+.account-family-panel {
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+/* Same visual structure as the Family page role summary card. */
+.account-family-role-card.family-readonly-field.family-role-summary-card,
+.account-info-summary-card {
+  width: 100% !important;
+  min-height: 106px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin: 0 !important;
+  padding: 22px !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 24px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.account-family-role-card.family-role-summary-card > div,
+.account-info-summary-card > div {
+  min-width: 0;
+}
+
+.account-family-role-card.family-role-summary-card span:not(.family-role-icon),
+.account-info-summary-card span:not(.account-family-avatar) {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--app-muted, #6b7280);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.account-family-role-card.family-role-summary-card strong,
+.account-info-summary-card strong {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  color: var(--app-heading, #111827);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-family-role-card.family-role-summary-card small {
+  display: none;
+}
+
+.account-family-avatar {
+  width: 54px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 54px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #475569;
+  font-size: 22px;
+}
+
+.account-family-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.family-role-icon {
+  width: 54px !important;
+  height: 54px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 54px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  font-size: 21px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+/* Same inline SVG crown as Family page, so Owner icon does not depend on Bootstrap Icons. */
+.family-role-icon .family-role-svg {
+  display: block !important;
+  width: 22px !important;
+  height: 22px !important;
+  flex: 0 0 22px !important;
+  color: currentColor !important;
+}
+
+.family-role-icon .bi,
+.family-role-icon i {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  font-size: 21px !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+
+.family-role-icon-owner {
+  background: #fff1bf !important;
+  color: #b45309 !important;
+}
+
+.family-role-icon-editor {
+  background: #dff3ff !important;
+  color: #0369a1 !important;
+}
+
+.family-role-icon-viewer,
+.family-role-icon-member {
+  background: #eef2f7 !important;
+  color: #475569 !important;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.account-form .form-label {
+  margin-bottom: 6px;
+  color: var(--app-heading, #111827);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.account-form .form-control {
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+.account-submit-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.account-danger-card {
+  border: 1px solid #fecaca;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f7 100%);
+  box-shadow: var(--app-shadow);
+}
+
+.account-danger-card-wide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 28px;
+  padding: 28px 34px;
+}
+
+.account-danger-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.account-danger-content h2 {
+  margin: 0 0 6px;
+  color: #b91c1c;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.account-danger-content p {
+  max-width: 700px;
+  margin: 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.account-danger-icon {
+  width: 58px;
+  height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 58px;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 26px;
+}
+
+.account-danger-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 8px;
+  text-align: center;
+}
+
+.account-danger-action span {
+  max-width: 180px;
+  color: var(--app-muted, #6b7280);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.account-modal-content {
+  overflow: hidden;
+  border: 0;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.18);
+}
+
+.account-delete-modal-content {
+  border: 1px solid #fecaca;
+}
+
+.account-modal-title {
+  margin: 0;
+  color: var(--app-heading, #111827);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.account-modal-note {
+  margin: 0 0 12px;
+  color: var(--app-muted, #6b7280);
+  line-height: 1.6;
+}
+
+@media (max-width: 991px) {
+  .account-settings-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .account-vertical-divider {
+    width: 100%;
+    height: 1px;
+    min-height: 1px;
+    margin: 30px 0 24px;
+  }
+
+  .account-summary-stack {
+    max-width: none;
+  }
+
+  .account-danger-card-wide {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .account-danger-action {
+    align-items: flex-start;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 576px) {
+  .account-overview-card,
+  .account-settings-card,
+  .account-danger-card {
+    padding: 22px;
+  }
+
+  .account-title {
+    font-size: 1.5rem;
+  }
+
+  .account-submit-btn,
+  .account-avatar-delete-form .btn,
+  .account-danger-action,
+  .account-danger-action .btn {
+    width: 100%;
+  }
+}
+
+/* Account page final small fixes for workspace cards and fallback avatar icon */
+.account-avatar-fallback-icon {
+  width: auto !important;
+  height: auto !important;
+  font-size: 62px !important;
+  line-height: 1 !important;
+}
+
+.account-family-role-card.family-role-summary-card strong,
+.account-info-summary-card strong {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+  font-size: 20px !important;
+  line-height: 1.15 !important;
+}
+
+.account-info-summary-card > div,
+.account-family-role-card.family-role-summary-card > div {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.account-info-summary-card,
+.account-family-role-card.family-readonly-field.family-role-summary-card {
+  align-items: center !important;
+}

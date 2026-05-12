@@ -1,0 +1,215 @@
+<%- include('../partials/header') %>
+
+<%
+  const familyRole = accountFamilyRole && accountFamilyRole.role ? String(accountFamilyRole.role).toLowerCase() : 'personal';
+  const normalizedRole = ['owner', 'editor', 'viewer'].includes(familyRole) ? familyRole : 'member';
+  const familyRoleTitle = normalizedRole === 'owner' ? 'Owner' : normalizedRole === 'editor' ? 'Editor' : normalizedRole === 'viewer' ? 'Viewer' : 'Personal';
+  const familyRoleSubtitle = accountFamilyRole && accountFamilyRole.family_name ? accountFamilyRole.family_name : 'Personal workspace';
+  const familyName = accountFamilyRole && accountFamilyRole.family_name ? accountFamilyRole.family_name : 'Personal workspace';
+  const familyAvatarUrl = accountFamilyRole && accountFamilyRole.family_avatar_url ? accountFamilyRole.family_avatar_url : '';
+  const memberSince = accountUser.created_at
+    ? new Date(accountUser.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+%>
+
+<section class="container account-page">
+  <section class="account-overview-card">
+    <p class="section-label">Personal workspace</p>
+    <h1 class="account-title">Account settings</h1>
+    <p class="account-overview-description">
+      Manage your profile details, avatar, password and workspace access in one place.
+    </p>
+  </section>
+
+  <% if (errorMessage) { %>
+    <div class="alert alert-danger rounded-4 account-alert" role="alert"><%= errorMessage %></div>
+  <% } %>
+
+  <% if (successMessage) { %>
+    <div class="alert alert-success rounded-4 account-alert" role="alert"><%= successMessage %></div>
+  <% } %>
+
+  <section class="account-settings-card">
+    <div class="account-settings-layout">
+      <aside class="account-left-column">
+        <section class="account-panel account-avatar-panel">
+          <h2>Avatar</h2>
+
+          <div class="account-avatar-editor">
+            <button class="account-avatar-button" type="button" id="accountAvatarTrigger" aria-label="Change avatar">
+              <% if (accountUser.avatar_url) { %>
+                <img class="account-avatar account-avatar-xl" src="<%= accountUser.avatar_url %>" alt="<%= accountUser.name %> avatar" />
+              <% } else { %>
+                <span class="account-avatar account-avatar-xl account-avatar-fallback" aria-hidden="true">
+                  <i class="bi bi-person account-avatar-fallback-icon"></i>
+                </span>
+              <% } %>
+              <span class="account-avatar-edit-hint"><i class="bi bi-camera"></i></span>
+            </button>
+
+            <div class="account-avatar-user-preview">
+              <h3><%= accountUser.name %></h3>
+              <p><%= accountUser.email %></p>
+              <% if (memberSince) { %>
+                <span>Member since <%= memberSince %></span>
+              <% } %>
+            </div>
+
+            <p class="account-avatar-help">Click avatar to upload JPG, PNG · up to 15 MB</p>
+          </div>
+
+          <form action="/account/avatar" method="POST" enctype="multipart/form-data" class="d-none" id="accountAvatarForm">
+            <input id="accountAvatarInput" name="avatar" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" />
+          </form>
+
+          <% if (accountUser.avatar_url) { %>
+            <form action="/account/avatar/delete" method="POST" class="account-avatar-delete-form">
+              <button class="btn btn-primary rounded-pill px-4" type="submit">Delete avatar</button>
+            </form>
+          <% } %>
+        </section>
+
+        <div class="account-inner-divider"></div>
+
+        <div class="account-summary-stack">
+          <section class="account-panel account-family-panel">
+            <div class="account-info-summary-card account-family-summary-card">
+              <span class="account-family-avatar" aria-hidden="true">
+                <% if (familyAvatarUrl) { %>
+                  <img src="<%= familyAvatarUrl %>" alt="<%= familyName %> avatar" />
+                <% } else { %>
+                  <i class="bi bi-people-fill"></i>
+                <% } %>
+              </span>
+              <div>
+                <span>Your family</span>
+                <strong><%= familyName %></strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="account-panel account-role-panel">
+            <div class="family-readonly-field family-role-summary-card account-family-role-card">
+              <span class="family-role-icon family-role-icon-<%= normalizedRole || 'member' %>" aria-hidden="true">
+                <% if (normalizedRole === 'owner') { %>
+                  <svg class="family-role-svg" viewBox="0 0 16 16" role="img" aria-label="Owner crown" focusable="false">
+                    <path d="M3.1 12.4h9.8l.7-6.8a.5.5 0 0 0-.82-.43L10.3 7.3 8.45 3.45a.5.5 0 0 0-.9 0L5.7 7.3 3.22 5.17a.5.5 0 0 0-.82.43l.7 6.8Zm.2 1.1a.5.5 0 0 0 .5.5h8.4a.5.5 0 0 0 .5-.5v-.3H3.3v.3Z" fill="currentColor"/>
+                  </svg>
+                <% } else if (normalizedRole === 'editor') { %>
+                  <i class="bi bi-pencil-fill"></i>
+                <% } else if (normalizedRole === 'viewer') { %>
+                  <i class="bi bi-eye-fill"></i>
+                <% } else { %>
+                  <i class="bi bi-person-fill"></i>
+                <% } %>
+              </span>
+              <div>
+                <span>Your role</span>
+                <strong><%= familyRoleTitle %></strong>
+                <small><%= familyRoleSubtitle %></small>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+
+      <div class="account-vertical-divider"></div>
+
+      <div class="account-right-column">
+        <section class="account-panel account-profile-panel">
+          <h2>Profile settings</h2>
+
+          <form action="/account/profile" method="POST" class="account-form">
+            <div class="form-group">
+              <label class="form-label" for="name">Name</label>
+              <input class="form-control form-input" id="name" name="name" type="text" value="<%= accountUser.name %>" maxlength="100" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input class="form-control form-input" id="email" name="email" type="email" value="<%= accountUser.email %>" maxlength="150" required />
+            </div>
+
+            <button class="btn btn-primary rounded-pill px-4 account-submit-btn" type="submit">Save changes</button>
+          </form>
+        </section>
+
+        <div class="account-inner-divider"></div>
+
+        <section class="account-panel account-password-panel">
+          <h2>Change password</h2>
+
+          <form action="/account/password" method="POST" class="account-form">
+            <div class="form-group">
+              <label class="form-label" for="currentPassword">Current password</label>
+              <input class="form-control form-input" id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" placeholder="Enter current password" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newPassword">New password</label>
+              <input class="form-control form-input" id="newPassword" name="newPassword" type="password" autocomplete="new-password" placeholder="Enter new password" minlength="6" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Repeat new password</label>
+              <input class="form-control form-input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat new password" minlength="6" required />
+            </div>
+
+            <button class="btn btn-primary rounded-pill px-4 account-submit-btn" type="submit">Update password</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="account-danger-card account-danger-card-wide">
+    <div class="account-danger-content">
+      <span class="account-danger-icon"><i class="bi bi-exclamation-octagon"></i></span>
+      <div>
+        <h2>Danger zone</h2>
+        <p>Deleting your account is permanent and cannot be undone. You will need to create a new account again.</p>
+      </div>
+    </div>
+
+    <div class="account-danger-action">
+      <button class="btn btn-outline-danger rounded-pill px-4" type="button" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+        Delete account
+      </button>
+      <span>You will confirm this in a modal popup.</span>
+    </div>
+  </section>
+</section>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content account-modal-content account-delete-modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <p class="section-label mb-1 text-danger">Danger zone</p>
+          <h2 class="modal-title account-modal-title" id="deleteAccountModalLabel">Delete account permanently</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="/account/delete" method="POST">
+        <div class="modal-body pt-3">
+          <p class="account-modal-note">
+            This action cannot be undone. Your avatar and account record will be removed permanently.
+          </p>
+          <p class="account-modal-note mb-3">
+            Type <strong>DELETE</strong> to confirm.
+          </p>
+          <input class="form-control rounded-pill" name="confirmation" type="text" placeholder="DELETE" autocomplete="off" required />
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger rounded-pill px-4">Delete forever</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/account.js"></script>
+
+<%- include('../partials/footer') %>

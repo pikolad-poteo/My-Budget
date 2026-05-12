@@ -13,6 +13,7 @@ const categoriesRoutes = require('./routes/categories.routes');
 const transactionsRoutes = require('./routes/transactions.routes');
 const wishlistRoutes = require('./routes/wishlist.routes');
 const calendarRoutes = require('./routes/calendar.routes');
+const accountRoutes = require('./routes/account.routes');
 const pagesRoutes = require('./routes/pages.routes');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use(categoriesRoutes);
 app.use(transactionsRoutes);
 app.use(wishlistRoutes);
 app.use(calendarRoutes);
+app.use(accountRoutes);
 app.use(pagesRoutes);
 
 app.use((req, res) => {

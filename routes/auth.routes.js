@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     const [rows] = await db.query(
-      'SELECT id, name, email, password_hash FROM users WHERE email = ? LIMIT 1',
+      'SELECT id, name, email, avatar_url, password_hash FROM users WHERE email = ? LIMIT 1',
       [normalizedEmail]
     );
 
@@ -74,7 +74,8 @@ router.post('/login', async (req, res) => {
     req.session.user = {
       id: user.id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      avatar_url: user.avatar_url || null
     };
 
     return res.redirect('/dashboard');

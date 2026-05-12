@@ -1,0 +1,354 @@
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const sharp = require('sharp');
+
+const router = express.Router();
+const db = require('../scr/db');
+const { requireAuth } = require('../scr/middleware');
+
+const accountUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'users');
+fs.mkdirSync(accountUploadDir, { recursive: true });
+
+const ALLOWED_AVATAR_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png'
+]);
+const ALLOWED_AVATAR_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png']);
+const MAX_AVATAR_SIZE = 15 * 1024 * 1024;
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_AVATAR_SIZE },
+  fileFilter: (req, file, cb) => {
+    const mimetype = String(file.mimetype || '').toLowerCase();
+    const extension = path.extname(file.originalname || '').toLowerCase();
+
+    if (!ALLOWED_AVATAR_MIME_TYPES.has(mimetype) && !ALLOWED_AVATAR_EXTENSIONS.has(extension)) {
+      return cb(new Error('Upload JPG or PNG image only.'));
+    }
+
+    return cb(null, true);
+  }
+});
+
+function setAccountFlash(req, type, message) {
+  req.session.accountFlash = { type, message };
+}
+
+function getAccountFlash(req) {
+  const flash = req.session.accountFlash || null;
+  delete req.session.accountFlash;
+  return flash;
+}
+
+async function ensureUserAvatarColumn() {
+  const [columns] = await db.query(
+    `
+    SELECT COLUMN_NAME
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'avatar_url'
+    LIMIT 1
+    `
+  );
+
+  if (columns.length === 0) {
+    await db.query('ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255) NULL AFTER email');
+  }
+}
+
+async function getCurrentUser(userId) {
+  await ensureUserAvatarColumn();
+
+  const [rows] = await db.query(
+    'SELECT id, name, email, avatar_url, created_at FROM users WHERE id = ? LIMIT 1',
+    [userId]
+  );
+
+  return rows[0] || null;
+}
+
+async function getAccountFamilyRole(userId) {
+  const [rows] = await db.query(
+    `
+    SELECT fm.role, f.name AS family_name, f.avatar_url AS family_avatar_url
+    FROM family_members fm
+    INNER JOIN families f ON f.id = fm.family_id
+    WHERE fm.user_id = ?
+    LIMIT 1
+    `,
+    [userId]
+  );
+
+  return rows[0] || null;
+}
+
+function runAccountAvatarUpload(req, res, next) {
+  upload.single('avatar')(req, res, (error) => {
+    if (!error) {
+      return next();
+    }
+
+    let message = 'Failed to upload avatar.';
+
+    if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+      message = 'Avatar image must be 15 MB or smaller.';
+    } else if (error.message) {
+      message = error.message;
+    }
+
+    setAccountFlash(req, 'error', message);
+    return res.redirect('/account');
+  });
+}
+
+function getAvatarUrl(filename) {
+  return filename ? `/uploads/users/${filename}` : null;
+}
+
+function removeLocalUserAvatar(avatarUrl) {
+  if (!avatarUrl || !avatarUrl.startsWith('/uploads/users/')) return;
+
+  const filePath = path.join(__dirname, '..', 'public', avatarUrl);
+  if (!filePath.startsWith(accountUploadDir)) return;
+
+  fs.promises.unlink(filePath).catch((error) => {
+    if (error.code !== 'ENOENT') {
+      console.error('Failed to remove old user avatar:', error.message);
+    }
+  });
+}
+
+async function saveCompressedUserAvatar(file) {
+  if (!file) return null;
+
+  const filename = `user-${Date.now()}-${Math.round(Math.random() * 1e9)}.jpg`;
+  const outputPath = path.join(accountUploadDir, filename);
+
+  await sharp(file.buffer)
+    .rotate()
+    .resize(256, 256, {
+      fit: 'cover',
+      position: 'center'
+    })
+    .jpeg({
+      quality: 86,
+      mozjpeg: true
+    })
+    .toFile(outputPath);
+
+  return filename;
+}
+
+function syncSessionUser(req, user) {
+  req.session.user = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar_url: user.avatar_url || null
+  };
+}
+
+async function renderAccountPage(req, res, overrides = {}) {
+  const accountUser = await getCurrentUser(req.session.user.id);
+
+  if (!accountUser) {
+    req.session.destroy(() => res.redirect('/login'));
+    return null;
+  }
+
+  syncSessionUser(req, accountUser);
+
+  const accountFamilyRole = await getAccountFamilyRole(accountUser.id);
+  const flash = getAccountFlash(req);
+
+  return res.render('account/index', {
+    title: 'Account',
+    activePage: 'account',
+    accountUser,
+    accountFamilyRole,
+    errorMessage: flash && flash.type === 'error' ? flash.message : '',
+    successMessage: flash && flash.type === 'success' ? flash.message : '',
+    ...overrides
+  });
+}
+
+router.get('/account', requireAuth, async (req, res) => {
+  try {
+    return await renderAccountPage(req, res);
+  } catch (error) {
+    console.error('Account page error:', error.message);
+    return res.status(500).render('account/index', {
+      title: 'Account',
+      activePage: 'account',
+      accountUser: req.session.user,
+      errorMessage: 'Failed to load account data.',
+      successMessage: '',
+      accountFamilyRole: null
+    });
+  }
+});
+
+router.post('/account/profile', requireAuth, async (req, res) => {
+  try {
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+
+    if (!name || !email) {
+      setAccountFlash(req, 'error', 'Name and email are required.');
+      return res.redirect('/account');
+    }
+
+    const [existingUsers] = await db.query(
+      'SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1',
+      [email, req.session.user.id]
+    );
+
+    if (existingUsers.length > 0) {
+      setAccountFlash(req, 'error', 'This email is already used by another account.');
+      return res.redirect('/account');
+    }
+
+    await db.query(
+      'UPDATE users SET name = ?, email = ? WHERE id = ? LIMIT 1',
+      [name, email, req.session.user.id]
+    );
+
+    const updatedUser = await getCurrentUser(req.session.user.id);
+    syncSessionUser(req, updatedUser);
+
+    setAccountFlash(req, 'success', 'Account details were updated.');
+    return res.redirect('/account');
+  } catch (error) {
+    console.error('Account profile update error:', error.message);
+    setAccountFlash(req, 'error', 'Failed to update account details.');
+    return res.redirect('/account');
+  }
+});
+
+router.post('/account/avatar', requireAuth, runAccountAvatarUpload, async (req, res) => {
+  try {
+    if (!req.file) {
+      setAccountFlash(req, 'error', 'Choose an image file first.');
+      return res.redirect('/account');
+    }
+
+    const accountUser = await getCurrentUser(req.session.user.id);
+    const filename = await saveCompressedUserAvatar(req.file);
+    const avatarUrl = getAvatarUrl(filename);
+
+    await db.query('UPDATE users SET avatar_url = ? WHERE id = ? LIMIT 1', [avatarUrl, req.session.user.id]);
+    removeLocalUserAvatar(accountUser.avatar_url);
+
+    const updatedUser = await getCurrentUser(req.session.user.id);
+    syncSessionUser(req, updatedUser);
+
+    setAccountFlash(req, 'success', 'Avatar was updated.');
+    return res.redirect('/account');
+  } catch (error) {
+    console.error('Account avatar update error:', error.message);
+    setAccountFlash(req, 'error', 'Failed to process avatar. Please upload a valid JPG or PNG image.');
+    return res.redirect('/account');
+  }
+});
+
+router.post('/account/avatar/delete', requireAuth, async (req, res) => {
+  try {
+    const accountUser = await getCurrentUser(req.session.user.id);
+
+    await db.query('UPDATE users SET avatar_url = NULL WHERE id = ? LIMIT 1', [req.session.user.id]);
+    removeLocalUserAvatar(accountUser.avatar_url);
+
+    const updatedUser = await getCurrentUser(req.session.user.id);
+    syncSessionUser(req, updatedUser);
+
+    setAccountFlash(req, 'success', 'Avatar was deleted.');
+    return res.redirect('/account');
+  } catch (error) {
+    console.error('Account avatar delete error:', error.message);
+    setAccountFlash(req, 'error', 'Failed to delete avatar.');
+    return res.redirect('/account');
+  }
+});
+
+router.post('/account/password', requireAuth, async (req, res) => {
+  try {
+    const currentPassword = String(req.body.currentPassword || '');
+    const newPassword = String(req.body.newPassword || '');
+    const confirmPassword = String(req.body.confirmPassword || '');
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setAccountFlash(req, 'error', 'Fill in all password fields.');
+      return res.redirect('/account');
+    }
+
+    if (newPassword.length < 6) {
+      setAccountFlash(req, 'error', 'New password must contain at least 6 characters.');
+      return res.redirect('/account');
+    }
+
+    if (newPassword !== confirmPassword) {
+      setAccountFlash(req, 'error', 'New passwords do not match.');
+      return res.redirect('/account');
+    }
+
+    const [rows] = await db.query(
+      'SELECT password_hash FROM users WHERE id = ? LIMIT 1',
+      [req.session.user.id]
+    );
+
+    if (rows.length === 0) {
+      req.session.destroy(() => res.redirect('/login'));
+      return null;
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, rows[0].password_hash);
+    if (!isCurrentPasswordValid) {
+      setAccountFlash(req, 'error', 'Current password is incorrect.');
+      return res.redirect('/account');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await db.query('UPDATE users SET password_hash = ? WHERE id = ? LIMIT 1', [passwordHash, req.session.user.id]);
+
+    setAccountFlash(req, 'success', 'Password was changed.');
+    return res.redirect('/account');
+  } catch (error) {
+    console.error('Account password update error:', error.message);
+    setAccountFlash(req, 'error', 'Failed to change password.');
+    return res.redirect('/account');
+  }
+});
+
+router.get('/account/delete', requireAuth, (req, res) => {
+  return res.redirect('/account');
+});
+
+router.post('/account/delete', requireAuth, async (req, res) => {
+  try {
+    const confirmation = String(req.body.confirmation || '').trim();
+
+    if (confirmation !== 'DELETE') {
+      setAccountFlash(req, 'error', 'Type DELETE to confirm account deletion.');
+      return res.redirect('/account');
+    }
+
+    const accountUser = await getCurrentUser(req.session.user.id);
+    await db.query('DELETE FROM users WHERE id = ? LIMIT 1', [req.session.user.id]);
+    removeLocalUserAvatar(accountUser.avatar_url);
+
+    req.session.destroy(() => res.redirect('/register'));
+    return null;
+  } catch (error) {
+    console.error('Account deletion error:', error.message);
+    setAccountFlash(req, 'error', 'Failed to delete account. Please try again.');
+    return res.redirect('/account');
+  }
+});
+
+module.exports = router;

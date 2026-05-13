@@ -10,7 +10,7 @@
   }
 %>
 
-<div class="category-create-panel-inline transaction-create-panel-inline" id="transactionCreatePanel" hidden>
+<div class="category-create-panel-inline transaction-create-panel-inline" id="transactionCreatePanel" <%= filters.openCreate ? '' : 'hidden' %>>
   <div class="category-create-header d-flex align-items-center justify-content-between gap-3">
     <div>
       <p class="section-label">Create</p>

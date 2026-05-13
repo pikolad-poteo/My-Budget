@@ -7,21 +7,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!panel || !button) return;
 
-      button.addEventListener('click', function () {
-        const isOpening = panel.hasAttribute('hidden');
-
-        if (isOpening) {
+      function setCreatePanelOpen(isOpen, shouldScroll) {
+        if (isOpen) {
           panel.removeAttribute('hidden');
         } else {
           panel.setAttribute('hidden', '');
         }
 
-        button.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 
         if (buttonText) {
-          buttonText.textContent = isOpening ? 'Hide form' : 'Add transaction';
+          buttonText.textContent = isOpen ? 'Hide form' : 'Add transaction';
         }
+
+        if (isOpen && shouldScroll) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          const amountInput = panel.querySelector('[data-transaction-amount-input]');
+          if (amountInput) {
+            setTimeout(function () {
+              amountInput.focus({ preventScroll: true });
+            }, 250);
+          }
+        }
+      }
+
+      button.addEventListener('click', function () {
+        setCreatePanelOpen(panel.hasAttribute('hidden'), false);
       });
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('create') === '1') {
+        setCreatePanelOpen(true, false);
+
+        window.history.replaceState({}, '', window.location.pathname + window.location.search);
+
+        const amountInput = panel.querySelector('[data-transaction-amount-input]');
+        window.setTimeout(function () {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          if (amountInput) {
+            window.setTimeout(function () {
+              amountInput.focus({ preventScroll: true });
+            }, 420);
+          }
+        }, 120);
+      }
     }
 
     function initTransactionForm() {

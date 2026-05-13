@@ -883,3 +883,62 @@
     justify-content: flex-start;
   }
 }
+
+/* Dashboard featured category switch */
+.category-dashboard-feature-card {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 18px;
+  background: #f9fafb;
+}
+
+.category-dashboard-feature-card--compact {
+  margin-top: 0;
+}
+
+.category-dashboard-feature-card .form-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding-left: 0;
+}
+
+.category-dashboard-feature-card .form-check-input {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+}
+
+.category-dashboard-feature-card .form-check-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #111827;
+  cursor: pointer;
+}
+
+.category-dashboard-feature-card .form-check-label strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.category-dashboard-feature-card .form-check-label span {
+  color: var(--app-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Dashboard featured toggle uses the same black active color as the main controls */
+.category-dashboard-feature-card .form-switch .form-check-input:checked,
+.category-dashboard-feature-card .form-check-input:checked {
+  background-color: #111827;
+  border-color: #111827;
+}
+
+.category-dashboard-feature-card .form-check-input:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 0.2rem rgba(17, 24, 39, 0.16);
+}

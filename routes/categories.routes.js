@@ -17,6 +17,7 @@ const {
   sanitizeCategoryScope,
   sanitizeCategoryColor,
   sanitizeCategoryIcon,
+  sanitizeCategoryDashboardFeatured,
   buildCategoriesRedirect,
   setCategoryFlash,
   getUserCategories,
@@ -46,7 +47,8 @@ router.get('/categories', requireAuth, async (req, res) => {
     const normalizedCategories = categories.map((category) => ({
       ...category,
       color: sanitizeCategoryColor(category.color),
-      icon: sanitizeCategoryIcon(category.icon)
+      icon: sanitizeCategoryIcon(category.icon),
+      dashboard_featured: Number(category.dashboard_featured || 0) === 1
     }));
 
     const incomeCategories = normalizedCategories.filter(
@@ -105,6 +107,7 @@ router.post('/categories/create', requireAuth, requireBudgetEditor('categories')
     const type = sanitizeCategoryType(req.body.type);
     const color = sanitizeCategoryColor(req.body.color);
     const icon = sanitizeCategoryIcon(req.body.icon);
+    const dashboardFeatured = sanitizeCategoryDashboardFeatured(req.body.dashboardFeatured);
     const familyId = family ? family.id : null;
 
     const redirectUrl = buildCategoriesRedirect(req, type);
@@ -128,10 +131,10 @@ router.post('/categories/create', requireAuth, requireBudgetEditor('categories')
 
     await db.query(
       `
-      INSERT INTO categories (user_id, family_id, name, type, color, icon)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO categories (user_id, family_id, name, type, color, icon, dashboard_featured)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
-      [currentUserId, familyId, name, type, color, icon]
+      [currentUserId, familyId, name, type, color, icon, dashboardFeatured]
     );
 
     setCategoryFlash(req, 'success', 'Category created successfully.');
@@ -154,6 +157,7 @@ router.post('/categories/:id/update', requireAuth, requireBudgetEditor('categori
     const type = sanitizeCategoryType(req.body.type);
     const color = sanitizeCategoryColor(req.body.color);
     const icon = sanitizeCategoryIcon(req.body.icon);
+    const dashboardFeatured = sanitizeCategoryDashboardFeatured(req.body.dashboardFeatured);
 
     const redirectUrl = buildCategoriesRedirect(req, type);
 
@@ -189,11 +193,11 @@ router.post('/categories/:id/update', requireAuth, requireBudgetEditor('categori
     await db.query(
       `
       UPDATE categories
-      SET name = ?, type = ?, color = ?, icon = ?
+      SET name = ?, type = ?, color = ?, icon = ?, dashboard_featured = ?
       WHERE id = ?
       LIMIT 1
       `,
-      [name, type, color, icon, categoryId]
+      [name, type, color, icon, dashboardFeatured, categoryId]
     );
 
     setCategoryFlash(req, 'success', 'Category updated successfully.');

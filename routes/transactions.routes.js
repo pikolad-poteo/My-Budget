@@ -54,7 +54,8 @@ router.get('/transactions', requireAuth, async (req, res) => {
       member: String(req.query.member || 'all').trim(),
       view: requestedView,
       dir: requestedDir,
-      showAll: showAllTransactions
+      showAll: showAllTransactions,
+      openCreate: req.query.create === '1'
     };
 
     const categories = await getAvailableTransactionCategories(currentUserId, family ? family.id : null);
@@ -126,7 +127,8 @@ router.get('/transactions', requireAuth, async (req, res) => {
       transactions,
       filters: {
         ...normalizedFilters,
-        hasAdvancedFilters
+        hasAdvancedFilters,
+        openCreate: req.query.create === '1'
       },
       summary,
       errorMessage: flash && flash.type === 'error' ? flash.message : '',
@@ -152,7 +154,8 @@ router.get('/transactions', requireAuth, async (req, res) => {
         view: 'date',
         dir: 'desc',
         showAll: false,
-        hasAdvancedFilters: false
+        hasAdvancedFilters: false,
+        openCreate: false
       },
       summary: {
         total: 0,

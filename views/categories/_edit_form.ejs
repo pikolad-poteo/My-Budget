@@ -60,6 +60,26 @@
 
       <input type="hidden" name="icon" value="<%= category.icon || 'tag' %>" data-edit-icon-input />
     </div>
+
+    <div class="col-12">
+      <div class="category-dashboard-feature-card category-dashboard-feature-card--compact">
+        <div class="form-check form-switch mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="<%= typeKey %>-dashboard-featured-<%= category.id %>"
+            name="dashboardFeatured"
+            value="1"
+            <%= category.dashboard_featured ? 'checked' : '' %>
+          />
+          <label class="form-check-label" for="<%= typeKey %>-dashboard-featured-<%= category.id %>">
+            <strong>Add to dashboard</strong>
+            <span>Show this category in the special Dashboard list.</span>
+          </label>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="d-flex flex-wrap gap-2 mt-3">

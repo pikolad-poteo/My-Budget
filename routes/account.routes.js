@@ -8,6 +8,9 @@ const sharp = require('sharp');
 const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
+const { normalizeEmail, isValidEmail, validatePassword } = require('../scr/auth.validation');
+const { createEmailVerificationToken } = require('../scr/emailVerification.service');
+const { sendVerificationEmail } = require('../scr/mail.service');
 
 const accountUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'users');
 fs.mkdirSync(accountUploadDir, { recursive: true });
@@ -66,7 +69,7 @@ async function getCurrentUser(userId) {
   await ensureUserAvatarColumn();
 
   const [rows] = await db.query(
-    'SELECT id, name, email, avatar_url, created_at FROM users WHERE id = ? LIMIT 1',
+    'SELECT id, name, email, avatar_url, email_verified_at, created_at FROM users WHERE id = ? LIMIT 1',
     [userId]
   );
 
@@ -195,14 +198,22 @@ router.get('/account', requireAuth, async (req, res) => {
 });
 
 router.post('/account/profile', requireAuth, async (req, res) => {
-  try {
-    const name = String(req.body.name || '').trim();
-    const email = String(req.body.email || '').trim().toLowerCase();
+  const name = String(req.body.name || '').trim();
+  const email = normalizeEmail(req.body.email);
 
+  try {
     if (!name || !email) {
       setAccountFlash(req, 'error', 'Name and email are required.');
       return res.redirect('/account');
     }
+
+    if (!isValidEmail(email)) {
+      setAccountFlash(req, 'error', 'Please enter a valid email address.');
+      return res.redirect('/account');
+    }
+
+    const accountUser = await getCurrentUser(req.session.user.id);
+    const isEmailChanged = accountUser.email !== email;
 
     const [existingUsers] = await db.query(
       'SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1',
@@ -214,19 +225,53 @@ router.post('/account/profile', requireAuth, async (req, res) => {
       return res.redirect('/account');
     }
 
-    await db.query(
-      'UPDATE users SET name = ?, email = ? WHERE id = ? LIMIT 1',
-      [name, email, req.session.user.id]
-    );
+    if (!isEmailChanged) {
+      await db.query(
+        'UPDATE users SET name = ? WHERE id = ? LIMIT 1',
+        [name, req.session.user.id]
+      );
 
-    const updatedUser = await getCurrentUser(req.session.user.id);
-    syncSessionUser(req, updatedUser);
+      const updatedUser = await getCurrentUser(req.session.user.id);
+      syncSessionUser(req, updatedUser);
 
-    setAccountFlash(req, 'success', 'Account details were updated.');
-    return res.redirect('/account');
+      setAccountFlash(req, 'success', 'Account details were updated.');
+      return res.redirect('/account');
+    }
+
+    const connection = await db.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      await connection.query(
+        'UPDATE users SET name = ?, email = ?, email_verified_at = NULL WHERE id = ? LIMIT 1',
+        [name, email, req.session.user.id]
+      );
+
+      const token = await createEmailVerificationToken(connection, req.session.user.id);
+      await sendVerificationEmail(email, token);
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+
+    req.session.destroy(() => {
+      return res.render('login', {
+        title: 'Login',
+        activePage: 'login',
+        errorMessage: '',
+        successMessage: 'Email was changed. Please verify your new email before signing in.'
+      });
+    });
+    return null;
   } catch (error) {
     console.error('Account profile update error:', error.message);
-    setAccountFlash(req, 'error', 'Failed to update account details.');
+    setAccountFlash(req, 'error', error.message.includes('Email sending is not configured')
+      ? 'Email sending is not configured. Email was not changed.'
+      : 'Failed to update account details.');
     return res.redirect('/account');
   }
 });
@@ -287,8 +332,9 @@ router.post('/account/password', requireAuth, async (req, res) => {
       return res.redirect('/account');
     }
 
-    if (newPassword.length < 6) {
-      setAccountFlash(req, 'error', 'New password must contain at least 6 characters.');
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
+      setAccountFlash(req, 'error', passwordValidation.message);
       return res.redirect('/account');
     }
 
@@ -313,7 +359,7 @@ router.post('/account/password', requireAuth, async (req, res) => {
       return res.redirect('/account');
     }
 
-    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const passwordHash = await bcrypt.hash(newPassword, 12);
     await db.query('UPDATE users SET password_hash = ? WHERE id = ? LIMIT 1', [passwordHash, req.session.user.id]);
 
     setAccountFlash(req, 'success', 'Password was changed.');

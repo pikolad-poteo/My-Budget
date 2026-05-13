@@ -158,6 +158,13 @@
   gap: 8px;
 }
 
+.form-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--app-muted);
+}
+
 .form-select {
   border-radius: 12px;
 }

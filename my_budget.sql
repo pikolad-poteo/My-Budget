@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 12 2026 г., 19:28
+-- Время создания: Май 13 2026 г., 17:41
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.0.30
 
@@ -86,7 +86,7 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`, `icon`, `dashboard_featured`, `created_at`) VALUES
 (1, 1, 1, 'Groceries', 'expense', '#22c55e', 'basket', 0, '2026-05-08 08:01:22'),
 (2, 1, 1, 'Transport', 'expense', '#3b82f6', 'car-front', 0, '2026-05-08 08:01:22'),
-(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', 0, '2026-05-08 08:01:22'),
+(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', 1, '2026-05-08 08:01:22'),
 (4, 1, 1, 'Shopping', 'expense', '#ec4899', 'bag', 0, '2026-05-08 08:01:22'),
 (5, 1, 1, 'Health', 'expense', '#ef4444', 'heart-pulse', 0, '2026-05-08 08:01:22'),
 (6, 1, 1, 'Education', 'expense', '#8b5cf6', 'book', 0, '2026-05-08 08:01:22'),
@@ -103,11 +103,32 @@ INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`,
 (17, 1, 1, 'Family Income', 'income', '#8b5cf6', 'piggy-bank', 0, '2026-05-08 08:01:22'),
 (18, 1, 1, 'Shared Refund', 'income', '#65a30d', 'wallet2', 0, '2026-05-08 08:01:22'),
 (19, 2, 1, 'Bank', 'income', '#2563eb', 'bank', 0, '2026-05-08 08:01:22'),
-(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'speaker', 0, '2026-05-08 08:01:22'),
+(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'tag', 0, '2026-05-08 08:01:22'),
 (21, 2, 1, 'Family Groceries', 'expense', '#22c55e', 'basket2', 0, '2026-05-08 08:01:22'),
-(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', 0, '2026-05-08 08:01:22'),
-(29, 5, NULL, 'food', 'expense', '#22c55e', 'cart3', 0, '2026-05-11 19:57:55'),
-(30, 5, NULL, 'car', 'expense', '#f43f5e', 'car-front', 0, '2026-05-11 19:58:55');
+(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', 0, '2026-05-08 08:01:22');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `email_verification_tokens`
+--
+
+CREATE TABLE `email_verification_tokens` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `token_hash` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Дамп данных таблицы `email_verification_tokens`
+--
+
+INSERT INTO `email_verification_tokens` (`id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`) VALUES
+(2, 7, '182934414358eaafce72208eab4f3dc79a55ced9a2b0b3c27272597564e1acc7', '2026-05-14 14:44:54', NULL, '2026-05-13 11:44:54'),
+(6, 11, '6e7d7466ce70628c43294fb33ff521cdb8cad038551881b2a2692b231ec842a2', '2026-05-14 17:55:44', '2026-05-13 17:56:25', '2026-05-13 14:55:44');
 
 -- --------------------------------------------------------
 
@@ -129,7 +150,7 @@ CREATE TABLE `families` (
 --
 
 INSERT INTO `families` (`id`, `name`, `avatar_url`, `owner_user_id`, `created_at`, `updated_at`) VALUES
-(1, 'Dudins', NULL, 1, '2026-04-21 15:24:14', '2026-05-11 20:27:35');
+(1, 'Dudins', '/uploads/family/family-1778686006773-878607758.jpg', 1, '2026-04-21 15:24:14', '2026-05-13 15:26:46');
 
 -- --------------------------------------------------------
 
@@ -224,14 +245,17 @@ INSERT INTO `family_activity_logs` (`id`, `family_id`, `actor_user_id`, `target_
 (70, 1, 1, NULL, 'member_removed', 'member', 3, 'Removed Dasha from the family.', '2026-05-11 19:00:23'),
 (75, 1, 1, NULL, 'member_added', 'member', 4, 'Added Dasha as viewer.', '2026-05-11 19:08:50'),
 (76, 1, 1, NULL, 'member_removed', 'member', 4, 'Removed Dasha from the family.', '2026-05-11 19:12:05'),
-(82, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:23:42'),
+(82, 1, 1, NULL, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:23:42'),
 (83, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-11 19:54:50'),
-(84, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-11 19:56:51'),
-(87, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:59:54'),
+(84, 1, 1, NULL, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-11 19:56:51'),
+(87, 1, 1, NULL, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-11 19:59:54'),
 (88, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-11 20:27:35'),
-(89, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 06:55:09'),
-(92, 1, 1, 5, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-12 14:43:23'),
-(93, 1, 1, 5, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 15:12:42');
+(89, 1, 1, NULL, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 06:55:09'),
+(92, 1, 1, NULL, 'member_added', 'member', 5, 'Added Dasha as viewer.', '2026-05-12 14:43:23'),
+(93, 1, 1, NULL, 'member_removed', 'member', 5, 'Removed Dasha from the family.', '2026-05-12 15:12:42'),
+(94, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-13 15:00:26'),
+(95, 1, 1, NULL, 'family_avatar_updated', 'family', 1, 'Removed family avatar.', '2026-05-13 15:02:37'),
+(96, 1, 2, NULL, 'family_avatar_updated', 'family', 1, 'Updated family avatar.', '2026-05-13 15:26:46');
 
 -- --------------------------------------------------------
 
@@ -255,6 +279,29 @@ CREATE TABLE `family_members` (
 INSERT INTO `family_members` (`id`, `family_id`, `user_id`, `role`, `joined_at`, `updated_at`) VALUES
 (2, 1, 1, 'owner', '2026-04-21 15:24:26', '2026-05-10 12:41:35'),
 (3, 1, 2, 'editor', '2026-04-21 15:25:16', '2026-05-10 16:59:42');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `token_hash` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Дамп данных таблицы `password_reset_tokens`
+--
+
+INSERT INTO `password_reset_tokens` (`id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`) VALUES
+(3, 11, 'eba389b4b161a75ccd3bd675b254186dc3eeaa42777ba92c10653a9b13561523', '2026-05-13 18:27:42', '2026-05-13 17:58:12', '2026-05-13 14:57:42'),
+(5, 11, '0801db18b9e1734baf9f292ac01ba05e0b41568b1caccdaf2f2d592a877cb32d', '2026-05-13 19:08:55', '2026-05-13 18:39:51', '2026-05-13 15:38:55');
 
 -- --------------------------------------------------------
 
@@ -341,6 +388,7 @@ CREATE TABLE `users` (
   `email` varchar(150) NOT NULL,
   `avatar_url` varchar(255) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
+  `email_verified_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -348,10 +396,11 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `avatar_url`, `password_hash`, `created_at`) VALUES
-(1, 'Violetta Owner', 'admin@test.local', NULL, '$2b$10$xWhfACccFASXRSlZazuahuo.Pa.uO94dQUa4HXzPNPz.mUJ7eP4me', '2026-04-21 14:59:58'),
-(2, 'Vladislav Editor', 'admin@myshop.local', NULL, '$2b$10$xNEaQNhWxaNaqX7u174A6ONpeCONdEnm8L7HaQ2aQHXb/017weKWS', '2026-04-21 15:05:23'),
-(5, 'Dasha', 'pikoladgame2004@gmail.com', NULL, '$2b$10$y0k1d.OIWiZDw2zNRyecEudsi.NNkG7QAMMMSTkKhRUqNBqVuItKG', '2026-05-11 19:22:32');
+INSERT INTO `users` (`id`, `name`, `email`, `avatar_url`, `password_hash`, `email_verified_at`, `created_at`) VALUES
+(1, 'Violetta Owner', 'admin@test.local', '/uploads/users/user-1778685921308-475980989.jpg', '$2b$12$5aM3bgCJallq9mFnBRX4GevYL6vEo3tS0KV6.biyzZPeZP2.c2X0a', '2026-05-13 13:52:08', '2026-04-21 14:59:58'),
+(2, 'Vladislav Editor', 'admin@myshop.local', '/uploads/users/user-1778685989169-127043073.jpg', '$2b$12$BMY1nYu6lMflJP8hsLZ4RuUR1zpZi4M9vrjWbfnoiIhxzY52a7M1C', '2026-05-13 13:52:08', '2026-04-21 15:05:23'),
+(7, 'Vanessa', 'pikoladgame@gmail.com', NULL, '$2b$12$4cp/IzXvifhGWAOXmq5pwehdQtmJECNfpsE0qOjzWklCBpEMLedkW', NULL, '2026-05-13 11:44:54'),
+(11, 'Dasha', 'pikoladgame2004@gmail.com', '/uploads/users/user-1778686038755-244995832.jpg', '$2b$12$Xq5.PvLRDBeZDkhoJc0zOOSc6jOQqmR8gQVYqLhXCxVRSBPQrK656', '2026-05-13 17:56:25', '2026-05-13 14:55:44');
 
 -- --------------------------------------------------------
 
@@ -461,6 +510,14 @@ ALTER TABLE `categories`
   ADD KEY `fk_categories_family` (`family_id`);
 
 --
+-- Индексы таблицы `email_verification_tokens`
+--
+ALTER TABLE `email_verification_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_email_verification_user` (`user_id`),
+  ADD KEY `idx_email_verification_token_hash` (`token_hash`);
+
+--
 -- Индексы таблицы `families`
 --
 ALTER TABLE `families`
@@ -483,6 +540,14 @@ ALTER TABLE `family_members`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_family_user` (`family_id`,`user_id`),
   ADD KEY `fk_family_members_user` (`user_id`);
+
+--
+-- Индексы таблицы `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_password_reset_user` (`user_id`),
+  ADD KEY `idx_password_reset_token_hash` (`token_hash`);
 
 --
 -- Индексы таблицы `transactions`
@@ -534,7 +599,13 @@ ALTER TABLE `calendar_events`
 -- AUTO_INCREMENT для таблицы `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT для таблицы `email_verification_tokens`
+--
+ALTER TABLE `email_verification_tokens`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `families`
@@ -546,7 +617,7 @@ ALTER TABLE `families`
 -- AUTO_INCREMENT для таблицы `family_activity_logs`
 --
 ALTER TABLE `family_activity_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT для таблицы `family_members`
@@ -555,16 +626,22 @@ ALTER TABLE `family_members`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
+-- AUTO_INCREMENT для таблицы `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT для таблицы `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT для таблицы `wishlist_folders`
@@ -597,6 +674,12 @@ ALTER TABLE `categories`
   ADD CONSTRAINT `fk_categories_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `email_verification_tokens`
+--
+ALTER TABLE `email_verification_tokens`
+  ADD CONSTRAINT `fk_email_verification_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `families`
 --
 ALTER TABLE `families`
@@ -616,6 +699,12 @@ ALTER TABLE `family_activity_logs`
 ALTER TABLE `family_members`
   ADD CONSTRAINT `fk_family_members_family` FOREIGN KEY (`family_id`) REFERENCES `families` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_family_members_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD CONSTRAINT `fk_password_reset_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `transactions`

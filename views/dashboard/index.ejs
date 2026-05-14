@@ -12,10 +12,10 @@
   const formatSignedMoney = (value) => `${Number(value || 0) >= 0 ? '+ ' : '- '}${formatMoney(Math.abs(Number(value || 0)))}`;
   const formatPercent = (value) => `${Number(value || 0).toFixed(1)}%`;
   const safeJson = (value) => JSON.stringify(value || {}).replace(/</g, '\\u003c');
-  const incomeChange = summary.incomeChange || { direction: 'flat', label: 'No activity yet', isGood: true };
-  const expenseChange = summary.expenseChange || { direction: 'flat', label: 'No activity yet', isGood: true };
+  const incomeChange = summary.incomeChange || { value: 0, direction: 'flat', label: t('dashboard.messages.noActivityYet'), isGood: true };
+  const expenseChange = summary.expenseChange || { value: 0, direction: 'flat', label: t('dashboard.messages.noActivityYet'), isGood: true };
   const changeIcon = (change) => change.direction === 'down' ? 'bi-arrow-down' : change.direction === 'up' ? 'bi-arrow-up' : 'bi-dash';
-  const changeClass = (change) => change.label === 'No activity yet' ? 'is-muted' : (change.isGood === false ? 'is-danger' : 'is-good');
+  const changeClass = (change) => change.direction === 'flat' && Number(change.value || 0) === 0 ? 'is-muted' : (change.isGood === false ? 'is-danger' : 'is-good');
   const recentTransactions = Array.isArray(data.recentTransactions) ? data.recentTransactions : [];
   const categoryBreakdown = Array.isArray(data.categoryBreakdown) ? data.categoryBreakdown : [];
   const featuredCategories = Array.isArray(data.featuredCategories) ? data.featuredCategories : [];
@@ -25,6 +25,12 @@
   const healthScore = Number(budgetHealth.score || 0);
   const healthClass = healthScore >= 80 ? 'is-strong' : healthScore >= 55 ? 'is-stable' : healthScore > 0 ? 'is-risk' : 'is-empty';
   const canEditBudget = Boolean(data.canEditBudget);
+  const dashboardI18n = {
+    locale: t('dashboard.locale'),
+    income: t('dashboard.income'),
+    expenses: t('dashboard.expenses'),
+    today: t('dashboard.today')
+  };
 %>
 
 <section class="container dashboard-shell">
@@ -34,13 +40,13 @@
 
   <section class="dashboard-overview-panel">
     <div class="dashboard-overview-copy">
-      <p class="section-label mb-2">Overview</p>
-      <h2 class="h3 fw-bold mb-2">Dashboard</h2>
-      <p class="overview-toolbar-text mb-0">See your financial overview and stay on track with your goals.</p>
-      <div class="dashboard-health-inline <%= healthClass %>" aria-label="Budget health score">
-        <span class="dashboard-health-inline-title">Budget health</span>
+      <p class="section-label mb-2"><%= t('dashboard.overview') %></p>
+      <h2 class="h3 fw-bold mb-2"><%= t('dashboard.title') %></h2>
+      <p class="overview-toolbar-text mb-0"><%= t('dashboard.description') %></p>
+      <div class="dashboard-health-inline <%= healthClass %>" aria-label="<%= t('dashboard.budgetHealthScore') %>">
+        <span class="dashboard-health-inline-title"><%= t('dashboard.budgetHealth') %></span>
         <strong><%= budgetHealth.score || 0 %>%</strong>
-        <em><%= budgetHealth.status || 'No data yet' %></em>
+        <em><%= budgetHealth.status || t('dashboard.noDataYet') %></em>
         <button
           type="button"
           class="dashboard-health-info"
@@ -48,9 +54,9 @@
           data-bs-trigger="hover focus"
           data-bs-placement="top"
           data-bs-html="true"
-          data-bs-title="About Budget Health"
-          data-bs-content="Budget health is recalculated from the selected period.<br><br><strong>Income</strong> and savings improve the score.<br><strong>High expenses</strong> and large planned wishlist goals reduce it.<br><strong>No financial activity</strong> keeps the score low."
-          aria-label="How Budget health is calculated"
+          data-bs-title="<%= t('dashboard.aboutBudgetHealth') %>"
+          data-bs-content="<%- t('dashboard.budgetHealthPopover') %>"
+          aria-label="<%= t('dashboard.howBudgetHealthCalculated') %>"
         >
           <i class="bi bi-info"></i>
         </button>
@@ -61,7 +67,7 @@
       <% if (canEditBudget) { %>
         <a href="/transactions?create=1" class="btn btn-primary rounded-pill px-4 dashboard-add-transaction-btn">
           <i class="bi bi-plus-lg me-2"></i>
-          Add transaction
+          <%= t('dashboard.addTransaction') %>
         </a>
       <% } %>
 
@@ -69,19 +75,19 @@
     </div>
   </section>
 
-  <section class="dashboard-metrics-grid" aria-label="Budget summary">
+  <section class="dashboard-metrics-grid" aria-label="<%= t('dashboard.budgetSummary') %>">
     <article class="dashboard-metric-card">
       <div class="dashboard-metric-head">
-        <span class="dashboard-metric-label">Current balance</span>
+        <span class="dashboard-metric-label"><%= t('dashboard.currentBalance') %></span>
         <span class="dashboard-metric-icon"><i class="bi bi-wallet2"></i></span>
       </div>
       <strong class="dashboard-metric-value"><%= formatMoney(summary.balance) %></strong>
-      <span class="dashboard-metric-note">Available across this workspace</span>
+      <span class="dashboard-metric-note"><%= t('dashboard.availableAcrossWorkspace') %></span>
     </article>
 
     <article class="dashboard-metric-card">
       <div class="dashboard-metric-head">
-        <span class="dashboard-metric-label">Income <%= period.summaryLabel || 'this month' %></span>
+        <span class="dashboard-metric-label"><%= t('dashboard.income') %> <%= period.summaryLabel || t('dashboard.period.thisMonth') %></span>
         <span class="dashboard-metric-icon"><i class="bi bi-graph-up-arrow"></i></span>
       </div>
       <strong class="dashboard-metric-value"><%= formatMoney(summary.periodIncome) %></strong>
@@ -93,7 +99,7 @@
 
     <article class="dashboard-metric-card">
       <div class="dashboard-metric-head">
-        <span class="dashboard-metric-label">Expenses <%= period.summaryLabel || 'this month' %></span>
+        <span class="dashboard-metric-label"><%= t('dashboard.expenses') %> <%= period.summaryLabel || t('dashboard.period.thisMonth') %></span>
         <span class="dashboard-metric-icon"><i class="bi bi-cart3"></i></span>
       </div>
       <strong class="dashboard-metric-value"><%= formatMoney(summary.periodExpenses) %></strong>
@@ -105,54 +111,54 @@
 
     <article class="dashboard-metric-card">
       <div class="dashboard-metric-head">
-        <span class="dashboard-metric-label">Savings rate</span>
+        <span class="dashboard-metric-label"><%= t('dashboard.savingsRate') %></span>
         <span class="dashboard-metric-icon"><i class="bi bi-bullseye"></i></span>
       </div>
       <strong class="dashboard-metric-value"><%= formatPercent(summary.savingsRate) %></strong>
-      <span class="dashboard-metric-note">Your goal: 40%</span>
+      <span class="dashboard-metric-note"><%= t('dashboard.yourGoal') %>: 40%</span>
     </article>
   </section>
 
   <section class="dashboard-card dashboard-chart-card">
     <div class="dashboard-card-header dashboard-chart-header">
       <div>
-        <h2>Cash flow trend</h2>
-        <p>Income and expenses for <%= data.periodLabel || 'selected period' %><%= period.containsToday ? ' up to today' : '' %>.</p>
+        <h2><%= t('dashboard.cashFlowTrend') %></h2>
+        <p><%= t('dashboard.cashFlowDescriptionPrefix') %> <%= data.periodLabel || t('dashboard.selectedPeriod') %><%= period.containsToday ? ' ' + t('dashboard.upToToday') : '' %>.</p>
       </div>
 
-      <div class="dashboard-period-controls" aria-label="Dashboard period controls">
-        <a href="<%= period.previousUrl || '/dashboard' %>" class="dashboard-period-arrow" aria-label="Previous period">
+      <div class="dashboard-period-controls" aria-label="<%= t('dashboard.periodControls') %>">
+        <a href="<%= period.previousUrl || '/dashboard' %>" class="dashboard-period-arrow" aria-label="<%= t('dashboard.previousPeriod') %>">
           <i class="bi bi-chevron-left"></i>
         </a>
 
-        <span class="dashboard-period-label"><%= period.shortLabel || data.periodLabel || 'Current period' %></span>
+        <span class="dashboard-period-label"><%= period.shortLabel || data.periodLabel || t('dashboard.currentPeriod') %></span>
 
-        <a href="<%= period.nextUrl || '/dashboard' %>" class="dashboard-period-arrow" aria-label="Next period">
+        <a href="<%= period.nextUrl || '/dashboard' %>" class="dashboard-period-arrow" aria-label="<%= t('dashboard.nextPeriod') %>">
           <i class="bi bi-chevron-right"></i>
         </a>
 
-        <div class="dashboard-period-tabs" role="group" aria-label="Period type">
-          <a href="<%= period.monthUrl || '/dashboard' %>" class="dashboard-period-tab <%= period.mode === 'month' ? 'is-active' : '' %>">Month</a>
-          <a href="<%= period.yearUrl || '/dashboard?mode=year' %>" class="dashboard-period-tab <%= period.mode === 'year' ? 'is-active' : '' %>">Year</a>
+        <div class="dashboard-period-tabs" role="group" aria-label="<%= t('dashboard.periodType') %>">
+          <a href="<%= period.monthUrl || '/dashboard' %>" class="dashboard-period-tab <%= period.mode === 'month' ? 'is-active' : '' %>"><%= t('dashboard.month') %></a>
+          <a href="<%= period.yearUrl || '/dashboard?mode=year' %>" class="dashboard-period-tab <%= period.mode === 'year' ? 'is-active' : '' %>"><%= t('dashboard.year') %></a>
         </div>
       </div>
     </div>
 
     <div class="dashboard-chart-wrap">
-      <canvas id="cashFlowChart" aria-label="Cash flow trend chart"></canvas>
+      <canvas id="cashFlowChart" aria-label="<%= t('dashboard.cashFlowTrendChart') %>"></canvas>
     </div>
   </section>
 
   <section class="dashboard-card dashboard-category-card">
     <div class="dashboard-card-header">
       <div>
-        <h2>Expenses by category</h2>
-        <p>Largest spending areas for <%= data.periodLabel || 'this period' %>.</p>
+        <h2><%= t('dashboard.expensesByCategory') %></h2>
+        <p><%= t('dashboard.expensesByCategoryDescriptionPrefix') %> <%= data.periodLabel || t('dashboard.thisPeriod') %>.</p>
       </div>
 
       <% if (topCategory) { %>
         <span class="dashboard-top-category-pill">
-          Top: <strong><%= topCategory.name %></strong>
+          <%= t('dashboard.top') %>: <strong><%= topCategory.name %></strong>
         </span>
       <% } %>
     </div>
@@ -161,10 +167,10 @@
       <div class="dashboard-category-panel">
         <div class="dashboard-donut-area">
           <div class="dashboard-donut-wrap">
-            <canvas id="categoryChart" aria-label="Expenses by category chart"></canvas>
+            <canvas id="categoryChart" aria-label="<%= t('dashboard.expensesByCategoryChart') %>"></canvas>
             <div class="dashboard-donut-center" aria-hidden="true">
               <strong><%= formatMoney(categoryTotal) %></strong>
-              <span>Total expenses</span>
+              <span><%= t('dashboard.totalExpenses') %></span>
             </div>
           </div>
         </div>
@@ -175,7 +181,7 @@
               <span
                 class="dashboard-category-chip"
                 style="--category-color: <%= category.color %>;"
-                aria-label="<%= category.name %> category icon"
+                aria-label="<%= category.name %> <%= t('dashboard.categoryIcon') %>"
               >
                 <i class="<%= category.iconClass %>"></i>
               </span>
@@ -196,8 +202,8 @@
           aria-expanded="false"
           aria-controls="dashboardFeaturedCategories"
         >
-          <span><i class="bi bi-stars"></i> Special dashboard categories</span>
-          <small><%= featuredCategories.length %> marked</small>
+          <span><i class="bi bi-stars"></i> <%= t('dashboard.specialDashboardCategories') %></span>
+          <small><%= featuredCategories.length %> <%= t('dashboard.marked') %></small>
           <i class="bi bi-chevron-down dashboard-featured-chevron"></i>
         </button>
 
@@ -209,7 +215,7 @@
                   <span
                     class="dashboard-category-chip"
                     style="--category-color: <%= category.color %>;"
-                    aria-label="<%= category.name %> special category icon"
+                    aria-label="<%= category.name %> special <%= t('dashboard.categoryIcon') %>"
                   >
                     <i class="<%= category.iconClass %>"></i>
                   </span>
@@ -220,7 +226,7 @@
               <% }) %>
             <% } else { %>
               <div class="dashboard-featured-empty">
-                Mark expense categories with “Add to dashboard” on the Categories page.
+                <%= t('dashboard.featuredCategoriesEmpty') %>
               </div>
             <% } %>
           </div>
@@ -229,12 +235,12 @@
     <% } else { %>
       <div class="dashboard-empty-state">
         <i class="bi bi-pie-chart"></i>
-        <p>No expense categories for <%= data.periodLabel || 'this period' %> yet.</p>
+        <p><%= t('dashboard.noExpenseCategoriesPrefix') %> <%= data.periodLabel || t('dashboard.thisPeriod') %> <%= t('dashboard.noExpenseCategoriesSuffix') %></p>
       </div>
     <% } %>
   </section>
 
-  <section class="dashboard-accordion" aria-label="Dashboard details">
+  <section class="dashboard-accordion" aria-label="<%= t('dashboard.details') %>">
     <article class="dashboard-accordion-item dashboard-transactions-card">
       <button
         class="dashboard-accordion-button collapsed"
@@ -246,8 +252,8 @@
       >
         <span class="dashboard-accordion-icon"><i class="bi bi-receipt"></i></span>
         <span>
-          <strong>Recent transactions</strong>
-          <small>Latest budget activity in your workspace.</small>
+          <strong><%= t('dashboard.recentTransactions') %></strong>
+          <small><%= t('dashboard.latestBudgetActivity') %></small>
         </span>
         <i class="bi bi-chevron-down dashboard-accordion-chevron"></i>
       </button>
@@ -255,8 +261,8 @@
       <div class="collapse" id="dashboardRecentTransactions">
         <div class="dashboard-accordion-body">
           <div class="dashboard-accordion-body-head">
-            <span>Latest entries</span>
-            <a href="/transactions" class="btn btn-outline-secondary btn-sm rounded-pill px-3">View all</a>
+            <span><%= t('dashboard.latestEntries') %></span>
+            <a href="/transactions" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><%= t('dashboard.viewAll') %></a>
           </div>
 
           <% if (recentTransactions.length) { %>
@@ -271,7 +277,7 @@
 
                   <div class="dashboard-transaction-main">
                     <strong class="dashboard-transaction-title"><%= transaction.description %></strong>
-                    <span class="dashboard-transaction-author">By <%= transaction.actorName %></span>
+                    <span class="dashboard-transaction-author"><%= t('dashboard.by') %> <%= transaction.actorName %></span>
                   </div>
 
                   <span
@@ -280,7 +286,7 @@
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="<%= transaction.categoryName %>"
-                    aria-label="<%= transaction.categoryName %> category"
+                    aria-label="<%= transaction.categoryName %> <%= t('dashboard.category') %>"
                   >
                     <i class="<%= transaction.categoryIconClass %>"></i>
                   </span>
@@ -294,7 +300,7 @@
           <% } else { %>
             <div class="dashboard-empty-state">
               <i class="bi bi-receipt"></i>
-              <p>No transactions yet. Add your first transaction to start building analytics.</p>
+              <p><%= t('dashboard.noTransactionsYet') %></p>
             </div>
           <% } %>
         </div>
@@ -312,8 +318,8 @@
       >
         <span class="dashboard-accordion-icon"><i class="bi bi-calendar-event"></i></span>
         <span>
-          <strong>Upcoming events</strong>
-          <small>Nearest calendar events with their assigned colors.</small>
+          <strong><%= t('dashboard.upcomingEvents') %></strong>
+          <small><%= t('dashboard.nearestCalendarEvents') %></small>
         </span>
         <i class="bi bi-chevron-down dashboard-accordion-chevron"></i>
       </button>
@@ -321,8 +327,8 @@
       <div class="collapse" id="dashboardUpcomingEvents">
         <div class="dashboard-accordion-body">
           <div class="dashboard-accordion-body-head">
-            <span>Calendar preview</span>
-            <a href="/calendar" class="btn btn-outline-secondary btn-sm rounded-pill px-3">View calendar</a>
+            <span><%= t('dashboard.calendarPreview') %></span>
+            <a href="/calendar" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><%= t('dashboard.viewCalendar') %></a>
           </div>
 
           <% if (upcomingEvents.length) { %>
@@ -340,7 +346,7 @@
           <% } else { %>
             <div class="dashboard-empty-state">
               <i class="bi bi-calendar-event"></i>
-              <p>No upcoming events yet.</p>
+              <p><%= t('dashboard.noUpcomingEventsYet') %></p>
             </div>
           <% } %>
         </div>
@@ -358,8 +364,8 @@
       >
         <span class="dashboard-accordion-icon"><i class="bi bi-heart"></i></span>
         <span>
-          <strong>Wishlist impact</strong>
-          <small>Planned goals and how they affect your balance.</small>
+          <strong><%= t('dashboard.wishlistImpact') %></strong>
+          <small><%= t('dashboard.plannedGoalsDescription') %></small>
         </span>
         <i class="bi bi-chevron-down dashboard-accordion-chevron"></i>
       </button>
@@ -367,14 +373,14 @@
       <div class="collapse" id="dashboardWishlistImpact">
         <div class="dashboard-accordion-body">
           <div class="dashboard-accordion-body-head">
-            <span>Goals preview</span>
-            <a href="/wishlist" class="btn btn-outline-secondary btn-sm rounded-pill px-3">View wishlist</a>
+            <span><%= t('dashboard.goalsPreview') %></span>
+            <a href="/wishlist" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><%= t('dashboard.viewWishlist') %></a>
           </div>
 
           <div class="dashboard-wishlist-summary">
-            <div><span>Planned value</span><strong><%= formatMoney(wishlist.plannedTotal) %></strong></div>
-            <div><span>Bought items</span><strong><%= wishlist.boughtCount || 0 %> / <%= wishlist.totalCount || 0 %></strong></div>
-            <div><span>Balance after goals</span><strong><%= formatMoney(wishlist.afterBalance) %></strong></div>
+            <div><span><%= t('dashboard.plannedValue') %></span><strong><%= formatMoney(wishlist.plannedTotal) %></strong></div>
+            <div><span><%= t('dashboard.boughtItems') %></span><strong><%= wishlist.boughtCount || 0 %> / <%= wishlist.totalCount || 0 %></strong></div>
+            <div><span><%= t('dashboard.balanceAfterGoals') %></span><strong><%= formatMoney(wishlist.afterBalance) %></strong></div>
           </div>
 
           <% if (wishlistGoals.length) { %>
@@ -382,7 +388,7 @@
               <% wishlistGoals.forEach(function (goal) { %>
                 <article class="dashboard-wishlist-goal">
                   <% if (goal.imageUrl) { %>
-                    <img src="<%= goal.imageUrl %>" alt="<%= goal.title %> image" />
+                    <img src="<%= goal.imageUrl %>" alt="<%= goal.title %> <%= t('dashboard.image') %>" />
                   <% } else { %>
                     <span class="dashboard-wishlist-placeholder"><i class="bi bi-gift"></i></span>
                   <% } %>
@@ -399,7 +405,7 @@
           <% } else { %>
             <div class="dashboard-empty-state">
               <i class="bi bi-heart"></i>
-              <p>No planned wishlist goals yet.</p>
+              <p><%= t('dashboard.noPlannedWishlistGoalsYet') %></p>
             </div>
           <% } %>
         </div>
@@ -409,6 +415,7 @@
 </section>
 
 <script type="application/json" id="dashboardChartData"><%- safeJson(data.charts) %></script>
+<script type="application/json" id="dashboardI18nData"><%- safeJson(dashboardI18n) %></script>
 <script src="/vendor/chart.js/chart.umd.js"></script>
 <script src="/js/dashboard.js"></script>
 

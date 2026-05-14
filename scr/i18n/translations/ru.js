@@ -121,6 +121,114 @@ module.exports = {
   }
 ,
 
+  dashboard: {
+    locale: 'ru-RU',
+    overview: 'Обзор',
+    title: 'Дашборд',
+    description: 'Смотрите финансовую сводку и контролируйте движение к целям.',
+    addTransaction: 'Добавить транзакцию',
+    budgetHealth: 'Состояние бюджета',
+    budgetHealthScore: 'Оценка состояния бюджета',
+    aboutBudgetHealth: 'О состоянии бюджета',
+    budgetHealthPopover: 'Состояние бюджета пересчитывается для выбранного периода.<br><br><strong>Доходы</strong> и накопления улучшают оценку.<br><strong>Высокие расходы</strong> и крупные цели в wishlist снижают ее.<br><strong>Отсутствие финансовой активности</strong> оставляет оценку низкой.',
+    howBudgetHealthCalculated: 'Как рассчитывается состояние бюджета',
+    noDataYet: 'Пока нет данных',
+    budgetSummary: 'Сводка бюджета',
+    currentBalance: 'Текущий баланс',
+    availableAcrossWorkspace: 'Доступно в этом пространстве',
+    income: 'Доходы',
+    expenses: 'Расходы',
+    savingsRate: 'Процент накоплений',
+    yourGoal: 'Ваша цель',
+    cashFlowTrend: 'Динамика денежных потоков',
+    cashFlowDescriptionPrefix: 'Доходы и расходы за',
+    selectedPeriod: 'выбранный период',
+    upToToday: 'по сегодняшний день',
+    periodControls: 'Управление периодом дашборда',
+    previousPeriod: 'Предыдущий период',
+    nextPeriod: 'Следующий период',
+    periodType: 'Тип периода',
+    currentPeriod: 'Текущий период',
+    month: 'Месяц',
+    year: 'Год',
+    today: 'Сегодня',
+    currentMonth: 'Текущий месяц',
+    cashFlowTrendChart: 'График денежных потоков',
+    expensesByCategory: 'Расходы по категориям',
+    expensesByCategoryDescriptionPrefix: 'Крупнейшие направления расходов за',
+    thisPeriod: 'этот период',
+    expensesByCategoryChart: 'График расходов по категориям',
+    top: 'Топ',
+    totalExpenses: 'Всего расходов',
+    categoryIcon: 'иконка категории',
+    specialCategoryIcon: 'иконка избранной категории',
+    specialDashboardCategories: 'Избранные категории дашборда',
+    marked: 'отмечено',
+    featuredCategoriesEmpty: 'Отметьте категории расходов через “Добавить на дашборд” на странице категорий.',
+    noExpenseCategoriesPrefix: 'За',
+    noExpenseCategoriesSuffix: 'категорий расходов пока нет.',
+    details: 'Детали дашборда',
+    recentTransactions: 'Последние транзакции',
+    latestBudgetActivity: 'Последняя активность бюджета в вашем пространстве.',
+    latestEntries: 'Последние записи',
+    viewAll: 'Смотреть все',
+    by: 'От',
+    category: 'категория',
+    noTransactionsYet: 'Транзакций пока нет. Добавьте первую транзакцию, чтобы начать строить аналитику.',
+    upcomingEvents: 'Ближайшие события',
+    nearestCalendarEvents: 'Ближайшие события календаря с назначенными цветами.',
+    calendarPreview: 'Предпросмотр календаря',
+    viewCalendar: 'Открыть календарь',
+    noUpcomingEventsYet: 'Ближайших событий пока нет.',
+    wishlistImpact: 'Влияние wishlist',
+    plannedGoalsDescription: 'Запланированные цели и их влияние на баланс.',
+    goalsPreview: 'Предпросмотр целей',
+    viewWishlist: 'Открыть wishlist',
+    plannedValue: 'Запланированная сумма',
+    boughtItems: 'Купленные позиции',
+    balanceAfterGoals: 'Баланс после целей',
+    image: 'изображение',
+    noPlannedWishlistGoalsYet: 'Запланированных целей wishlist пока нет.',
+    allDay: 'Весь день',
+    noDescription: 'Без описания',
+    unknownMember: 'Неизвестный участник',
+    familyWorkspace: 'Семейное пространство',
+    personalWorkspace: 'Личное пространство',
+
+    period: {
+      thisMonth: 'за месяц',
+      thisYear: 'за год'
+    },
+
+    healthStatus: {
+      healthy: 'Здоровый',
+      stable: 'Стабильный',
+      needsAttention: 'Требует внимания'
+    },
+
+    healthText: {
+      noData: 'Добавьте доходы и расходы, чтобы рассчитать состояние бюджета.',
+      healthy: 'Доходы уверенно опережают расходы за выбранный период.',
+      stable: 'Бюджет рабочий, но расходы или запланированные цели требуют внимания.',
+      needsAttention: 'Расходы слишком близки к доходам. Сначала проверьте категории трат.'
+    },
+
+    insight: {
+      biggestExpensePrefix: 'Самая большая категория расходов —',
+      biggestExpenseMiddle: 'Она занимает',
+      biggestExpenseSuffix: 'расходов за',
+      addExpenses: 'Добавьте расходные транзакции, чтобы увидеть главную категорию трат.'
+    },
+
+    messages: {
+      noActivityYet: 'Активности пока нет',
+      newActivity: 'Новая активность',
+      vsPreviousPeriod: 'к предыдущему периоду',
+      failedToLoadAnalytics: 'Не удалось загрузить аналитику дашборда.'
+    }
+  }
+,
+
   account: {
     pageTitle: 'Аккаунт',
     personalWorkspace: 'Личное пространство',

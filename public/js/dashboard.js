@@ -33,7 +33,9 @@
     return;
   }
 
+  const i18nNode = document.getElementById('dashboardI18nData');
   let charts = {};
+  let dashboardI18n = {};
 
   try {
     charts = JSON.parse(dataNode.textContent || '{}');
@@ -41,7 +43,15 @@
     charts = {};
   }
 
-  const moneyFormatter = new Intl.NumberFormat('en-US', {
+  if (i18nNode) {
+    try {
+      dashboardI18n = JSON.parse(i18nNode.textContent || '{}');
+    } catch (error) {
+      dashboardI18n = {};
+    }
+  }
+
+  const moneyFormatter = new Intl.NumberFormat(dashboardI18n.locale || 'en-US', {
     style: 'currency',
     currency: 'EUR',
     maximumFractionDigits: 0
@@ -73,7 +83,7 @@
       const { ctx } = chart;
       const top = yScale.top;
       const bottom = yScale.bottom;
-      const label = options.label || 'Today';
+      const label = options.label || dashboardI18n.today || 'Today';
 
       ctx.save();
       ctx.beginPath();
@@ -115,7 +125,7 @@
         labels: cashFlow.labels,
         datasets: [
           {
-            label: 'Income',
+            label: dashboardI18n.income || 'Income',
             data: cashFlow.income || [],
             borderColor: '#22c55e',
             backgroundColor(context) {
@@ -134,7 +144,7 @@
             pointBorderWidth: 2
           },
           {
-            label: 'Expenses',
+            label: dashboardI18n.expenses || 'Expenses',
             data: cashFlow.expenses || [],
             borderColor: '#ef4444',
             backgroundColor(context) {

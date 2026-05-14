@@ -121,6 +121,114 @@ module.exports = {
   }
 ,
 
+  dashboard: {
+    locale: 'et-EE',
+    overview: 'Ülevaade',
+    title: 'Töölaud',
+    description: 'Vaata oma finantsülevaadet ja püsi eesmärkidega kursis.',
+    addTransaction: 'Lisa tehing',
+    budgetHealth: 'Eelarve seis',
+    budgetHealthScore: 'Eelarve seisu skoor',
+    aboutBudgetHealth: 'Eelarve seisust',
+    budgetHealthPopover: 'Eelarve seis arvutatakse valitud perioodi põhjal.<br><br><strong>Sissetulek</strong> ja säästud parandavad skoori.<br><strong>Suured kulud</strong> ja kallid wishlisti eesmärgid vähendavad seda.<br><strong>Finantsaktiivsuse puudumine</strong> hoiab skoori madalana.',
+    howBudgetHealthCalculated: 'Kuidas eelarve seisu arvutatakse',
+    noDataYet: 'Andmeid veel pole',
+    budgetSummary: 'Eelarve kokkuvõte',
+    currentBalance: 'Praegune saldo',
+    availableAcrossWorkspace: 'Saadaval selles tööruumis',
+    income: 'Sissetulek',
+    expenses: 'Kulud',
+    savingsRate: 'Säästumäär',
+    yourGoal: 'Sinu eesmärk',
+    cashFlowTrend: 'Rahavoo trend',
+    cashFlowDescriptionPrefix: 'Sissetulek ja kulud perioodil',
+    selectedPeriod: 'valitud periood',
+    upToToday: 'kuni tänaseni',
+    periodControls: 'Töölaua perioodi juhtimine',
+    previousPeriod: 'Eelmine periood',
+    nextPeriod: 'Järgmine periood',
+    periodType: 'Perioodi tüüp',
+    currentPeriod: 'Praegune periood',
+    month: 'Kuu',
+    year: 'Aasta',
+    today: 'Täna',
+    currentMonth: 'Praegune kuu',
+    cashFlowTrendChart: 'Rahavoo trendi graafik',
+    expensesByCategory: 'Kulud kategooriate kaupa',
+    expensesByCategoryDescriptionPrefix: 'Suurimad kulukohad perioodil',
+    thisPeriod: 'see periood',
+    expensesByCategoryChart: 'Kulude kategooriate graafik',
+    top: 'Suurim',
+    totalExpenses: 'Kulud kokku',
+    categoryIcon: 'kategooria ikoon',
+    specialCategoryIcon: 'eraldi kategooria ikoon',
+    specialDashboardCategories: 'Töölaua erikategooriad',
+    marked: 'märgitud',
+    featuredCategoriesEmpty: 'Märgi kulukategooriad nupuga “Lisa töölauale” kategooriate lehel.',
+    noExpenseCategoriesPrefix: 'Perioodil',
+    noExpenseCategoriesSuffix: 'pole veel kulukategooriaid.',
+    details: 'Töölaua detailid',
+    recentTransactions: 'Viimased tehingud',
+    latestBudgetActivity: 'Viimane eelarve tegevus sinu tööruumis.',
+    latestEntries: 'Viimased kirjed',
+    viewAll: 'Vaata kõiki',
+    by: 'Autor',
+    category: 'kategooria',
+    noTransactionsYet: 'Tehinguid veel pole. Lisa esimene tehing, et alustada analüütikaga.',
+    upcomingEvents: 'Tulevased sündmused',
+    nearestCalendarEvents: 'Lähimad kalendrisündmused koos määratud värvidega.',
+    calendarPreview: 'Kalendri eelvaade',
+    viewCalendar: 'Ava kalender',
+    noUpcomingEventsYet: 'Tulevasi sündmusi veel pole.',
+    wishlistImpact: 'Wishlisti mõju',
+    plannedGoalsDescription: 'Planeeritud eesmärgid ja nende mõju saldole.',
+    goalsPreview: 'Eesmärkide eelvaade',
+    viewWishlist: 'Ava wishlist',
+    plannedValue: 'Planeeritud väärtus',
+    boughtItems: 'Ostetud esemed',
+    balanceAfterGoals: 'Saldo pärast eesmärke',
+    image: 'pilt',
+    noPlannedWishlistGoalsYet: 'Planeeritud wishlisti eesmärke veel pole.',
+    allDay: 'Terve päev',
+    noDescription: 'Kirjeldus puudub',
+    unknownMember: 'Tundmatu liige',
+    familyWorkspace: 'Pere tööruum',
+    personalWorkspace: 'Isiklik tööruum',
+
+    period: {
+      thisMonth: 'sel kuul',
+      thisYear: 'sel aastal'
+    },
+
+    healthStatus: {
+      healthy: 'Hea',
+      stable: 'Stabiilne',
+      needsAttention: 'Vajab tähelepanu'
+    },
+
+    healthText: {
+      noData: 'Lisa sissetuleku- ja kulutehingud, et arvutada eelarve seis.',
+      healthy: 'Sissetulek ületab valitud perioodil kulusid mugavalt.',
+      stable: 'Eelarve on kasutatav, kuid kulud või planeeritud eesmärgid vajavad tähelepanu.',
+      needsAttention: 'Kulud on sissetulekule liiga lähedal. Vaata esmalt üle kulukategooriad.'
+    },
+
+    insight: {
+      biggestExpensePrefix: 'Suurim kulukategooria on',
+      biggestExpenseMiddle: 'See moodustab',
+      biggestExpenseSuffix: 'kuludest perioodil',
+      addExpenses: 'Lisa kulutehinguid, et näha peamist kulukategooriat.'
+    },
+
+    messages: {
+      noActivityYet: 'Tegevust veel pole',
+      newActivity: 'Uus tegevus',
+      vsPreviousPeriod: 'võrreldes eelmise perioodiga',
+      failedToLoadAnalytics: 'Töölaua analüütika laadimine ebaõnnestus.'
+    }
+  }
+,
+
   account: {
     pageTitle: 'Konto',
     personalWorkspace: 'Isiklik tööruum',

@@ -1,6 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
+const DASHBOARD_LOCALES = {
+  en: 'en-US',
+  ru: 'ru-RU',
+  et: 'et-EE'
+};
+
+function getDashboardLocale(language = 'en') {
+  return DASHBOARD_LOCALES[language] || DASHBOARD_LOCALES.en;
+}
+
+function getTranslator(req) {
+  return typeof req.t === 'function' ? req.t : (key) => key;
+}
+
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { getUserFamily } = require('../scr/family.service');
@@ -29,7 +43,8 @@ function addYears(date, amount) {
   return new Date(date.getFullYear() + amount, 0, 1);
 }
 
-function getDashboardPeriod(query = {}) {
+function getDashboardPeriod(query = {}, language = 'en', t = (key) => key) {
+  const locale = getDashboardLocale(language);
   const now = new Date();
   const mode = query.mode === 'year' ? 'year' : 'month';
   const year = clampNumber(query.year, 2000, 2100, now.getFullYear());
@@ -86,11 +101,11 @@ function getDashboardPeriod(query = {}) {
     previousEndString: formatDateLocal(previousEnd),
     label: mode === 'year'
       ? String(base.getFullYear())
-      : base.toLocaleString('en', { month: 'long', year: 'numeric' }),
+      : base.toLocaleString(locale, { month: 'long', year: 'numeric' }),
     shortLabel: mode === 'year'
       ? String(base.getFullYear())
-      : base.toLocaleString('en', { month: 'short', year: 'numeric' }),
-    summaryLabel: mode === 'year' ? 'this year' : 'this month',
+      : base.toLocaleString(locale, { month: 'short', year: 'numeric' }),
+    summaryLabel: mode === 'year' ? t('dashboard.period.thisYear') : t('dashboard.period.thisMonth'),
     previousUrl: buildUrl(mode, previousBase),
     nextUrl: buildUrl(mode, nextBase),
     monthUrl: buildUrl('month', mode === 'year' ? new Date(base.getFullYear(), now.getMonth(), 1) : base),
@@ -102,16 +117,16 @@ function roundCurrency(value) {
   return Math.round(Number(value || 0) * 100) / 100;
 }
 
-function calculateChange(current, previous, positiveWhenLower = false) {
+function calculateChange(current, previous, positiveWhenLower = false, t = (key) => key) {
   const currentValue = Math.abs(Number(current || 0));
   const previousValue = Math.abs(Number(previous || 0));
 
   if (!previousValue && !currentValue) {
-    return { value: 0, direction: 'flat', label: 'No activity yet', isGood: true };
+    return { value: 0, direction: 'flat', label: t('dashboard.messages.noActivityYet'), isGood: true };
   }
 
   if (!previousValue) {
-    return { value: 100, direction: 'up', label: 'New activity', isGood: !positiveWhenLower };
+    return { value: 100, direction: 'up', label: t('dashboard.messages.newActivity'), isGood: !positiveWhenLower };
   }
 
   const rawChange = ((currentValue - previousValue) / previousValue) * 100;
@@ -122,17 +137,19 @@ function calculateChange(current, previous, positiveWhenLower = false) {
     value: Math.abs(rawChange),
     direction,
     isGood,
-    label: `${Math.abs(rawChange).toFixed(1)}% vs previous ${positiveWhenLower ? 'period' : 'period'}`
+    label: `${Math.abs(rawChange).toFixed(1)}% ${t('dashboard.messages.vsPreviousPeriod')}`
   };
 }
 
-function normalizeDateLabel(value) {
+function normalizeDateLabel(value, language = 'en') {
+  const locale = getDashboardLocale(language);
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
-  return `${date.getDate()} ${date.toLocaleString('en', { month: 'short' })}`;
+  return `${date.getDate()} ${date.toLocaleString(locale, { month: 'short' })}`;
 }
 
-function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false) {
+function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false, language = 'en', t = (key) => key) {
+  const locale = getDashboardLocale(language);
   const rowsByDate = new Map(
     dailyRows.map((row) => [formatDateLocal(new Date(row.period_key)), row])
   );
@@ -149,7 +166,7 @@ function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false
     incomeRunning += Number(row ? row.income : 0);
     expenseRunning += Math.abs(Number(row ? row.expenses : 0));
 
-    labels.push(`${day} ${current.toLocaleString('en', { month: 'short' })}`);
+    labels.push(`${day} ${current.toLocaleString(locale, { month: 'short' })}`);
     income.push(roundCurrency(incomeRunning));
     expenses.push(roundCurrency(expenseRunning));
   }
@@ -159,11 +176,12 @@ function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false
     income,
     expenses,
     currentIndex: containsToday && labels.length ? labels.length - 1 : null,
-    currentLabel: containsToday ? 'Today' : ''
+    currentLabel: containsToday ? t('dashboard.today') : ''
   };
 }
 
-function buildYearTrend(year, chartEnd, monthlyRows, containsToday = false) {
+function buildYearTrend(year, chartEnd, monthlyRows, containsToday = false, language = 'en', t = (key) => key) {
+  const locale = getDashboardLocale(language);
   const rowsByMonth = new Map(
     monthlyRows.map((row) => [Number(row.period_key), row])
   );
@@ -180,7 +198,7 @@ function buildYearTrend(year, chartEnd, monthlyRows, containsToday = false) {
     incomeRunning += Number(row ? row.income : 0);
     expenseRunning += Math.abs(Number(row ? row.expenses : 0));
 
-    labels.push(new Date(year, monthIndex, 1).toLocaleString('en', { month: 'short' }));
+    labels.push(new Date(year, monthIndex, 1).toLocaleString(locale, { month: 'short' }));
     income.push(roundCurrency(incomeRunning));
     expenses.push(roundCurrency(expenseRunning));
   }
@@ -190,7 +208,7 @@ function buildYearTrend(year, chartEnd, monthlyRows, containsToday = false) {
     income,
     expenses,
     currentIndex: containsToday && labels.length ? labels.length - 1 : null,
-    currentLabel: containsToday ? 'Current month' : ''
+    currentLabel: containsToday ? t('dashboard.currentMonth') : ''
   };
 }
 
@@ -202,7 +220,7 @@ function getCategoryIcon(icon) {
   return icon ? `bi bi-${icon}` : 'bi bi-tag';
 }
 
-function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishlistPlannedTotal) {
+function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishlistPlannedTotal, t = (key) => key) {
   const income = Number(periodIncome || 0);
   const expenses = Number(periodExpenses || 0);
   const plannedGoals = Number(wishlistPlannedTotal || 0);
@@ -210,8 +228,8 @@ function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishli
   if (!income && !expenses) {
     return {
       score: 0,
-      status: 'No data yet',
-      text: 'Add income and expense transactions to calculate budget health.'
+      status: t('dashboard.noDataYet'),
+      text: t('dashboard.healthText.noData')
     };
   }
 
@@ -242,23 +260,23 @@ function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishli
 
   return {
     score,
-    status: score >= 80 ? 'Healthy' : score >= 55 ? 'Stable' : 'Needs attention',
+    status: score >= 80 ? t('dashboard.healthStatus.healthy') : score >= 55 ? t('dashboard.healthStatus.stable') : t('dashboard.healthStatus.needsAttention'),
     text: score >= 80
-      ? 'Income is comfortably ahead of expenses for the selected period.'
+      ? t('dashboard.healthText.healthy')
       : score >= 55
-        ? 'The budget is usable, but expenses or planned goals need attention.'
-        : 'Expenses are too close to income. Review spending categories first.'
+        ? t('dashboard.healthText.stable')
+        : t('dashboard.healthText.needsAttention')
   };
 }
 
-async function loadDashboardData(user, query = {}) {
+async function loadDashboardData(user, query = {}, t = (key) => key, language = 'en') {
   const currentUserId = user.id;
   const family = await getUserFamily(currentUserId);
   const familyId = family ? family.id : null;
   const workspace = getWorkspaceCondition(currentUserId, familyId, 't');
   const wishlistWorkspace = getWorkspaceCondition(currentUserId, familyId, 'w');
   const eventWorkspace = getWorkspaceCondition(currentUserId, familyId, 'e');
-  const period = getDashboardPeriod(query);
+  const period = getDashboardPeriod(query, language, t);
   const todayString = formatDateLocal(new Date());
 
   const [balanceRows] = await db.query(
@@ -455,14 +473,14 @@ async function loadDashboardData(user, query = {}) {
   const wishlistSummary = wishlistRows[0] || {};
   const wishlistPlannedTotal = roundCurrency(wishlistSummary.planned_total);
   const balance = roundCurrency(balanceRows[0] ? balanceRows[0].balance : 0);
-  const budgetHealth = calculateBudgetHealth(monthly.income, monthly.expenses, savingsRate, wishlistPlannedTotal);
+  const budgetHealth = calculateBudgetHealth(monthly.income, monthly.expenses, savingsRate, wishlistPlannedTotal, t);
   const topCategory = categoryBreakdown[0] || null;
   const wishlistAfterBalance = roundCurrency(balance - wishlistPlannedTotal);
 
   return {
     family,
     canEditBudget: getCanEditBudget(family),
-    workspaceLabel: family ? 'Family workspace' : 'Personal workspace',
+    workspaceLabel: family ? t('dashboard.familyWorkspace') : t('dashboard.personalWorkspace'),
     period,
     periodLabel: period.label,
     summary: {
@@ -470,13 +488,13 @@ async function loadDashboardData(user, query = {}) {
       periodIncome: monthly.income,
       periodExpenses: monthly.expenses,
       savingsRate: roundCurrency(savingsRate),
-      incomeChange: calculateChange(monthly.income, previous.income),
-      expenseChange: calculateChange(monthly.expenses, previous.expenses, true)
+      incomeChange: calculateChange(monthly.income, previous.income, false, t),
+      expenseChange: calculateChange(monthly.expenses, previous.expenses, true, t)
     },
     charts: {
       cashFlow: period.mode === 'year'
-        ? buildYearTrend(period.year, period.chartEnd, trendRows, period.containsToday)
-        : buildMonthTrend(period.start, period.chartEnd, trendRows, period.containsToday),
+        ? buildYearTrend(period.year, period.chartEnd, trendRows, period.containsToday, language, t)
+        : buildMonthTrend(period.start, period.chartEnd, trendRows, period.containsToday, language, t),
       categories: {
         labels: categoryRows.map((row) => row.name),
         totals: categoryRows.map((row) => roundCurrency(row.total)),
@@ -492,8 +510,8 @@ async function loadDashboardData(user, query = {}) {
       type: row.type,
       amount: roundCurrency(row.amount),
       description: row.description || row.category_name,
-      dateLabel: normalizeDateLabel(row.transaction_date),
-      actorName: row.actor_name || 'Unknown member',
+      dateLabel: normalizeDateLabel(row.transaction_date, language),
+      actorName: row.actor_name || t('dashboard.unknownMember'),
       categoryName: row.category_name,
       categoryColor: row.category_color || '#6b7280',
       categoryIconClass: getCategoryIcon(row.category_icon),
@@ -512,33 +530,33 @@ async function loadDashboardData(user, query = {}) {
         title: row.title,
         amount: roundCurrency(row.amount),
         imageUrl: row.image_url,
-        desiredDate: row.desired_date ? normalizeDateLabel(row.desired_date) : ''
+        desiredDate: row.desired_date ? normalizeDateLabel(row.desired_date, language) : ''
       })),
       nextGoal: wishlistGoalRows[0] ? {
         title: wishlistGoalRows[0].title,
         amount: roundCurrency(wishlistGoalRows[0].amount),
         imageUrl: wishlistGoalRows[0].image_url,
-        desiredDate: wishlistGoalRows[0].desired_date ? normalizeDateLabel(wishlistGoalRows[0].desired_date) : ''
+        desiredDate: wishlistGoalRows[0].desired_date ? normalizeDateLabel(wishlistGoalRows[0].desired_date, language) : ''
       } : null
     },
     upcomingEvents: eventRows.map((row) => ({
       title: row.title,
-      dateLabel: normalizeDateLabel(row.event_date),
-      timeLabel: Number(row.is_all_day) === 1 ? 'All day' : String(row.event_time || '').slice(0, 5),
+      dateLabel: normalizeDateLabel(row.event_date, language),
+      timeLabel: Number(row.is_all_day) === 1 ? t('dashboard.allDay') : String(row.event_time || '').slice(0, 5),
       type: row.type,
-      description: row.description || 'No description',
+      description: row.description || t('dashboard.noDescription'),
       color: row.color || '#111827'
     })),
     analytics: {
       budgetHealth,
       monthlyComparison: {
-        incomeChange: calculateChange(monthly.income, previous.income),
-        expenseChange: calculateChange(monthly.expenses, previous.expenses, true),
-        balanceChange: calculateChange(monthly.income - monthly.expenses, previous.income - previous.expenses)
+        incomeChange: calculateChange(monthly.income, previous.income, false, t),
+        expenseChange: calculateChange(monthly.expenses, previous.expenses, true, t),
+        balanceChange: calculateChange(monthly.income - monthly.expenses, previous.income - previous.expenses, false, t)
       },
       insight: topCategory
-        ? `Your biggest expense category is ${topCategory.name}. It takes ${topCategory.percent.toFixed(1)}% of expenses for ${period.label}.`
-        : 'Add expense transactions to see your strongest spending category.',
+        ? `${t('dashboard.insight.biggestExpensePrefix')} ${topCategory.name}. ${t('dashboard.insight.biggestExpenseMiddle')} ${topCategory.percent.toFixed(1)}% ${t('dashboard.insight.biggestExpenseSuffix')} ${period.label}.`
+        : t('dashboard.insight.addExpenses'),
       upcomingCount: eventRows.length
     }
   };
@@ -553,11 +571,14 @@ router.get('/', (req, res) => {
 });
 
 router.get('/dashboard', requireAuth, async (req, res) => {
+  const t = getTranslator(req);
+  const language = req.language || 'en';
+
   try {
-    const dashboard = await loadDashboardData(req.session.user, req.query);
+    const dashboard = await loadDashboardData(req.session.user, req.query, t, language);
 
     return res.render('dashboard/index', {
-      title: 'Dashboard',
+      title: t('nav.dashboard'),
       activePage: 'dashboard',
       dashboard,
       errorMessage: ''
@@ -566,10 +587,10 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     console.error('Dashboard page error:', error.message);
 
     return res.render('dashboard/index', {
-      title: 'Dashboard',
+      title: t('nav.dashboard'),
       activePage: 'dashboard',
       dashboard: null,
-      errorMessage: 'Failed to load dashboard analytics.'
+      errorMessage: t('dashboard.messages.failedToLoadAnalytics')
     });
   }
 });

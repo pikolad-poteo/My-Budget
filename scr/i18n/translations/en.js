@@ -121,6 +121,114 @@ module.exports = {
   }
 ,
 
+  dashboard: {
+    locale: 'en-US',
+    overview: 'Overview',
+    title: 'Dashboard',
+    description: 'See your financial overview and stay on track with your goals.',
+    addTransaction: 'Add transaction',
+    budgetHealth: 'Budget health',
+    budgetHealthScore: 'Budget health score',
+    aboutBudgetHealth: 'About Budget Health',
+    budgetHealthPopover: 'Budget health is recalculated from the selected period.<br><br><strong>Income</strong> and savings improve the score.<br><strong>High expenses</strong> and large planned wishlist goals reduce it.<br><strong>No financial activity</strong> keeps the score low.',
+    howBudgetHealthCalculated: 'How Budget health is calculated',
+    noDataYet: 'No data yet',
+    budgetSummary: 'Budget summary',
+    currentBalance: 'Current balance',
+    availableAcrossWorkspace: 'Available across this workspace',
+    income: 'Income',
+    expenses: 'Expenses',
+    savingsRate: 'Savings rate',
+    yourGoal: 'Your goal',
+    cashFlowTrend: 'Cash flow trend',
+    cashFlowDescriptionPrefix: 'Income and expenses for',
+    selectedPeriod: 'selected period',
+    upToToday: 'up to today',
+    periodControls: 'Dashboard period controls',
+    previousPeriod: 'Previous period',
+    nextPeriod: 'Next period',
+    periodType: 'Period type',
+    currentPeriod: 'Current period',
+    month: 'Month',
+    year: 'Year',
+    today: 'Today',
+    currentMonth: 'Current month',
+    cashFlowTrendChart: 'Cash flow trend chart',
+    expensesByCategory: 'Expenses by category',
+    expensesByCategoryDescriptionPrefix: 'Largest spending areas for',
+    thisPeriod: 'this period',
+    expensesByCategoryChart: 'Expenses by category chart',
+    top: 'Top',
+    totalExpenses: 'Total expenses',
+    categoryIcon: 'category icon',
+    specialCategoryIcon: 'special category icon',
+    specialDashboardCategories: 'Special dashboard categories',
+    marked: 'marked',
+    featuredCategoriesEmpty: 'Mark expense categories with “Add to dashboard” on the Categories page.',
+    noExpenseCategoriesPrefix: 'No expense categories for',
+    noExpenseCategoriesSuffix: 'yet.',
+    details: 'Dashboard details',
+    recentTransactions: 'Recent transactions',
+    latestBudgetActivity: 'Latest budget activity in your workspace.',
+    latestEntries: 'Latest entries',
+    viewAll: 'View all',
+    by: 'By',
+    category: 'category',
+    noTransactionsYet: 'No transactions yet. Add your first transaction to start building analytics.',
+    upcomingEvents: 'Upcoming events',
+    nearestCalendarEvents: 'Nearest calendar events with their assigned colors.',
+    calendarPreview: 'Calendar preview',
+    viewCalendar: 'View calendar',
+    noUpcomingEventsYet: 'No upcoming events yet.',
+    wishlistImpact: 'Wishlist impact',
+    plannedGoalsDescription: 'Planned goals and how they affect your balance.',
+    goalsPreview: 'Goals preview',
+    viewWishlist: 'View wishlist',
+    plannedValue: 'Planned value',
+    boughtItems: 'Bought items',
+    balanceAfterGoals: 'Balance after goals',
+    image: 'image',
+    noPlannedWishlistGoalsYet: 'No planned wishlist goals yet.',
+    allDay: 'All day',
+    noDescription: 'No description',
+    unknownMember: 'Unknown member',
+    familyWorkspace: 'Family workspace',
+    personalWorkspace: 'Personal workspace',
+
+    period: {
+      thisMonth: 'this month',
+      thisYear: 'this year'
+    },
+
+    healthStatus: {
+      healthy: 'Healthy',
+      stable: 'Stable',
+      needsAttention: 'Needs attention'
+    },
+
+    healthText: {
+      noData: 'Add income and expense transactions to calculate budget health.',
+      healthy: 'Income is comfortably ahead of expenses for the selected period.',
+      stable: 'The budget is usable, but expenses or planned goals need attention.',
+      needsAttention: 'Expenses are too close to income. Review spending categories first.'
+    },
+
+    insight: {
+      biggestExpensePrefix: 'Your biggest expense category is',
+      biggestExpenseMiddle: 'It takes',
+      biggestExpenseSuffix: 'of expenses for',
+      addExpenses: 'Add expense transactions to see your strongest spending category.'
+    },
+
+    messages: {
+      noActivityYet: 'No activity yet',
+      newActivity: 'New activity',
+      vsPreviousPeriod: 'vs previous period',
+      failedToLoadAnalytics: 'Failed to load dashboard analytics.'
+    }
+  }
+,
+
   account: {
     pageTitle: 'Account',
     personalWorkspace: 'Personal workspace',

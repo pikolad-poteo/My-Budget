@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 13 2026 г., 17:41
+-- Время создания: Май 17 2026 г., 14:02
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.0.30
 
@@ -86,7 +86,7 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`, `icon`, `dashboard_featured`, `created_at`) VALUES
 (1, 1, 1, 'Groceries', 'expense', '#22c55e', 'basket', 0, '2026-05-08 08:01:22'),
 (2, 1, 1, 'Transport', 'expense', '#3b82f6', 'car-front', 0, '2026-05-08 08:01:22'),
-(3, 1, 1, 'Coffee', 'expense', '#a16207', 'cup-hot', 1, '2026-05-08 08:01:22'),
+(3, 1, 1, 'Coffee', 'expense', '#ab8617', 'cup-hot', 1, '2026-05-08 08:01:22'),
 (4, 1, 1, 'Shopping', 'expense', '#ec4899', 'bag', 0, '2026-05-08 08:01:22'),
 (5, 1, 1, 'Health', 'expense', '#ef4444', 'heart-pulse', 0, '2026-05-08 08:01:22'),
 (6, 1, 1, 'Education', 'expense', '#8b5cf6', 'book', 0, '2026-05-08 08:01:22'),
@@ -94,18 +94,19 @@ INSERT INTO `categories` (`id`, `user_id`, `family_id`, `name`, `type`, `color`,
 (8, 1, 1, 'Subscriptions', 'expense', '#64748b', 'credit-card', 0, '2026-05-08 08:01:22'),
 (9, 1, 1, 'Salary', 'income', '#16a34a', 'cash-stack', 0, '2026-05-08 08:01:22'),
 (10, 1, 1, 'Freelance', 'income', '#06b6d4', 'laptop', 0, '2026-05-08 08:01:22'),
-(11, 1, 1, 'Refund', 'income', '#84cc16', 'arrow-counterclockwise', 0, '2026-05-08 08:01:22'),
+(11, 1, 1, 'Refund', 'income', '#84cc16', 'piggy-bank', 0, '2026-05-08 08:01:22'),
 (12, 1, 1, 'Gift', 'income', '#f59e0b', 'gift', 0, '2026-05-08 08:01:22'),
-(13, 1, 1, 'Home Bills', 'expense', '#6366f1', 'house', 0, '2026-05-08 08:01:22'),
-(14, 1, 1, 'Family Food', 'expense', '#10b981', 'cart', 0, '2026-05-08 08:01:22'),
-(15, 1, 1, 'Kids', 'expense', '#f59e0b', 'emoji-smile', 0, '2026-05-08 08:01:22'),
-(16, 1, 1, 'Car Service', 'expense', '#0f766e', 'tag', 0, '2026-05-08 08:01:22'),
+(13, 1, 1, 'Home Bills', 'expense', '#6366f1', 'house-door', 0, '2026-05-08 08:01:22'),
+(14, 1, 1, 'Family Food', 'expense', '#10b981', 'cake2', 0, '2026-05-08 08:01:22'),
+(15, 1, 1, 'Kids', 'expense', '#f59e0b', 'people', 0, '2026-05-08 08:01:22'),
+(16, 1, 1, 'Car Service', 'expense', '#0f766e', 'fuel-pump', 1, '2026-05-08 08:01:22'),
 (17, 1, 1, 'Family Income', 'income', '#8b5cf6', 'piggy-bank', 0, '2026-05-08 08:01:22'),
 (18, 1, 1, 'Shared Refund', 'income', '#65a30d', 'wallet2', 0, '2026-05-08 08:01:22'),
 (19, 2, 1, 'Bank', 'income', '#2563eb', 'bank', 0, '2026-05-08 08:01:22'),
-(20, 2, 1, 'Car Audio', 'expense', '#7c3aed', 'tag', 0, '2026-05-08 08:01:22'),
-(21, 2, 1, 'Family Groceries', 'expense', '#22c55e', 'basket2', 0, '2026-05-08 08:01:22'),
-(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash', 0, '2026-05-08 08:01:22');
+(20, 2, 1, 'Car Audio', 'income', '#a16e4a', 'car-front', 1, '2026-05-08 08:01:22'),
+(21, 2, 1, 'Family Groceries', 'expense', '#3b82f6', 'basket2', 0, '2026-05-08 08:01:22'),
+(22, 2, 1, 'Shared Salary', 'income', '#16a34a', 'cash-stack', 0, '2026-05-08 08:01:22'),
+(32, 1, 1, 'ferhkgbferg', 'income', '#416195', 'cup-hot', 1, '2026-05-15 16:08:42');
 
 -- --------------------------------------------------------
 
@@ -346,7 +347,6 @@ INSERT INTO `transactions` (`id`, `user_id`, `family_id`, `category_id`, `type`,
 (17, 1, 1, 5, 'expense', -32.70, 'Vitamins', '2026-05-14', 1, '2026-05-08 08:01:22'),
 (18, 1, 1, 6, 'expense', -12.99, 'Programming book discount', '2026-05-15', 1, '2026-05-08 08:01:22'),
 (19, 1, 1, 7, 'expense', -59.99, 'Game purchase', '2026-05-16', 1, '2026-05-08 08:01:22'),
-(20, 1, 1, 8, 'expense', -14.99, 'Cloud storage', '2026-05-17', 1, '2026-05-08 08:01:22'),
 (21, 1, 1, 13, 'expense', -95.00, 'Electricity bill', '2026-05-03', 1, '2026-05-08 08:01:22'),
 (22, 1, 1, 14, 'expense', -88.60, 'Family dinner groceries', '2026-05-04', 1, '2026-05-08 08:01:22'),
 (23, 1, 1, 15, 'expense', -41.30, 'School supplies', '2026-05-05', 1, '2026-05-08 08:01:22'),
@@ -429,7 +429,8 @@ INSERT INTO `wishlist_folders` (`id`, `user_id`, `family_id`, `name`, `created_a
 (6, 1, 1, 'Very Long Folder Name For Layout Testing', '2026-05-08 08:01:22'),
 (7, 2, 1, 'Noortehnik', '2026-05-08 08:01:22'),
 (8, 2, 1, 'Car Audio', '2026-05-08 08:01:22'),
-(9, 2, 1, 'Clothes', '2026-05-08 08:01:22');
+(9, 2, 1, 'Clothes', '2026-05-08 08:01:22'),
+(10, 1, 1, 'Car Audio', '2026-05-15 16:10:04');
 
 -- --------------------------------------------------------
 
@@ -593,13 +594,13 @@ ALTER TABLE `wishlist_items`
 -- AUTO_INCREMENT для таблицы `calendar_events`
 --
 ALTER TABLE `calendar_events`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT для таблицы `email_verification_tokens`
@@ -647,13 +648,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `wishlist_folders`
 --
 ALTER TABLE `wishlist_folders`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `wishlist_items`
 --
 ALTER TABLE `wishlist_items`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

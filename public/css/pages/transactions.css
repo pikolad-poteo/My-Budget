@@ -222,62 +222,46 @@
   color: #ffffff;
 }
 
+
 .transaction-advanced-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
   min-height: 42px;
-  padding-inline: 2px;
-  color: #4b5563;
-  font-size: 14px;
-  font-weight: 800;
+  padding: 9px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: #f9fafb;
+  color: var(--app-muted);
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.transaction-advanced-toggle span {
-  border-bottom: 2px solid rgba(75, 85, 99, 0.28);
-  padding-bottom: 2px;
+.transaction-advanced-toggle i {
+  font-size: 15px;
 }
 
-.transaction-advanced-toggle::after {
-  content: '';
-  display: inline-block;
-  width: 0;
-  height: 0;
-  margin-top: 2px;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid #6b7280;
-  transition: border-top-color 0.2s ease;
+.transaction-advanced-toggle:hover {
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: var(--app-heading);
 }
 
-.transaction-advanced-toggle:hover,
 .transaction-advanced-toggle.is-open,
 .transaction-advanced-toggle[aria-expanded='true'] {
-  color: #111827;
-  text-decoration: none;
-}
-
-.transaction-advanced-toggle:hover span,
-.transaction-advanced-toggle.is-open span,
-.transaction-advanced-toggle[aria-expanded='true'] span {
-  border-bottom-color: rgba(17, 24, 39, 0.55);
-}
-
-.transaction-advanced-toggle:hover::after,
-.transaction-advanced-toggle.is-open::after,
-.transaction-advanced-toggle[aria-expanded='true']::after {
-  border-top-color: #111827;
+  border-color: var(--app-heading);
+  background: var(--app-heading);
+  color: #ffffff;
 }
 
 .transaction-filter-actions {
   flex-shrink: 0;
 }
-
 
 .transaction-show-all-toggle {
   display: inline-flex;
@@ -285,12 +269,12 @@
   justify-content: center;
   min-height: 42px;
   padding: 9px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: #f8fafc;
-  color: #4b5563;
+  background: #f9fafb;
+  color: var(--app-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   text-align: center;
   text-decoration: none;
@@ -298,14 +282,14 @@
 }
 
 .transaction-show-all-toggle:hover {
-  border-color: #cbd5e1;
-  background: #eef2f7;
-  color: #111827;
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: var(--app-heading);
 }
 
 .transaction-show-all-toggle.is-active {
-  border-color: #111827;
-  background: #111827;
+  border-color: var(--app-heading);
+  background: var(--app-heading);
   color: #ffffff;
 }
 
@@ -318,13 +302,28 @@
 }
 
 .transactions-table {
-  min-width: 900px;
+  min-width: 980px;
+  table-layout: fixed;
 }
 
-.transaction-table-card,
-.transaction-table-card > .card-body,
-.transaction-table-responsive {
-  overflow: visible;
+.transaction-col-date {
+  width: 18%;
+}
+
+.transaction-col-category {
+  width: 36%;
+}
+
+.transaction-col-member {
+  width: 17%;
+}
+
+.transaction-col-amount {
+  width: 15%;
+}
+
+.transaction-col-actions {
+  width: 14%;
 }
 
 .transaction-table-responsive {
@@ -333,7 +332,7 @@
 
 .transactions-table thead th {
   padding-top: 0;
-  border-bottom-color: #e5e7eb;
+  border-bottom-color: var(--app-border);
   color: #6b7280;
   font-size: 13px;
   font-weight: 800;
@@ -342,29 +341,78 @@
 }
 
 .transactions-table tbody td {
+  height: 76px;
   padding: 16px 12px;
-  border-bottom-color: #e5e7eb;
-  vertical-align: top;
+  border-bottom-color: var(--app-border);
+  vertical-align: middle;
+}
+
+.transactions-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.transactions-table tbody tr:hover {
+  background: #f9fafb;
 }
 
 .transactions-table tbody tr:last-child td {
   border-bottom: 0;
 }
 
+.transaction-date-text,
+.transaction-member-text,
+.transaction-category-name,
+.transaction-row-note {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .transaction-date-text {
-  display: inline-block;
-  min-width: 135px;
   color: #111827;
   font-weight: 700;
 }
 
+.transaction-member-text {
+  color: #374151;
+  font-weight: 700;
+}
+
+.transaction-category-cell {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.transaction-category-copy {
+  min-width: 0;
+}
+
+.transaction-category-name {
+  color: #111827;
+  font-weight: 800;
+}
+
 .transaction-row-note {
   margin-top: 4px;
+  color: #6b7280;
   font-size: 13px;
 }
 
+.transaction-row-note--empty {
+  color: #9ca3af;
+}
+
 .transaction-amount {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
   font-weight: 800;
+  text-overflow: ellipsis;
+  vertical-align: middle;
   white-space: nowrap;
 }
 
@@ -376,37 +424,82 @@
   color: #047857;
 }
 
-.transaction-row-actions .dropdown-toggle::after {
-  margin-left: 0.45rem;
+.transaction-manage-btn {
+  min-width: 96px;
+  border-color: var(--app-border);
+  color: var(--app-muted);
+  font-weight: 700;
 }
 
-.transaction-row-actions-dropdown {
-  width: min(420px, 82vw);
-  max-height: min(560px, calc(100vh - 96px));
-  overflow-y: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-  z-index: 1080;
+.transaction-manage-btn:hover {
+  border-color: var(--app-heading);
+  background: var(--app-heading);
+  color: #ffffff;
+}
+
+.transaction-edit-modal-content {
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+}
+
+.transaction-edit-modal-header {
+  align-items: flex-start;
+  padding: 24px 30px 18px;
+  border-bottom: 1px solid var(--app-border);
+  text-align: left;
+}
+
+.transaction-edit-title-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+
+.transaction-edit-eyebrow {
+  margin: 0 0 8px;
+  text-align: left;
+}
+
+.transaction-edit-modal-body {
+  padding: 24px 30px 30px;
+  text-align: left;
+}
+
+.transaction-edit-modal .form-label {
+  margin-bottom: 6px;
+  color: var(--app-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.transaction-edit-modal .form-control,
+.transaction-edit-modal .form-select {
+  min-height: 48px;
+  border-color: var(--app-border);
+  border-radius: 14px;
+}
+
+.transaction-edit-modal .form-control:focus,
+.transaction-edit-modal .form-select:focus {
+  border-color: var(--app-heading);
+  box-shadow: 0 0 0 0.2rem rgba(17, 24, 39, 0.08);
 }
 
 .transaction-row-edit-form {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #eef2f7;
+  margin-bottom: 22px;
 }
 
-.transaction-row-actions-dropdown .form-label {
-  margin-bottom: 4px;
-  font-size: 12px;
+.transaction-edit-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-top: 22px;
+  border-top: 1px solid var(--app-border);
+}
+
+.transaction-edit-modal-actions .btn {
+  min-height: 46px;
   font-weight: 800;
-  color: #4b5563;
-}
-
-.transaction-row-actions-dropdown .form-control,
-.transaction-row-actions-dropdown .form-select {
-  border-color: #e5e7eb;
-  border-radius: 12px;
 }
 
 @media (max-width: 1100px) {
@@ -459,14 +552,6 @@
   .transaction-table-responsive {
     overflow-x: auto;
     overflow-y: visible;
-  }
-
-  .transaction-row-actions-dropdown.show {
-    position: fixed !important;
-    inset: auto 16px 24px 16px !important;
-    transform: none !important;
-    width: auto;
-    max-height: calc(100vh - 48px);
   }
 }
 
@@ -576,35 +661,6 @@
   color: #ffffff;
 }
 
-.transaction-show-all-toggle {
-  border-color: var(--app-border);
-  background: #f9fafb;
-  color: var(--app-muted);
-  font-weight: 700;
-}
-
-.transaction-show-all-toggle:hover {
-  border-color: #d1d5db;
-  background: #ffffff;
-  color: var(--app-heading);
-}
-
-.transaction-show-all-toggle.is-active {
-  border-color: var(--app-heading);
-  background: var(--app-heading);
-  color: #ffffff;
-}
-
-.transaction-advanced-toggle {
-  color: var(--app-muted);
-  font-weight: 700;
-}
-
-.transaction-advanced-toggle:hover,
-.transaction-advanced-toggle.is-open,
-.transaction-advanced-toggle[aria-expanded='true'] {
-  color: var(--app-heading);
-}
 
 .transaction-advanced-panel.is-open {
   margin-top: 24px;

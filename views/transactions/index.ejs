@@ -14,18 +14,18 @@
   <% } %>
 
   <%- include('../partials/page-overview', {
-    eyebrow: 'Management',
-    heading: 'Transaction overview',
-    description: 'Track personal and family income or expenses in one clean workspace.',
+    eyebrow: t('transactions.management'),
+    heading: t('transactions.overviewTitle'),
+    description: t('transactions.overviewDescription'),
     buttonId: 'toggleTransactionCreateButton',
     buttonTextId: 'toggleTransactionCreateButtonText',
     controlsId: 'transactionCreatePanel',
-    buttonLabel: 'Add transaction',
+    buttonLabel: t('transactions.addTransaction'),
     stats: [
-      { value: summary.total, label: 'Total' },
-      { value: summary.expenseCount, label: 'Expenses' },
-      { value: summary.incomeCount, label: 'Income' },
-      { value: family ? 'On' : 'Off', label: 'Family mode' }
+      { value: summary.total, label: t('transactions.total') },
+      { value: summary.expenseCount, label: t('transactions.expenses') },
+      { value: summary.incomeCount, label: t('transactions.income') },
+      { value: family ? t('transactions.on') : t('transactions.off'), label: t('transactions.familyMode') }
     ],
     createContent: include('./_form_new', { categories, members, filters })
   }) %>
@@ -36,6 +36,12 @@
   </div>
 </section>
 
+<script>
+  window.transactionI18n = <%- JSON.stringify({
+    addTransaction: t('transactions.addTransaction'),
+    hideForm: t('transactions.hideForm')
+  }).replace(/</g, '\\u003c') %>;
+</script>
 <script src="/js/transactions.js"></script>
 
 <%- include('../partials/footer') %>

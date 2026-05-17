@@ -9,7 +9,7 @@
     const date = new Date(`${value}T00:00:00`);
     if (Number.isNaN(date.getTime())) return value;
 
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(t('transactions.locale'), {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -21,53 +21,63 @@
   <div class="card-body p-4">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
       <div>
-        <p class="section-label">Transaction</p>
-        <h2 class="h3 fw-bold mb-0">History</h2>
+        <p class="section-label"><%= t('transactions.transaction') %></p>
+        <h2 class="h3 fw-bold mb-0"><%= t('transactions.history') %></h2>
       </div>
 
-      <span class="badge rounded-pill text-bg-light transaction-history-count"><%= transactions.length %> entries</span>
+      <span class="badge rounded-pill text-bg-light transaction-history-count"><%= transactions.length %> <%= t('transactions.entries') %></span>
     </div>
 
     <% if (!transactions.length) { %>
       <div class="categories-empty-state" role="status">
         <span class="categories-empty-icon"><i class="bi bi-receipt"></i></span>
-        <h3>No transactions found</h3>
-        <p>No transactions match the selected filters yet.</p>
+        <h3><%= t('transactions.noTransactionsFound') %></h3>
+        <p><%= t('transactions.noTransactionsMatch') %></p>
       </div>
     <% } else { %>
       <div class="table-responsive transaction-table-responsive">
         <table class="table align-middle transactions-table mb-0">
+          <colgroup>
+            <col class="transaction-col-date" />
+            <col class="transaction-col-category" />
+            <col class="transaction-col-member" />
+            <col class="transaction-col-amount" />
+            <col class="transaction-col-actions" />
+          </colgroup>
+
           <thead>
             <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Category</th>
-              <th scope="col">Paid by</th>
-              <th scope="col">Scope</th>
-              <th scope="col" class="text-end">Amount</th>
-              <th scope="col" class="text-end">Actions</th>
+              <th scope="col"><%= t('transactions.date') %></th>
+              <th scope="col"><%= t('transactions.category') %></th>
+              <th scope="col"><%= t('transactions.paidBy') %></th>
+              <th scope="col" class="text-end"><%= t('transactions.amount') %></th>
+              <th scope="col" class="text-end"><%= t('transactions.actions') %></th>
             </tr>
           </thead>
 
           <tbody>
             <% transactions.forEach((transaction) => { %>
               <tr>
-                <td><span class="transaction-date-text"><%= formatPrettyDate(transaction.transaction_date) %></span></td>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
+                  <span class="transaction-date-text"><%= formatPrettyDate(transaction.transaction_date) %></span>
+                </td>
+                <td>
+                  <div class="transaction-category-cell">
                     <span class="transaction-table-icon" style="background-color: <%= transaction.category_color %>22; color: <%= transaction.category_color %>;">
                       <i class="bi bi-<%= transaction.category_icon %>"></i>
                     </span>
-                    <div class="min-w-0">
-                      <strong class="d-block"><%= transaction.category_name %></strong>
+                    <div class="transaction-category-copy">
+                      <strong class="transaction-category-name"><%= transaction.category_name %></strong>
                       <% if (transaction.description) { %>
                         <div class="transaction-row-note"><%= transaction.description %></div>
+                      <% } else { %>
+                        <div class="transaction-row-note transaction-row-note--empty"><%= t('transactions.noDescription') %></div>
                       <% } %>
                     </div>
                   </div>
                 </td>
-                <td><%= transaction.paid_by_name || '—' %></td>
                 <td>
-                  <span class="category-meta-pill category-meta-pill--soft"><%= transaction.family_id ? 'Family' : 'Personal' %></span>
+                  <span class="transaction-member-text"><%= transaction.paid_by_name || '—' %></span>
                 </td>
                 <td class="text-end">
                   <span class="transaction-amount <%= transaction.type === 'income' ? 'is-income' : 'is-expense' %>">
@@ -75,106 +85,127 @@
                   </span>
                 </td>
                 <td class="text-end">
-                  <div class="dropdown transaction-row-actions">
-                    <button
-                      class="btn btn-outline-secondary btn-sm rounded-pill px-3 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      data-bs-boundary="viewport"
-                      aria-expanded="false"
-                    >
-                      Manage
-                    </button>
-
-                    <div class="dropdown-menu dropdown-menu-end transaction-row-actions-dropdown p-3">
-                      <form
-                        class="transaction-row-edit-form"
-                        method="POST"
-                        action="/transactions/<%= transaction.id %>/update"
-                      >
-                        <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
-                        <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
-                        <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
-                        <input type="hidden" name="redirectType" value="<%= filters.type %>" />
-                        <input type="hidden" name="redirectScope" value="<%= filters.scope %>" />
-                        <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
-                        <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
-                        <input type="hidden" name="redirectDir" value="<%= filters.dir || 'desc' %>" />
-                        <input type="hidden" name="redirectShowAll" value="<%= filters.showAll ? '1' : '' %>" />
-
-                        <div class="row g-2 mb-3">
-                          <div class="col-6">
-                            <label class="form-label">Type</label>
-                            <select class="form-select form-select-sm" name="type">
-                              <option value="expense" <%= transaction.type === 'expense' ? 'selected' : '' %>>Expense</option>
-                              <option value="income" <%= transaction.type === 'income' ? 'selected' : '' %>>Income</option>
-                            </select>
-                          </div>
-
-                          <div class="col-6">
-                            <label class="form-label">Amount</label>
-                            <input class="form-control form-control-sm" type="number" name="amount" min="0.01" step="0.01" value="<%= toPositiveAmount(transaction.amount) %>" required />
-                          </div>
-
-                          <div class="col-6">
-                            <label class="form-label">Date</label>
-                            <input class="form-control form-control-sm" type="date" name="transaction_date" value="<%= transaction.transaction_date %>" required />
-                          </div>
-
-                          <div class="col-6">
-                            <label class="form-label">Category</label>
-                            <select class="form-select form-select-sm" name="category_id" required>
-                              <% categories.forEach((category) => { %>
-                                <option value="<%= category.id %>" <%= Number(category.id) === Number(transaction.category_id) ? 'selected' : '' %>><%= category.name %></option>
-                              <% }) %>
-                            </select>
-                          </div>
-
-                          <div class="col-12">
-                            <label class="form-label">Paid by</label>
-                            <select class="form-select form-select-sm" name="paid_by_user_id">
-                              <% members.forEach((member) => { %>
-                                <option value="<%= member.id %>" <%= Number(member.id) === Number(transaction.paid_by_user_id) ? 'selected' : '' %>><%= member.name %></option>
-                              <% }) %>
-                            </select>
-                          </div>
-
-                          <div class="col-12">
-                            <label class="form-label">Description</label>
-                            <input class="form-control form-control-sm" type="text" name="description" value="<%= transaction.description || '' %>" />
-                          </div>
-                        </div>
-
-                        <button class="btn btn-primary btn-sm rounded-pill px-3" type="submit">Save</button>
-                      </form>
-
-                      <form
-                        method="POST"
-                        action="/transactions/<%= transaction.id %>/delete"
-                        onsubmit="return confirm('Delete this transaction?');"
-                        data-history-mutation-form
-                      >
-                        <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
-                        <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
-                        <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
-                        <input type="hidden" name="redirectType" value="<%= filters.type %>" />
-                        <input type="hidden" name="redirectScope" value="<%= filters.scope %>" />
-                        <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
-                        <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
-                        <input type="hidden" name="redirectDir" value="<%= filters.dir || 'desc' %>" />
-                        <input type="hidden" name="redirectShowAll" value="<%= filters.showAll ? '1' : '' %>" />
-
-                        <button class="btn btn-outline-danger btn-sm rounded-pill w-100" type="submit">Delete</button>
-                      </form>
-                    </div>
-                  </div>
+                  <button
+                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 transaction-manage-btn"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#transactionEditModal<%= transaction.id %>"
+                  >
+                    <%= t('transactions.manage') %>
+                  </button>
                 </td>
               </tr>
             <% }) %>
           </tbody>
         </table>
       </div>
+
+      <% transactions.forEach((transaction) => { %>
+        <div
+          class="modal fade transaction-edit-modal"
+          id="transactionEditModal<%= transaction.id %>"
+          tabindex="-1"
+          aria-labelledby="transactionEditModalLabel<%= transaction.id %>"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 transaction-edit-modal-content">
+              <div class="modal-header transaction-edit-modal-header">
+                <div class="transaction-edit-title-wrap">
+                  <p class="section-label transaction-edit-eyebrow"><%= t('transactions.edit') %></p>
+                  <h2 class="modal-title h4 fw-bold mb-0" id="transactionEditModalLabel<%= transaction.id %>"><%= t('transactions.editTransaction') %></h2>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('transactions.close') %>"></button>
+              </div>
+
+              <div class="modal-body transaction-edit-modal-body">
+                <form
+                  id="transactionEditForm<%= transaction.id %>"
+                  class="transaction-row-edit-form"
+                  method="POST"
+                  action="/transactions/<%= transaction.id %>/update"
+                  data-history-mutation-form
+                >
+                  <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
+                  <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
+                  <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
+                  <input type="hidden" name="redirectType" value="<%= filters.type %>" />
+                  <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
+                  <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
+                  <input type="hidden" name="redirectDir" value="<%= filters.dir || 'desc' %>" />
+                  <input type="hidden" name="redirectShowAll" value="<%= filters.showAll ? '1' : '' %>" />
+
+                  <div class="row g-3 mb-0">
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.type') %></label>
+                      <select class="form-select" name="type">
+                        <option value="expense" <%= transaction.type === 'expense' ? 'selected' : '' %>><%= t('transactions.expense') %></option>
+                        <option value="income" <%= transaction.type === 'income' ? 'selected' : '' %>><%= t('transactions.income') %></option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.amount') %></label>
+                      <input class="form-control" type="number" name="amount" min="0.01" step="0.01" value="<%= toPositiveAmount(transaction.amount) %>" required />
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.date') %></label>
+                      <input class="form-control" type="date" name="transaction_date" value="<%= transaction.transaction_date %>" required />
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.category') %></label>
+                      <select class="form-select" name="category_id" required>
+                        <% categories.forEach((category) => { %>
+                          <option value="<%= category.id %>" <%= Number(category.id) === Number(transaction.category_id) ? 'selected' : '' %>><%= category.name %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.paidBy') %></label>
+                      <select class="form-select" name="paid_by_user_id">
+                        <% members.forEach((member) => { %>
+                          <option value="<%= member.id %>" <%= Number(member.id) === Number(transaction.paid_by_user_id) ? 'selected' : '' %>><%= member.name %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"><%= t('transactions.description') %></label>
+                      <input class="form-control" type="text" name="description" value="<%= transaction.description || '' %>" />
+                    </div>
+                  </div>
+                </form>
+
+                <form
+                  id="transactionDeleteForm<%= transaction.id %>"
+                  method="POST"
+                  action="/transactions/<%= transaction.id %>/delete"
+                  onsubmit="return confirm('<%= t('transactions.confirmDelete') %>');"
+                  data-history-mutation-form
+                >
+                  <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
+                  <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
+                  <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
+                  <input type="hidden" name="redirectType" value="<%= filters.type %>" />
+                  <input type="hidden" name="redirectMember" value="<%= filters.member %>" />
+                  <input type="hidden" name="redirectView" value="<%= filters.view || 'date' %>" />
+                  <input type="hidden" name="redirectDir" value="<%= filters.dir || 'desc' %>" />
+                  <input type="hidden" name="redirectShowAll" value="<%= filters.showAll ? '1' : '' %>" />
+                </form>
+
+                <div class="transaction-edit-modal-actions">
+                  <button class="btn btn-primary rounded-pill px-4" type="submit" form="transactionEditForm<%= transaction.id %>"><%= t('transactions.saveChanges') %></button>
+                  <button class="btn btn-outline-danger rounded-pill px-4" type="submit" form="transactionDeleteForm<%= transaction.id %>"><%= t('transactions.deleteTransaction') %></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
     <% } %>
   </div>
 </section>

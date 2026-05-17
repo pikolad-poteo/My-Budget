@@ -13,7 +13,6 @@ const {
   sanitizeTransactionMemberId,
   sanitizeTransactionCategoryId,
   sanitizeTransactionFilterType,
-  sanitizeTransactionFilterScope,
   sanitizeTransactionView,
   sanitizeTransactionSortDir,
   buildTransactionsRedirect,
@@ -50,7 +49,6 @@ router.get('/transactions', requireAuth, async (req, res) => {
       to: sanitizeTransactionDate(req.query.to || defaultDates.to),
       category: String(req.query.category || 'all').trim(),
       type: resolvedType,
-      scope: sanitizeTransactionFilterScope(req.query.scope),
       member: String(req.query.member || 'all').trim(),
       view: requestedView,
       dir: requestedDir,
@@ -78,7 +76,6 @@ router.get('/transactions', requireAuth, async (req, res) => {
         to: normalizedFilters.showAll ? null : normalizedFilters.to,
         categoryId: normalizedFilters.category !== 'all' ? Number(normalizedFilters.category) : null,
         type: normalizedFilters.type,
-        scope: normalizedFilters.scope,
         memberId: normalizedFilters.member !== 'all' ? Number(normalizedFilters.member) : null,
         view: normalizedFilters.view,
         dir: normalizedFilters.dir
@@ -118,7 +115,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
       (normalizedFilters.view === 'date' && normalizedFilters.type !== 'all');
 
     return res.render('transactions/index', {
-      title: 'Transactions',
+      title: req.t('transactions.pageTitle'),
       activePage: 'transactions',
       family,
       canEditBudget,
@@ -138,7 +135,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
     console.error('Transactions page error:', error.message);
 
     return res.render('transactions/index', {
-      title: 'Transactions',
+      title: req.t('transactions.pageTitle'),
       activePage: 'transactions',
       family: null,
       canEditBudget: true,
@@ -149,7 +146,6 @@ router.get('/transactions', requireAuth, async (req, res) => {
         ...getDefaultTransactionDates(),
         category: 'all',
         type: 'all',
-        scope: 'all',
         member: 'all',
         view: 'date',
         dir: 'desc',
@@ -164,7 +160,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
         incomeCount: 0,
         expenseCount: 0
       },
-      errorMessage: 'Failed to load transactions.',
+      errorMessage: req.t('transactions.messages.failedToLoadTransactions'),
       successMessage: ''
     });
   }
@@ -184,7 +180,7 @@ router.post('/transactions/create', requireAuth, requireBudgetEditor('transactio
     const transactionDate = sanitizeTransactionDate(req.body.transaction_date);
 
     if (!categoryId || !amount) {
-      setTransactionFlash(req, 'error', 'Amount and category are required.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.amountAndCategoryRequired'));
       return res.redirect(redirectUrl);
     }
 
@@ -192,7 +188,7 @@ router.post('/transactions/create', requireAuth, requireBudgetEditor('transactio
     const category = categoryRows.find((item) => Number(item.id) === Number(categoryId));
 
     if (!category) {
-      setTransactionFlash(req, 'error', 'Selected category is not available.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.selectedCategoryUnavailable'));
       return res.redirect(redirectUrl);
     }
 
@@ -200,7 +196,7 @@ router.post('/transactions/create', requireAuth, requireBudgetEditor('transactio
     const memberExists = members.some((member) => Number(member.id) === Number(paidByUserId));
 
     if (!memberExists) {
-      setTransactionFlash(req, 'error', 'Selected payer is not available.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.selectedPayerUnavailable'));
       return res.redirect(redirectUrl);
     }
 
@@ -233,11 +229,11 @@ router.post('/transactions/create', requireAuth, requireBudgetEditor('transactio
       ]
     );
 
-    setTransactionFlash(req, 'success', 'Transaction created successfully.');
+    setTransactionFlash(req, 'success', req.t('transactions.messages.transactionCreated'));
     return res.redirect(redirectUrl);
   } catch (error) {
     console.error('Transaction creation error:', error.message);
-    setTransactionFlash(req, 'error', 'Failed to create transaction.');
+    setTransactionFlash(req, 'error', req.t('transactions.messages.failedToCreateTransaction'));
     return res.redirect(buildTransactionsRedirect(req));
   }
 });
@@ -258,7 +254,7 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
     const transactionDate = sanitizeTransactionDate(req.body.transaction_date);
 
     if (!transactionId || !categoryId || !amount) {
-      setTransactionFlash(req, 'error', 'Invalid transaction data.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.invalidTransactionData'));
       return res.redirect(redirectUrl);
     }
 
@@ -269,7 +265,7 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
     );
 
     if (!existingTransaction) {
-      setTransactionFlash(req, 'error', 'Transaction not found.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.transactionNotFound'));
       return res.redirect(redirectUrl);
     }
 
@@ -277,7 +273,7 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
     const category = categoryRows.find((item) => Number(item.id) === Number(categoryId));
 
     if (!category) {
-      setTransactionFlash(req, 'error', 'Selected category is not available.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.selectedCategoryUnavailable'));
       return res.redirect(redirectUrl);
     }
 
@@ -285,7 +281,7 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
     const memberExists = members.some((member) => Number(member.id) === Number(paidByUserId));
 
     if (!memberExists) {
-      setTransactionFlash(req, 'error', 'Selected payer is not available.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.selectedPayerUnavailable'));
       return res.redirect(redirectUrl);
     }
 
@@ -312,15 +308,15 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
     );
 
     if (!updateResult || updateResult.affectedRows !== 1) {
-      setTransactionFlash(req, 'error', 'Transaction was not updated.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.transactionNotUpdated'));
       return res.redirect(redirectUrl);
     }
 
-    setTransactionFlash(req, 'success', 'Transaction updated successfully.');
+    setTransactionFlash(req, 'success', req.t('transactions.messages.transactionUpdated'));
     return res.redirect(redirectUrl);
   } catch (error) {
     console.error('Transaction update error:', error.message);
-    setTransactionFlash(req, 'error', 'Failed to update transaction.');
+    setTransactionFlash(req, 'error', req.t('transactions.messages.failedToUpdateTransaction'));
     return res.redirect(buildTransactionsRedirect(req));
   }
 });
@@ -334,7 +330,7 @@ router.post('/transactions/:id/delete', requireAuth, requireBudgetEditor('transa
     const redirectUrl = buildTransactionsRedirect(req);
 
     if (!transactionId) {
-      setTransactionFlash(req, 'error', 'Invalid transaction id.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.invalidTransactionId'));
       return res.redirect(redirectUrl);
     }
 
@@ -345,17 +341,17 @@ router.post('/transactions/:id/delete', requireAuth, requireBudgetEditor('transa
     );
 
     if (!existingTransaction) {
-      setTransactionFlash(req, 'error', 'Transaction not found.');
+      setTransactionFlash(req, 'error', req.t('transactions.messages.transactionNotFound'));
       return res.redirect(redirectUrl);
     }
 
     await db.query('DELETE FROM transactions WHERE id = ? LIMIT 1', [transactionId]);
 
-    setTransactionFlash(req, 'success', 'Transaction deleted successfully.');
+    setTransactionFlash(req, 'success', req.t('transactions.messages.transactionDeleted'));
     return res.redirect(redirectUrl);
   } catch (error) {
     console.error('Transaction deletion error:', error.message);
-    setTransactionFlash(req, 'error', 'Failed to delete transaction.');
+    setTransactionFlash(req, 'error', req.t('transactions.messages.failedToDeleteTransaction'));
     return res.redirect(buildTransactionsRedirect(req));
   }
 });

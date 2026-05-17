@@ -53,17 +53,17 @@
     <div class="transaction-filters-header">
       <div class="transaction-filters-left">
         <div class="transaction-filters-title">
-          <p class="section-label">Search</p>
-          <h2 class="mb-0">Filters</h2>
+          <p class="section-label"><%= t('transactions.search') %></p>
+          <h2 class="mb-0"><%= t('transactions.filters') %></h2>
         </div>
 
-        <div class="categories-switcher transaction-view-switch" role="group" aria-label="Transaction history view">
+        <div class="categories-switcher transaction-view-switch" role="group" aria-label="<%= t('transactions.historyView') %>">
           <a
             href="<%= buildHistoryViewUrl('date') %>"
             class="categories-switcher-btn transaction-view-pill <%= (filters.view || 'date') === 'date' ? 'is-active' : '' %>"
             data-history-link
           >
-            By date
+            <%= t('transactions.byDate') %>
           </a>
 
           <a
@@ -71,7 +71,7 @@
             class="categories-switcher-btn transaction-view-pill <%= filters.view === 'expenses' ? 'is-active' : '' %>"
             data-history-link
           >
-            Expenses
+            <%= t('transactions.expenses') %>
           </a>
 
           <a
@@ -79,7 +79,7 @@
             class="categories-switcher-btn transaction-view-pill <%= filters.view === 'income' ? 'is-active' : '' %>"
             data-history-link
           >
-            Income
+            <%= t('transactions.income') %>
           </a>
         </div>
       </div>
@@ -91,16 +91,17 @@
             data-history-link
             aria-pressed="<%= filters.showAll ? 'true' : 'false' %>"
           >
-            Show all transactions
+            <%= t('transactions.showAllTransactions') %>
           </a>
 
           <button
-            class="btn btn-link transaction-advanced-toggle"
+            class="btn transaction-advanced-toggle"
             type="button"
             data-advanced-filters-toggle
             aria-expanded="<%= filters.hasAdvancedFilters ? 'true' : 'false' %>"
           >
-            <span>Advanced filters</span>
+            <span><%= t('transactions.advancedFilters') %></span>
+            <i class="bi bi-sliders2" aria-hidden="true"></i>
           </button>
       </div>
     </div>
@@ -112,19 +113,19 @@
 
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label" for="filterFrom">From</label>
+            <label class="form-label" for="filterFrom"><%= t('transactions.from') %></label>
             <input class="form-control transaction-date-input" id="filterFrom" name="from" type="date" value="<%= filters.from %>" />
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" for="filterTo">To</label>
+            <label class="form-label" for="filterTo"><%= t('transactions.to') %></label>
             <input class="form-control transaction-date-input" id="filterTo" name="to" type="date" value="<%= filters.to %>" />
           </div>
 
           <div class="col-md-6 col-xl-3">
-            <label class="form-label" for="filterCategory">Category</label>
+            <label class="form-label" for="filterCategory"><%= t('transactions.category') %></label>
             <select class="form-select" id="filterCategory" name="category">
-              <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>>All categories</option>
+              <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>><%= t('transactions.allCategories') %></option>
               <% categories.forEach((category) => { %>
                 <option value="<%= category.id %>" <%= String(filters.category) === String(category.id) ? 'selected' : '' %>>
                   <%= category.name %>
@@ -134,18 +135,18 @@
           </div>
 
           <div class="col-md-6 col-xl-3">
-            <label class="form-label" for="filterType">Type</label>
+            <label class="form-label" for="filterType"><%= t('transactions.type') %></label>
             <select class="form-select" id="filterType" name="type">
-              <option value="all" <%= filters.type === 'all' ? 'selected' : '' %>>All</option>
-              <option value="expense" <%= filters.type === 'expense' ? 'selected' : '' %>>Expense</option>
-              <option value="income" <%= filters.type === 'income' ? 'selected' : '' %>>Income</option>
+              <option value="all" <%= filters.type === 'all' ? 'selected' : '' %>><%= t('transactions.all') %></option>
+              <option value="expense" <%= filters.type === 'expense' ? 'selected' : '' %>><%= t('transactions.expense') %></option>
+              <option value="income" <%= filters.type === 'income' ? 'selected' : '' %>><%= t('transactions.income') %></option>
             </select>
           </div>
 
           <div class="col-md-6 col-xl-3">
-            <label class="form-label" for="filterMember">Paid by</label>
+            <label class="form-label" for="filterMember"><%= t('transactions.paidBy') %></label>
             <select class="form-select" id="filterMember" name="member">
-              <option value="all" <%= filters.member === 'all' ? 'selected' : '' %>>All members</option>
+              <option value="all" <%= filters.member === 'all' ? 'selected' : '' %>><%= t('transactions.allMembers') %></option>
               <% members.forEach((member) => { %>
                 <option value="<%= member.id %>" <%= String(filters.member) === String(member.id) ? 'selected' : '' %>>
                   <%= member.name %>
@@ -156,10 +157,10 @@
         </div>
 
         <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
-          <button class="btn btn-primary rounded-pill px-4" type="submit">Apply filters</button>
+          <button class="btn btn-primary rounded-pill px-4" type="submit"><%= t('transactions.applyFilters') %></button>
 
           <a href="/transactions?view=date&dir=desc" class="btn btn-outline-secondary rounded-pill px-4" data-history-link>
-            Reset
+            <%= t('transactions.reset') %>
           </a>
         </div>
       </form>

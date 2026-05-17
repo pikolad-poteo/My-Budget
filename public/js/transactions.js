@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const transactionI18n = window.transactionI18n || {};
+
 
     function initTransactionCreateToggle() {
       const panel = document.getElementById('transactionCreatePanel');
@@ -17,7 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 
         if (buttonText) {
-          buttonText.textContent = isOpen ? 'Hide form' : 'Add transaction';
+          buttonText.textContent = isOpen
+            ? (transactionI18n.hideForm || 'Hide form')
+            : (transactionI18n.addTransaction || 'Add transaction');
         }
 
         if (isOpen && shouldScroll) {
@@ -157,6 +161,23 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+
+    function clearTransactionModalState() {
+      const openModal = document.querySelector('.transaction-edit-modal.show');
+
+      if (openModal && window.bootstrap && window.bootstrap.Modal) {
+        const modalInstance = window.bootstrap.Modal.getInstance(openModal);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+
+      document.querySelectorAll('.modal-backdrop').forEach((backdrop) => backdrop.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('padding-right');
+    }
+
     async function replaceHistoryZone(url) {
       const historyZone = document.querySelector('[data-transactions-history-zone]');
 
@@ -189,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
         }
 
+        clearTransactionModalState();
         historyZone.innerHTML = nextHistoryZone.innerHTML;
         window.history.pushState({}, '', url);
 
@@ -230,14 +252,20 @@ document.addEventListener('DOMContentLoaded', function () {
       const action = form.getAttribute('action');
       const method = form.getAttribute('method') || 'POST';
       const formData = new FormData(form);
+      const body = new URLSearchParams();
+
+      formData.forEach((value, key) => {
+        body.append(key, value);
+      });
 
       historyZone.classList.add('is-loading');
 
       try {
         const response = await fetch(action, {
           method,
-          body: formData,
+          body,
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
             'X-Requested-With': 'fetch'
           },
           redirect: 'follow'
@@ -260,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
         }
 
+        clearTransactionModalState();
         historyZone.innerHTML = nextHistoryZone.innerHTML;
         window.history.pushState({}, '', finalUrl);
 

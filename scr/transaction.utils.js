@@ -43,9 +43,6 @@ function sanitizeTransactionFilterType(value = '') {
   return 'all';
 }
 
-function sanitizeTransactionFilterScope(value = '') {
-  return value === 'family' ? 'family' : value === 'personal' ? 'personal' : 'all';
-}
 
 function sanitizeTransactionView(value = '') {
   if (value === 'expenses') return 'expenses';
@@ -65,7 +62,6 @@ function buildTransactionsRedirect(req) {
     ['to', req.body.redirectTo || req.query.to || ''],
     ['category', req.body.redirectCategory || req.query.category || 'all'],
     ['type', req.body.redirectType || req.query.type || 'all'],
-    ['scope', req.body.redirectScope || req.query.scope || 'all'],
     ['member', req.body.redirectMember || req.query.member || 'all'],
     ['view', req.body.redirectView || req.query.view || 'date'],
     ['dir', req.body.redirectDir || req.query.dir || 'desc'],
@@ -103,10 +99,7 @@ function getDefaultTransactionDates() {
 async function getAvailableTransactionCategories(userId, familyId = null) {
   const categories = await getUserCategories(userId, familyId, '');
 
-  return categories.map((category) => ({
-    ...category,
-    scope: category.family_id ? 'family' : 'personal'
-  }));
+  return categories;
 }
 
 async function getAvailableTransactionMembers(userId, family = null) {
@@ -239,7 +232,6 @@ module.exports = {
   sanitizeTransactionMemberId,
   sanitizeTransactionCategoryId,
   sanitizeTransactionFilterType,
-  sanitizeTransactionFilterScope,
   sanitizeTransactionView,
   sanitizeTransactionSortDir,
   buildTransactionsRedirect,

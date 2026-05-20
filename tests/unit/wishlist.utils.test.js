@@ -69,6 +69,14 @@ describe('wishlist utility helpers', () => {
     expect(buildWishlistRedirect({ body: {}, query: {} }, '/wishlist/folders')).toBe('/wishlist/folders');
   });
 
+  test('keeps safe wishlist return paths and blocks external redirects', () => {
+    expect(buildWishlistRedirect({ body: { return_to: '/wishlist/42' }, query: {} })).toBe('/wishlist/42');
+    expect(buildWishlistRedirect({ body: { return_to: '/wishlist/42', status: 'planned' }, query: {} })).toBe('/wishlist/42?status=planned');
+    expect(buildWishlistRedirect({ body: { return_to: 'https://example.com' }, query: {} })).toBe('/wishlist');
+    expect(buildWishlistRedirect({ body: { return_to: '//example.com/wishlist' }, query: {} })).toBe('/wishlist');
+    expect(buildWishlistRedirect({ body: { return_to: '/transactions' }, query: {} })).toBe('/wishlist');
+  });
+
   test('stores wishlist flash messages in session', () => {
     const req = { session: {} };
 

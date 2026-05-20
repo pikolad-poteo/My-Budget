@@ -22,7 +22,22 @@ function sanitizeWishlistSort(value) { return WISHLIST_SORTS.includes(value) ? v
 function sanitizeWishlistDate(value) { const date = String(value || '').trim(); if (!date) return null; return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null; }
 function sanitizeWishlistUrl(value) { const url = String(value || '').trim(); if (!url) return null; if (url.startsWith('/uploads/wishlist/')) return url.slice(0, 1000); if (url.startsWith('http://') || url.startsWith('https://')) return url.slice(0, 1000); return `https://${url}`.slice(0, 1000); }
 function setWishlistFlash(req, type, message) { req.session.wishlistFlash = { type, message }; }
-function buildWishlistRedirect(req, fallback = '/wishlist') { const params = new URLSearchParams(); ['status','folder','q','sort','buyer'].forEach((key)=>{ if(req.body&&req.body[key]) params.set(key, req.body[key]); if(req.query&&req.query[key]) params.set(key, req.query[key]); }); const query=params.toString(); return query ? `${fallback}?${query}` : fallback; }
+function getSafeWishlistReturnTo(value, fallback = '/wishlist') {
+  const returnTo = sanitizeWishlistText(value, 500);
+  if (!returnTo || !returnTo.startsWith('/wishlist') || returnTo.startsWith('//')) return fallback;
+  return returnTo;
+}
+
+function buildWishlistRedirect(req, fallback = '/wishlist') {
+  const redirectBase = getSafeWishlistReturnTo(req.body && req.body.return_to, fallback);
+  const params = new URLSearchParams();
+  ['status', 'folder', 'q', 'sort', 'buyer'].forEach((key) => {
+    if (req.body && req.body[key]) params.set(key, req.body[key]);
+    if (req.query && req.query[key]) params.set(key, req.query[key]);
+  });
+  const query = params.toString();
+  return query ? `${redirectBase}?${query}` : redirectBase;
+}
 
 function getWishlistOrderBy(sort) { switch (sort) { case 'oldest': return 'w.created_at ASC'; case 'price_desc': return 'w.amount DESC, w.created_at DESC'; case 'price_asc': return 'w.amount ASC, w.created_at DESC'; case 'buyer_asc': return 'COALESCE(u.name, \'\') ASC, w.created_at DESC'; case 'buyer_desc': return 'COALESCE(u.name, \'\') DESC, w.created_at DESC'; default: return 'w.created_at DESC'; } }
 

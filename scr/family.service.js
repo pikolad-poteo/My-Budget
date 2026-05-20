@@ -71,24 +71,6 @@ async function getFamilyMembers(familyId) {
   return rows;
 }
 
-
-async function ensureFamilyAvatarColumn() {
-  const [columns] = await db.query(
-    `
-    SELECT COLUMN_NAME
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'families'
-      AND COLUMN_NAME = 'avatar_url'
-    LIMIT 1
-    `
-  );
-
-  if (columns.length === 0) {
-    await db.query('ALTER TABLE families ADD COLUMN avatar_url VARCHAR(255) NULL AFTER name');
-  }
-}
-
 async function countFamilyOwners(familyId) {
   const [rows] = await db.query(
     'SELECT COUNT(*) AS total FROM family_members WHERE family_id = ? AND role = ?',
@@ -228,8 +210,6 @@ async function getPersonalWorkspaceActivity(userId, limit = 100) {
 }
 
 async function createFamily({ userId, name, avatarUrl = null }) {
-  await ensureFamilyAvatarColumn();
-
   const existingFamily = await getUserFamily(userId);
   if (existingFamily) {
     throw new Error('You already belong to a family.');
@@ -300,24 +280,6 @@ async function updateFamilyName({ familyId, actorUserId, name }) {
   });
 }
 
-
-async function ensureFamilyMottoColumn() {
-  const [columns] = await db.query(
-    `
-    SELECT COLUMN_NAME
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'families'
-      AND COLUMN_NAME = 'motto'
-    LIMIT 1
-    `
-  );
-
-  if (columns.length === 0) {
-    await db.query('ALTER TABLE families ADD COLUMN motto VARCHAR(140) NULL AFTER name');
-  }
-}
-
 async function updateFamilyMotto({ familyId, actorUserId, motto }) {
   const cleanMotto = String(motto || '').trim().slice(0, 140) || null;
   const family = await getFamilyById(familyId);
@@ -326,7 +288,6 @@ async function updateFamilyMotto({ familyId, actorUserId, motto }) {
     throw new Error('Family not found.');
   }
 
-  await ensureFamilyMottoColumn();
   await db.query('UPDATE families SET motto = ? WHERE id = ? LIMIT 1', [cleanMotto, familyId]);
 
   await logFamilyActivity({
@@ -340,8 +301,6 @@ async function updateFamilyMotto({ familyId, actorUserId, motto }) {
 }
 
 async function updateFamilyAvatar({ familyId, actorUserId, avatarUrl }) {
-  await ensureFamilyAvatarColumn();
-
   const cleanAvatarUrl = avatarUrl ? String(avatarUrl).trim() : null;
 
   await db.query('UPDATE families SET avatar_url = ? WHERE id = ? LIMIT 1', [cleanAvatarUrl, familyId]);

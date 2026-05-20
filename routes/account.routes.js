@@ -48,26 +48,7 @@ function getAccountFlash(req) {
   return flash;
 }
 
-async function ensureUserAvatarColumn() {
-  const [columns] = await db.query(
-    `
-    SELECT COLUMN_NAME
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'users'
-      AND COLUMN_NAME = 'avatar_url'
-    LIMIT 1
-    `
-  );
-
-  if (columns.length === 0) {
-    await db.query('ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255) NULL AFTER email');
-  }
-}
-
 async function getCurrentUser(userId) {
-  await ensureUserAvatarColumn();
-
   const [rows] = await db.query(
     'SELECT id, name, email, avatar_url, email_verified_at, created_at FROM users WHERE id = ? LIMIT 1',
     [userId]

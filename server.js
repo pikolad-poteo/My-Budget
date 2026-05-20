@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 
-const checkDatabase = require('./scr/checkDatabase');
+const { initializeDatabase } = require('./scr/checkDatabase');
 const { attachI18n } = require('./scr/i18n');
 const { attachUser } = require('./scr/middleware');
 
@@ -46,7 +46,6 @@ app.use(
 
 app.use(attachI18n);
 app.use(attachUser);
-app.use(checkDatabase);
 
 /*
   Main application routes.
@@ -66,6 +65,13 @@ app.use((req, res) => {
   res.status(404).send('404 - Page not found');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT}`);
-});
+initializeDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server started on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  });

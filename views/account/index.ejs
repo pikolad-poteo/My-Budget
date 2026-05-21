@@ -136,7 +136,18 @@
             <div class="form-group">
               <label class="form-label" for="email"><%= t('account.email') %></label>
               <input class="form-control form-input" id="email" name="email" type="email" value="<%= accountUser.email %>" maxlength="150" required />
+              <small class="text-muted"><%= t('account.currentEmailActiveHint') %></small>
             </div>
+
+            <% if (accountUser.pending_email) { %>
+              <div class="alert alert-warning rounded-4 account-alert" role="status">
+                <strong><%= t('account.pendingEmailTitle') %></strong><br />
+                <%= t('account.pendingEmailText') %> <strong><%= accountUser.pending_email %></strong>
+                <div class="mt-2">
+                  <button class="btn btn-outline-secondary rounded-pill px-4 btn-sm" type="submit" formaction="/account/email-change/cancel" formmethod="POST" formnovalidate><%= t('account.cancelPendingEmail') %></button>
+                </div>
+              </div>
+            <% } %>
 
             <button class="btn btn-primary rounded-pill px-4 account-submit-btn" type="submit"><%= t('account.saveChanges') %></button>
           </form>
@@ -155,7 +166,8 @@
 
             <div class="form-group">
               <label class="form-label" for="newPassword"><%= t('account.newPassword') %></label>
-              <input class="form-control form-input" id="newPassword" name="newPassword" type="password" autocomplete="new-password" placeholder="<%= t('account.newPasswordPlaceholder') %>" minlength="8" required />
+              <input class="form-control form-input" id="newPassword" name="newPassword" type="password" autocomplete="new-password" placeholder="<%= t('account.newPasswordPlaceholder') %>" minlength="8" title="<%= t('account.passwordHint') %>" required />
+              <small class="text-muted d-block mt-2"><%= t('account.passwordHint') %></small>
             </div>
 
             <div class="form-group">

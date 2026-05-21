@@ -53,6 +53,10 @@ module.exports = {
 
     name: 'Nimi',
     email: 'Email',
+    currentEmailActiveHint: 'Praegune email jääb aktiivseks, kuni uus email on kinnitatud.',
+    pendingEmailTitle: 'Emaili muutmine ootab kinnitamist',
+    pendingEmailText: 'Kinnituslink saadeti aadressile:',
+    cancelPendingEmail: 'Tühista emaili muutmine',
     password: 'Parool',
     newPassword: 'Uus parool',
     confirmPassword: 'Kinnita parool',
@@ -97,6 +101,9 @@ module.exports = {
       failedToRegister: 'Kasutaja registreerimine ebaõnnestus. Proovi uuesti.',
       verificationInvalid: 'Kinnituslink on vigane või aegunud. Küsi uus kinnituskiri.',
       emailVerified: 'Email on kinnitatud. Nüüd saad sisse logida.',
+      emailChangeConfirmed: 'Uus email on kinnitatud. Nüüd saad sellega sisse logida.',
+      emailChangeInvalid: 'Emaili muutmise link on vigane või aegunud. Küsi konto seadetes uus emaili muutmine.',
+      emailChangeAlreadyUsed: 'See email on juba teise konto kasutuses.',
       failedToVerifyEmail: 'Emaili kinnitamine ebaõnnestus. Proovi uuesti.',
       verificationSentIfNeeded: 'Kui see email on olemas ja kinnitamata, saadeti uus kinnituse link.',
       emailAlreadyVerified: 'See email on juba kinnitatud. Saad sisse logida.',
@@ -123,7 +130,7 @@ module.exports = {
 
   dashboard: {
     locale: 'et-EE',
-    overview: 'Ülevaade',
+    overview: 'Finantsülevaade',
     title: 'Töölaud',
     description: 'Vaata oma finantsülevaadet ja püsi eesmärkidega kursis.',
     addTransaction: 'Lisa tehing',
@@ -253,6 +260,7 @@ module.exports = {
     currentPasswordPlaceholder: 'Sisesta praegune parool',
     newPassword: 'Uus parool',
     newPasswordPlaceholder: 'Sisesta uus parool',
+    passwordHint: 'Kasuta vähemalt 8 märki: suur- ja väiketäht, number ning erimärk. Tühikud ei ole lubatud.',
     repeatNewPassword: 'Korda uut parooli',
     repeatNewPasswordPlaceholder: 'Korda uut parooli',
     updatePassword: 'Uuenda parooli',
@@ -267,6 +275,12 @@ module.exports = {
     typeDeleteSuffix: 'kinnitamiseks.',
     cancel: 'Tühista',
     deleteForever: 'Kustuta jäädavalt',
+    currentEmailActiveHint: 'Praegune e-posti aadress jääb aktiivseks kuni uue aadressi kinnitamiseni.',
+    pendingEmailTitle: 'E-posti muutmine ootab kinnitamist',
+    pendingEmailHint: 'Kinnituslink saadeti uuele e-posti aadressile.',
+    cancelEmailChange: 'Tühista e-posti muutmine',
+    pendingEmailText: 'Kinnituskiri saadeti aadressile',
+    cancelPendingEmail: 'Tühista e-posti muutmine',
 
     roles: {
       owner: 'Omanik',
@@ -282,6 +296,9 @@ module.exports = {
       emailAlreadyUsed: 'See email on juba teise konto kasutuses.',
       accountUpdated: 'Konto andmed on uuendatud.',
       emailChangedVerify: 'Email on muudetud. Kinnita uus email enne sisselogimist.',
+      emailChangeRequested: 'Kinnituskiri saadeti uuele aadressile. Praegune email jääb aktiivseks kuni kinnitamiseni.',
+      pendingEmailCancelled: 'Ootel emaili muutmine tühistati.',
+      failedToCancelPendingEmail: 'Emaili muutmise tühistamine ebaõnnestus.',
       emailNotConfiguredNotChanged: 'Emailide saatmine ei ole seadistatud. Emaili ei muudetud.',
       failedToUpdateAccount: 'Konto andmete uuendamine ebaõnnestus.',
       uploadJpgPngOnly: 'Laadi üles ainult JPG või PNG pilt.',
@@ -305,7 +322,7 @@ module.exports = {
   family: {
     locale: 'et-EE',
     sharedWorkspace: 'Ühine eelarve tööruum',
-    overview: 'Ülevaade',
+    overview: 'Pere',
     overviewDescription: 'Pere seaded · Halda pere profiili, liikmeid, õigusi ja viimast ühistegevust.',
     defaultFamilyName: 'Pere tööruum',
     familyName: 'Pere nimi',
@@ -538,8 +555,8 @@ module.exports = {
 
   categories: {
     pageTitle: 'Kategooriad',
-    management: 'Haldus',
-    overviewTitle: 'Kategooriate ülevaade',
+    management: 'Kategooriate haldus',
+    overviewTitle: 'Kategooriad',
     overviewDescriptionPersonal: 'Loo ja muuda enda kulu- või tulukategooriaid.',
     overviewDescriptionFamily: 'Loo ja muuda enda ja pere kulu- või tulukategooriaid.',
     title: 'Kategooriad',
@@ -611,8 +628,8 @@ module.exports = {
 
   wishlist: {
     pageTitle: 'Soovinimekiri',
-    management: 'Haldus',
-    overviewTitle: 'Soovinimekirja ülevaade',
+    management: 'Ostude planeerimine',
+    overviewTitle: 'Soovinimekiri',
     overviewDescription: 'Planeeri tulevasi oste, sorteeri neid kaustadesse ja vaata, kuidas planeeritud kulud mõjutavad praegust eelarvet.',
     addItem: 'Lisa ese',
     hideForm: 'Peida vorm',
@@ -778,8 +795,8 @@ module.exports = {
   transactions: {
     pageTitle: 'Tehingud',
     locale: 'et-EE',
-    management: 'Haldus',
-    overviewTitle: 'Tehingute ülevaade',
+    management: 'Tehingute ajalugu',
+    overviewTitle: 'Tehingud',
     overviewDescription: 'Jälgi isiklikke ja pere tulusid või kulusid ühes selges tööruumis.',
     addTransaction: 'Lisa tehing',
     hideForm: 'Peida vorm',
@@ -855,8 +872,8 @@ module.exports = {
   calendar: {
     pageTitle: 'Kalender',
     locale: 'et-EE',
-    management: 'Haldus',
-    overviewTitle: 'Kalendri ülevaade',
+    management: 'Kalendri haldus',
+    overviewTitle: 'Kalender',
     overviewDescription: 'Halda pere sündmusi, meeldetuletusi, ülesandeid ja tähtsaid kuupäevi ühes tööruumis.',
     addEvent: 'Lisa sündmus',
     hideForm: 'Peida vorm',

@@ -53,6 +53,10 @@ module.exports = {
 
     name: 'Name',
     email: 'Email',
+    currentEmailActiveHint: 'Your current email stays active until a new email address is verified.',
+    pendingEmailTitle: 'Pending email change',
+    pendingEmailText: 'A confirmation link was sent to:',
+    cancelPendingEmail: 'Cancel email change',
     password: 'Password',
     newPassword: 'New password',
     confirmPassword: 'Confirm password',
@@ -97,6 +101,9 @@ module.exports = {
       failedToRegister: 'Failed to register user. Please try again.',
       verificationInvalid: 'Verification link is invalid or expired. Request a new verification email.',
       emailVerified: 'Email verified successfully. You can now sign in.',
+      emailChangeConfirmed: 'New email address confirmed. You can now sign in with it.',
+      emailChangeInvalid: 'Email change link is invalid or expired. Please request a new email change from account settings.',
+      emailChangeAlreadyUsed: 'This email address is already used by another account.',
       failedToVerifyEmail: 'Failed to verify email. Please try again.',
       verificationSentIfNeeded: 'If this email exists and is not verified, a new verification link has been sent.',
       emailAlreadyVerified: 'This email is already verified. You can sign in.',
@@ -123,7 +130,7 @@ module.exports = {
 
   dashboard: {
     locale: 'en-US',
-    overview: 'Overview',
+    overview: 'Financial overview',
     title: 'Dashboard',
     description: 'See your financial overview and stay on track with your goals.',
     addTransaction: 'Add transaction',
@@ -253,6 +260,7 @@ module.exports = {
     currentPasswordPlaceholder: 'Enter current password',
     newPassword: 'New password',
     newPasswordPlaceholder: 'Enter new password',
+    passwordHint: 'Use at least 8 characters with uppercase, lowercase, number and special character. Spaces are not allowed.',
     repeatNewPassword: 'Repeat new password',
     repeatNewPasswordPlaceholder: 'Repeat new password',
     updatePassword: 'Update password',
@@ -267,6 +275,12 @@ module.exports = {
     typeDeleteSuffix: 'to confirm.',
     cancel: 'Cancel',
     deleteForever: 'Delete forever',
+    currentEmailActiveHint: 'Your current email remains active until the new email address is verified.',
+    pendingEmailTitle: 'Pending email change',
+    pendingEmailHint: 'A verification link has been sent to the new email address.',
+    cancelEmailChange: 'Cancel email change',
+    pendingEmailText: 'Verification email was sent to',
+    cancelPendingEmail: 'Cancel email change',
 
     roles: {
       owner: 'Owner',
@@ -282,6 +296,9 @@ module.exports = {
       emailAlreadyUsed: 'This email is already used by another account.',
       accountUpdated: 'Account details were updated.',
       emailChangedVerify: 'Email was changed. Please verify your new email before signing in.',
+      emailChangeRequested: 'Verification email was sent to the new address. Your current email remains active until confirmation.',
+      pendingEmailCancelled: 'Pending email change was cancelled.',
+      failedToCancelPendingEmail: 'Failed to cancel pending email change.',
       emailNotConfiguredNotChanged: 'Email sending is not configured. Email was not changed.',
       failedToUpdateAccount: 'Failed to update account details.',
       uploadJpgPngOnly: 'Upload JPG or PNG image only.',
@@ -305,7 +322,7 @@ module.exports = {
   family: {
     locale: 'en-GB',
     sharedWorkspace: 'Shared budget workspace',
-    overview: 'Overview',
+    overview: 'Family',
     overviewDescription: 'Family settings · Manage family profile, household members, permissions and recent shared activity.',
     defaultFamilyName: 'Family workspace',
     familyName: 'Family name',
@@ -538,8 +555,8 @@ module.exports = {
 
   categories: {
     pageTitle: 'Categories',
-    management: 'Management',
-    overviewTitle: 'Category overview',
+    management: 'Category management',
+    overviewTitle: 'Categories',
     overviewDescriptionPersonal: 'Create and edit expense or income categories for yourself.',
     overviewDescriptionFamily: 'Create and edit expense or income categories for yourself and your family.',
     title: 'Categories',
@@ -611,8 +628,8 @@ module.exports = {
 
   wishlist: {
     pageTitle: 'Wishlist',
-    management: 'Management',
-    overviewTitle: 'Wishlist overview',
+    management: 'Purchase planning',
+    overviewTitle: 'Wishlist',
     overviewDescription: 'Plan future purchases, sort them by folders and check how your planned spending affects the current budget.',
     addItem: 'Add item',
     hideForm: 'Hide form',
@@ -778,8 +795,8 @@ module.exports = {
   transactions: {
     pageTitle: 'Transactions',
     locale: 'en-US',
-    management: 'Management',
-    overviewTitle: 'Transaction overview',
+    management: 'Transaction history',
+    overviewTitle: 'Transactions',
     overviewDescription: 'Track personal and family income or expenses in one clean workspace.',
     addTransaction: 'Add transaction',
     hideForm: 'Hide form',
@@ -855,8 +872,8 @@ module.exports = {
   calendar: {
     pageTitle: 'Calendar',
     locale: 'en-US',
-    management: 'Management',
-    overviewTitle: 'Calendar overview',
+    management: 'Schedule management',
+    overviewTitle: 'Calendar',
     overviewDescription: 'Manage family events, reminders, tasks, and important dates in one clean workspace.',
     addEvent: 'Add event',
     hideForm: 'Hide form',

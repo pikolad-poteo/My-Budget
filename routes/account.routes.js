@@ -9,8 +9,8 @@ const router = express.Router();
 const db = require('../scr/db');
 const { requireAuth } = require('../scr/middleware');
 const { normalizeEmail, isValidEmail, validatePassword } = require('../scr/auth.validation');
-const { createEmailVerificationToken } = require('../scr/emailVerification.service');
-const { sendVerificationEmail } = require('../scr/mail.service');
+const { sendEmailChangeVerificationEmail } = require('../scr/mail.service');
+const { createPendingEmailChange, cancelPendingEmailChange } = require('../scr/pendingEmail.service');
 
 const accountUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'users');
 fs.mkdirSync(accountUploadDir, { recursive: true });
@@ -50,7 +50,7 @@ function getAccountFlash(req) {
 
 async function getCurrentUser(userId) {
   const [rows] = await db.query(
-    'SELECT id, name, email, avatar_url, email_verified_at, created_at FROM users WHERE id = ? LIMIT 1',
+    'SELECT id, name, email, pending_email, avatar_url, email_verified_at, created_at FROM users WHERE id = ? LIMIT 1',
     [userId]
   );
 
@@ -197,8 +197,14 @@ router.post('/account/profile', requireAuth, async (req, res) => {
     const isEmailChanged = accountUser.email !== email;
 
     const [existingUsers] = await db.query(
-      'SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1',
-      [email, req.session.user.id]
+      `
+      SELECT id
+      FROM users
+      WHERE (email = ? OR pending_email = ?)
+        AND id <> ?
+      LIMIT 1
+      `,
+      [email, email, req.session.user.id]
     );
 
     if (existingUsers.length > 0) {
@@ -225,12 +231,12 @@ router.post('/account/profile', requireAuth, async (req, res) => {
       await connection.beginTransaction();
 
       await connection.query(
-        'UPDATE users SET name = ?, email = ?, email_verified_at = NULL WHERE id = ? LIMIT 1',
-        [name, email, req.session.user.id]
+        'UPDATE users SET name = ? WHERE id = ? LIMIT 1',
+        [name, req.session.user.id]
       );
 
-      const token = await createEmailVerificationToken(connection, req.session.user.id);
-      await sendVerificationEmail(email, token);
+      const token = await createPendingEmailChange(connection, req.session.user.id, email);
+      await sendEmailChangeVerificationEmail(email, token);
       await connection.commit();
     } catch (error) {
       await connection.rollback();
@@ -239,20 +245,29 @@ router.post('/account/profile', requireAuth, async (req, res) => {
       connection.release();
     }
 
-    req.session.destroy(() => {
-      return res.render('login', {
-        title: req.t('auth.loginTitle'),
-        activePage: 'login',
-        errorMessage: '',
-        successMessage: req.t('account.messages.emailChangedVerify')
-      });
-    });
-    return null;
+    const updatedUser = await getCurrentUser(req.session.user.id);
+    syncSessionUser(req, updatedUser);
+
+    setAccountFlash(req, 'success', req.t('account.messages.emailChangeRequested'));
+    return res.redirect('/account');
   } catch (error) {
     console.error('Account profile update error:', error.message);
     setAccountFlash(req, 'error', error.message.includes('Email sending is not configured')
       ? req.t('account.messages.emailNotConfiguredNotChanged')
       : req.t('account.messages.failedToUpdateAccount'));
+    return res.redirect('/account');
+  }
+});
+
+
+router.post('/account/email-change/cancel', requireAuth, async (req, res) => {
+  try {
+    await cancelPendingEmailChange(req.session.user.id);
+    setAccountFlash(req, 'success', req.t('account.messages.pendingEmailCancelled'));
+    return res.redirect('/account');
+  } catch (error) {
+    console.error('Pending email cancel error:', error.message);
+    setAccountFlash(req, 'error', req.t('account.messages.failedToCancelPendingEmail'));
     return res.redirect('/account');
   }
 });

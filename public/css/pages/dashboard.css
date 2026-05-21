@@ -12,7 +12,7 @@
   border: 1px solid var(--app-border);
   border-radius: 18px;
   background: #ffffff;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.055);
+  box-shadow: var(--app-shadow);
 }
 
 .dashboard-overview-panel {

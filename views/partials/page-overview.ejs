@@ -16,7 +16,9 @@
   <div class="card-body p-4">
     <div class="row align-items-start g-4 mb-4">
       <div class="col-lg-8">
-        <p class="section-label"><%= overviewEyebrow %></p>
+        <% if (overviewEyebrow) { %>
+          <p class="section-label mb-1"><%= overviewEyebrow %></p>
+        <% } %>
         <h2 class="h3 fw-bold mb-2"><%= overviewHeading %></h2>
         <p class="overview-toolbar-text">
           <%= overviewDescription %>

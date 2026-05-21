@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 const E2E_USER_EMAIL = process.env.E2E_USER_EMAIL || 'admin@test.local';
-const E2E_USER_PASSWORD = process.env.E2E_USER_PASSWORD || 'Owner2026!';
+const E2E_USER_PASSWORD = process.env.E2E_USER_PASSWORD || 'DemoOwner2026!';
 
 async function signIn(page) {
   await page.goto('/login');

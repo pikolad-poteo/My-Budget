@@ -62,6 +62,23 @@ async function sendVerificationEmail(email, token) {
   });
 }
 
+
+async function sendEmailChangeVerificationEmail(email, token) {
+  const verificationUrl = `${getAppUrl()}/verify-email-change/${token}`;
+
+  await sendMail({
+    to: email,
+    subject: 'Confirm your new My Budget email',
+    text: `Please confirm your new My Budget email address by opening this link: ${verificationUrl}\n\nYour current email remains active until the new email is confirmed. This link is valid for 24 hours.`,
+    html: `
+      <p>Please confirm your new My Budget email address by opening this link:</p>
+      <p><a href="${verificationUrl}">${verificationUrl}</a></p>
+      <p>Your current email remains active until the new email is confirmed.</p>
+      <p>This link is valid for 24 hours.</p>
+    `
+  });
+}
+
 async function sendPasswordResetEmail(email, token) {
   const resetUrl = `${getAppUrl()}/reset-password/${token}`;
 
@@ -79,5 +96,6 @@ async function sendPasswordResetEmail(email, token) {
 
 module.exports = {
   sendVerificationEmail,
+  sendEmailChangeVerificationEmail,
   sendPasswordResetEmail
 };

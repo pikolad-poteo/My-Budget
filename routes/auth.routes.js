@@ -6,6 +6,7 @@ const db = require('../scr/db');
 const { normalizeEmail, isValidEmail, validatePassword } = require('../scr/auth.validation');
 const { createEmailVerificationToken, sendVerificationToken, verifyEmailToken } = require('../scr/emailVerification.service');
 const { sendVerificationEmail } = require('../scr/mail.service');
+const { confirmPendingEmailChange } = require('../scr/pendingEmail.service');
 const {
   sendPasswordResetToken,
   getValidPasswordResetToken,
@@ -250,6 +251,30 @@ router.get('/verify-email/:token', async (req, res) => {
     return res.redirect('/login');
   } catch (error) {
     console.error('Email verification error:', error.message);
+    setAuthFlash(req, 'error', req.t('auth.messages.failedToVerifyEmail'));
+    return res.redirect('/login');
+  }
+});
+
+
+router.get('/verify-email-change/:token', async (req, res) => {
+  try {
+    const result = await confirmPendingEmailChange(req.params.token);
+
+    if (result === 'invalid') {
+      setAuthFlash(req, 'error', req.t('auth.messages.emailChangeInvalid'));
+      return res.redirect('/login');
+    }
+
+    if (result === 'duplicate') {
+      setAuthFlash(req, 'error', req.t('auth.messages.emailChangeAlreadyUsed'));
+      return res.redirect('/login');
+    }
+
+    setAuthFlash(req, 'success', req.t('auth.messages.emailChangeConfirmed'));
+    return res.redirect('/login');
+  } catch (error) {
+    console.error('Pending email verification error:', error.message);
     setAuthFlash(req, 'error', req.t('auth.messages.failedToVerifyEmail'));
     return res.redirect('/login');
   }

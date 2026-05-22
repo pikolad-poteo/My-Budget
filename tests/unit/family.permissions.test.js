@@ -1,3 +1,6 @@
+// Unit tests for family role permissions.
+// These tests define the expected capabilities of owner, editor and viewer roles across family-management actions.
+
 const {
   FAMILY_ROLES,
   normalizeRole,

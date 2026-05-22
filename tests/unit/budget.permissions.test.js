@@ -1,3 +1,7 @@
+// Unit tests for budget editing permissions.
+// The suite verifies that personal users, family owners and editors can modify budget data, while viewers are blocked safely.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/family.service', () => ({
   getUserFamily: jest.fn()
 }));

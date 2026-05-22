@@ -1,3 +1,7 @@
+// Unit tests for family activity logging.
+// The suite verifies readable audit entries for membership, role and profile changes inside the shared family workspace.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/db', () => ({
   query: jest.fn()
 }));

@@ -1,3 +1,6 @@
+// Unit tests for category utility helpers.
+// These tests cover input sanitizing, workspace scoping, redirect building and flash-message behavior used by category routes.
+
 const {
   sanitizeCategoryName,
   sanitizeCategoryType,

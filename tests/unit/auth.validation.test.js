@@ -1,3 +1,6 @@
+// Unit tests for authentication input helpers.
+// These checks protect the login, registration, password reset and account-management flows from invalid email/password values.
+
 const { normalizeEmail, isValidEmail, validatePassword } = require('../../scr/auth.validation');
 
 describe('auth.validation helpers', () => {

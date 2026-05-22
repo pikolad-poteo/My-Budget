@@ -1,3 +1,6 @@
+// Unit tests for transaction utility helpers.
+// These tests cover filter normalization, sorting options, workspace SQL conditions and redirect preservation for transactions.
+
 const {
   sanitizeTransactionType,
   sanitizeTransactionDescription,

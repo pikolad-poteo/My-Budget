@@ -4,6 +4,7 @@ function getAppUrl() {
   return (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
 }
 
+// Reads SMTP settings from environment variables to keep credentials outside the repository.
 function getMailConfig() {
   const host = process.env.MAIL_HOST;
   const user = process.env.MAIL_USER;
@@ -34,6 +35,7 @@ function createTransporter() {
   return nodemailer.createTransport(config);
 }
 
+// Centralized mail sender used by verification, email-change confirmation and password reset flows.
 async function sendMail({ to, subject, text, html }) {
   const transporter = createTransporter();
   const from = process.env.MAIL_FROM || process.env.MAIL_USER;
@@ -53,7 +55,9 @@ async function sendVerificationEmail(email, token) {
   await sendMail({
     to: email,
     subject: 'Verify your My Budget email',
-    text: `Please verify your My Budget account by opening this link: ${verificationUrl}\n\nThis link is valid for 24 hours.`,
+    text: `Please verify your My Budget account by opening this link: ${verificationUrl}
+
+This link is valid for 24 hours.`,
     html: `
       <p>Please verify your My Budget account by opening this link:</p>
       <p><a href="${verificationUrl}">${verificationUrl}</a></p>
@@ -62,14 +66,15 @@ async function sendVerificationEmail(email, token) {
   });
 }
 
-
 async function sendEmailChangeVerificationEmail(email, token) {
   const verificationUrl = `${getAppUrl()}/verify-email-change/${token}`;
 
   await sendMail({
     to: email,
     subject: 'Confirm your new My Budget email',
-    text: `Please confirm your new My Budget email address by opening this link: ${verificationUrl}\n\nYour current email remains active until the new email is confirmed. This link is valid for 24 hours.`,
+    text: `Please confirm your new My Budget email address by opening this link: ${verificationUrl}
+
+Your current email remains active until the new email is confirmed. This link is valid for 24 hours.`,
     html: `
       <p>Please confirm your new My Budget email address by opening this link:</p>
       <p><a href="${verificationUrl}">${verificationUrl}</a></p>
@@ -85,7 +90,9 @@ async function sendPasswordResetEmail(email, token) {
   await sendMail({
     to: email,
     subject: 'Reset your My Budget password',
-    text: `You can reset your My Budget password by opening this link: ${resetUrl}\n\nThis link is valid for 30 minutes.`,
+    text: `You can reset your My Budget password by opening this link: ${resetUrl}
+
+This link is valid for 30 minutes.`,
     html: `
       <p>You can reset your My Budget password by opening this link:</p>
       <p><a href="${resetUrl}">${resetUrl}</a></p>

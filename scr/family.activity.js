@@ -1,5 +1,9 @@
 const db = require('./db');
 
+/**
+ * Writes an audit-style activity entry for important family workspace actions.
+ * Missing required identifiers are ignored so optional UI actions do not crash flows.
+ */
 async function logFamilyActivity({
   familyId,
   actorUserId,
@@ -21,6 +25,9 @@ async function logFamilyActivity({
   );
 }
 
+/**
+ * Returns the latest family-wide actions with actor and target display data.
+ */
 async function getFamilyActivity(familyId, limit = 20) {
   const safeLimit = Number.isInteger(Number(limit)) ? Math.min(Math.max(Number(limit), 1), 100) : 20;
 
@@ -53,6 +60,9 @@ async function getFamilyActivity(familyId, limit = 20) {
   return rows;
 }
 
+/**
+ * Returns activity created by a specific member for the profile/history view.
+ */
 async function getMemberActivity(familyId, userId, limit = 50) {
   const safeLimit = Number.isInteger(Number(limit)) ? Math.min(Math.max(Number(limit), 1), 100) : 50;
 

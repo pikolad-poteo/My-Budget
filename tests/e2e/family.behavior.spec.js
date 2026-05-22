@@ -1,8 +1,13 @@
+// End-to-end tests for the Family page behavior.
+// These checks focus on visible workspace state, role presentation and safe UI interactions for family management.
+
 const { test, expect } = require('@playwright/test');
 
+// Credentials are configurable so the same tests can run against local or CI test databases.
 const E2E_USER_EMAIL = process.env.E2E_USER_EMAIL || 'admin@test.local';
 const E2E_USER_PASSWORD = process.env.E2E_USER_PASSWORD || 'DemoOwner2026!';
 
+// Reusable sign-in helper keeps authenticated scenarios focused on the wishlist workflow.
 async function signIn(page) {
   await page.goto('/login');
   await page.locator('input[name="email"]').fill(E2E_USER_EMAIL);

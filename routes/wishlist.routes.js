@@ -1,5 +1,7 @@
 /**
  * Wishlist routes.
+ * Handles planned purchases, folders, member filters, status changes, image uploads,
+ * and workspace-aware wishlist CRUD actions.
  */
 const express = require('express');
 const fs = require('fs');
@@ -38,6 +40,7 @@ const {
 const wishlistUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'wishlist');
 fs.mkdirSync(wishlistUploadDir, { recursive: true });
 
+// Store wishlist images on disk because item cards reference the generated public URL.
 const wishlistUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, wishlistUploadDir),
@@ -55,6 +58,7 @@ const wishlistUpload = multer({
   }
 });
 
+// Convert upload failures into wishlist flash messages without breaking form redirects.
 function uploadWishlistImage(req, res, next) {
   wishlistUpload.single('local_image')(req, res, (error) => {
     if (error) {
@@ -94,6 +98,7 @@ function deleteWishlistLocalImage(imageUrl) {
   });
 }
 
+// Prefer a local upload over an external image URL when creating a wishlist item.
 function resolveCreatedWishlistImageUrl(req) {
   const externalImageUrl = getExternalWishlistImageUrl(req.body.image_url);
   const uploadedImageUrl = getUploadedWishlistImageUrl(req);
@@ -106,6 +111,7 @@ function resolveCreatedWishlistImageUrl(req) {
   return uploadedImageUrl;
 }
 
+// Preserve the previous image unless the edit form provides a replacement.
 function resolveUpdatedWishlistImageUrl(req, existingImageUrl) {
   const externalImageUrl = getExternalWishlistImageUrl(req.body.image_url);
   const uploadedImageUrl = getUploadedWishlistImageUrl(req);
@@ -131,6 +137,7 @@ function resolveUpdatedWishlistImageUrl(req, existingImageUrl) {
   return existingIsLocal ? existingImageUrl : null;
 }
 
+// Family wishlists can be filtered by member; lone users receive a single fallback member.
 async function getWishlistMembers(currentUser, familyId, fallbackName = 'Me') {
   if (!familyId) {
     return [{ id: currentUser.id, name: currentUser.name || fallbackName }];
@@ -148,6 +155,7 @@ function getWishlistBuyerFilterId(value, members) {
   return members.some((member) => Number(member.id) === memberId) ? memberId : 'all';
 }
 
+// Calculate folder totals from already loaded item data to avoid extra SQL per card.
 function getFolderStats(items) {
   return items.reduce((acc, item) => {
     const folderName = normalizeWishlistFolderName(item.folder);
@@ -162,6 +170,7 @@ function getFolderStats(items) {
   }, {});
 }
 
+// Render wishlist folders, filtered items, summary metrics, and member-aware folder cards.
 router.get('/wishlist', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -193,6 +202,7 @@ router.get('/wishlist', requireAuth, async (req, res) => {
 });
 
 
+// Render item details only after checking the item belongs to the current workspace.
 router.get('/wishlist/:id', requireAuth, async (req, res) => {
   const itemId = Number(req.params.id);
 
@@ -230,6 +240,7 @@ router.get('/wishlist/:id', requireAuth, async (req, res) => {
   }
 });
 
+// Create a member-owned folder in the current workspace.
 router.post('/wishlist/folders/create', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -252,6 +263,7 @@ router.post('/wishlist/folders/create', requireAuth, requireBudgetEditor('wishli
   }
 });
 
+// Rename or reassign a folder while preserving its workspace scope.
 router.post('/wishlist/folders/rename', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -300,6 +312,7 @@ router.post('/wishlist/folders/delete', requireAuth, requireBudgetEditor('wishli
 });
 
 
+// Replace folder membership with the submitted selected item list.
 router.post('/wishlist/folders/add-items', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -333,6 +346,7 @@ router.post('/wishlist/folders/add-items', requireAuth, requireBudgetEditor('wis
   }
 });
 
+// Create a wishlist item with sanitized amount, date, status, buyer, and image data.
 router.post('/wishlist/create', requireAuth, requireBudgetEditor('wishlist'), uploadWishlistImage, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -364,6 +378,7 @@ router.post('/wishlist/create', requireAuth, requireBudgetEditor('wishlist'), up
   }
 });
 
+// Update a wishlist item and clean up replaced local images when needed.
 router.post('/wishlist/:id/update', requireAuth, requireBudgetEditor('wishlist'), uploadWishlistImage, async (req, res) => {
   const itemId = Number(req.params.id);
   try {
@@ -407,6 +422,7 @@ router.post('/wishlist/:id/update', requireAuth, requireBudgetEditor('wishlist')
   }
 });
 
+// Update only item status for quick state changes from the card UI.
 router.post('/wishlist/:id/status', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   const itemId = Number(req.params.id);
   try {
@@ -433,6 +449,7 @@ router.post('/wishlist/:id/status', requireAuth, requireBudgetEditor('wishlist')
   }
 });
 
+// Delete the item and remove its local image file when it was uploaded by the app.
 router.post('/wishlist/:id/delete', requireAuth, requireBudgetEditor('wishlist'), async (req, res) => {
   const itemId = Number(req.params.id);
   try {

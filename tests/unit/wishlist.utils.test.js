@@ -1,3 +1,7 @@
+// Unit tests for wishlist utility helpers.
+// The suite verifies folder-aware filtering, buyer/member selection, status handling and safe redirects for wishlist routes.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/db', () => ({
   query: jest.fn()
 }));

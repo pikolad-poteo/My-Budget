@@ -1,7 +1,7 @@
 /**
  * Categories routes.
- * Handles category page rendering and category CRUD actions,
- * including create, update, delete, search, and tab state persistence.
+ * Handles workspace-aware category page rendering and category CRUD actions,
+ * including create, update, delete, search state, and dashboard visibility flags.
  */
 
 const express = require('express');
@@ -30,6 +30,7 @@ const {
   CATEGORY_COLOR_OPTIONS
 } = require('../scr/category.constants');
 
+// Render all workspace categories and split them into income and expense groups for the UI.
 router.get('/categories', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -98,6 +99,7 @@ router.get('/categories', requireAuth, async (req, res) => {
   }
 });
 
+// Create a category only if the name is valid and not duplicated in the same workspace/type.
 router.post('/categories/create', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -146,6 +148,7 @@ router.post('/categories/create', requireAuth, requireBudgetEditor('categories')
   }
 });
 
+// Update a category after ownership, workspace scope, and duplicate-name checks.
 router.post('/categories/:id/update', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   const categoryId = Number(req.params.id);
 
@@ -209,6 +212,7 @@ router.post('/categories/:id/update', requireAuth, requireBudgetEditor('categori
   }
 });
 
+// Delete categories through a scoped lookup so another workspace cannot be affected.
 router.post('/categories/:id/delete', requireAuth, requireBudgetEditor('categories'), async (req, res) => {
   const categoryId = Number(req.params.id);
 

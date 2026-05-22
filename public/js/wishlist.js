@@ -1,7 +1,13 @@
+/**
+ * Wishlist page client-side behavior.
+ * Coordinates folder filters, modals, image previews, live search, and partial page
+ * replacement so wishlist actions feel immediate without losing scroll position.
+ */
 document.addEventListener('DOMContentLoaded', function () {
   const i18n = window.MyBudgetWishlistI18n || {};
   const t = function (key, fallback) { return i18n[key] || fallback; };
 
+  // Persist folder panel state locally so it stays stable across AJAX and reloads.
   const folderStateKey = 'wishlistFoldersOpen';
   let liveSearchTimer = null;
   let getRequestController = null;
@@ -16,10 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return document.querySelector('.wishlist-shell');
   }
 
+  // Restricts partial replacement to wishlist pages only.
   function isWishlistUrl(url) {
     return url && url.origin === window.location.origin && url.pathname.startsWith('/wishlist');
   }
 
+  // Detail pages are handled by normal navigation to avoid replacing the list shell.
   function isWishlistDetailUrl(url) {
     return url
       && url.origin === window.location.origin
@@ -39,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return document.getElementById('wishlistCreatePanel');
   }
 
+  // Resets all wishlist modal overlays before opening another panel or replacing content.
   function closeWishlistModals() {
     document.querySelectorAll('.wishlist-modal').forEach(function (modal) {
       modal.setAttribute('hidden', '');
@@ -46,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.remove('wishlist-modal-open');
   }
 
+  // Opens a modal and moves focus into it without scrolling the viewport.
   function openWishlistModal(modal) {
     if (!modal) return;
 
@@ -57,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (focusTarget) focusTarget.focus({ preventScroll: true });
   }
 
+  // Opens the inline create panel and closes modal overlays to avoid competing edit states.
   function openCreatePanel() {
     const panel = getCreatePanel();
     const button = document.getElementById('toggleWishlistCreateButton');
@@ -84,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (buttonText) buttonText.textContent = t('addItem', 'Add item');
   }
 
+  // Scrolls to the create panel only for explicit add-new actions.
   function scrollToCreatePanel() {
     const panel = getCreatePanel();
     const target = panel ? panel.closest('.overview-panel') || panel : document.querySelector('.wishlist-shell');
@@ -115,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
     scrollToCreatePanel();
   }
 
+  // Stores and applies the collapsed/expanded folder panel state.
   function setFoldersPanelState(isOpen) {
     const foldersPanel = document.getElementById('wishlistFoldersPanel');
     const foldersButton = document.getElementById('toggleWishlistFoldersButton');
@@ -129,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
     sessionStorage.setItem(folderStateKey, isOpen ? '1' : '0');
   }
 
+  // Updates image preview cards for uploaded files, remote URLs, or empty states.
   function setPreviewContent(preview, src, label) {
     if (!preview) return;
 
@@ -139,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Binds file/url inputs to preview elements after initial load and AJAX replacement.
   function initImagePreviews() {
     document.querySelectorAll('[data-current-src]').forEach(function (preview) {
       if (!preview.querySelector('img')) {
@@ -167,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 
+  // Enables existing-item selection only when a target folder and at least one item are selected.
   function updateExistingItemsModalState() {
     const targetSelect = document.getElementById('wishlistExistingTargetFolder');
     const folderInput = document.getElementById('wishlistExistingTargetFolderName');
@@ -197,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Preselects the correct owner-aware folder in the add-existing-items modal.
   function chooseExistingItemsTarget(folderName, ownerId) {
     const targetSelect = document.getElementById('wishlistExistingTargetFolder');
     if (!targetSelect) return;
@@ -211,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateExistingItemsModalState();
   }
 
+  // Re-initializes all controls that can disappear when the wishlist shell is replaced.
   function initDynamicWishlistUi() {
     initFoldersState();
     initImagePreviews();
@@ -218,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateExistingItemsModalState();
   }
 
+  // Converts regular forms into fetch requests while preserving clicked submit button values.
   function buildFormRequest(form, submitter) {
     const method = (form.method || 'GET').toUpperCase();
     const url = normalizeUrl(form.action || window.location.href);
@@ -250,11 +269,13 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
 
+  // Falls back to full navigation while preserving scroll when partial replacement is unsafe.
   function hardReloadWithScroll(url) {
     sessionStorage.setItem('wishlistScrollTop', String(window.scrollY || 0));
     window.location.href = url.toString();
   }
 
+  // Restores scroll after a deliberate fallback reload.
   function restoreScrollAfterHardReload() {
     const savedScroll = sessionStorage.getItem('wishlistScrollTop');
     if (savedScroll === null) return;
@@ -266,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Replaces the wishlist shell after filters, folder actions, and CRUD forms.
   async function replaceWishlistShell(url, options, behavior) {
     const targetUrl = normalizeUrl(url);
     const shell = getWishlistShell();
@@ -357,6 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Central submission helper used by filters and wishlist mutation forms.
   function submitWishlistForm(form, submitter, behavior) {
     if (!form || isReplacingWishlist) return;
 
@@ -364,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
     replaceWishlistShell(request.url, request.options, behavior);
   }
 
+  // Debounces live search so typing does not send a request for every keystroke.
   function submitFiltersWithDelay(form, searchInput) {
     clearTimeout(liveSearchTimer);
     liveSearchTimer = setTimeout(function () {
@@ -375,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 450);
   }
 
+  // Event delegation keeps controls working after the wishlist shell is replaced.
   document.addEventListener('click', function (event) {
     const clickedSubmitter = event.target.closest('button[type="submit"], input[type="submit"]');
     if (clickedSubmitter) lastSubmitter = clickedSubmitter;

@@ -1,8 +1,13 @@
+// End-to-end smoke tests for authenticated navigation.
+// The suite moves through the main application pages to confirm that shared layout links and page shells are available.
+
 const { test, expect } = require('@playwright/test');
 
+// Credentials are configurable so the same tests can run against local or CI test databases.
 const E2E_USER_EMAIL = process.env.E2E_USER_EMAIL || 'admin@test.local';
 const E2E_USER_PASSWORD = process.env.E2E_USER_PASSWORD || 'DemoOwner2026!';
 
+// Reusable login helper keeps authenticated scenarios focused on the feature under test.
 async function login(page) {
   await page.goto('/login');
   await page.locator('#email').fill(E2E_USER_EMAIL);

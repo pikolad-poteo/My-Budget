@@ -1,4 +1,9 @@
+/**
+ * Dashboard client-side behavior.
+ * Initializes Bootstrap helpers and renders summary charts from JSON data embedded by EJS.
+ */
 (function () {
+  // Bootstrap widgets are optional, so the page still works when Bootstrap JS is unavailable.
   function initDashboardUi() {
     const popoverTriggers = document.querySelectorAll('[data-bs-toggle="popover"]');
     const tooltipTriggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -27,6 +32,7 @@
     window.setTimeout(initDashboardUi, 0);
   }
 
+  // Chart data is rendered as JSON in the page to avoid extra client-side API calls.
   const dataNode = document.getElementById('dashboardChartData');
 
   if (!dataNode || typeof Chart === 'undefined') {
@@ -57,10 +63,12 @@
     maximumFractionDigits: 0
   });
 
+  // Reads design tokens from CSS so chart colors stay aligned with the page theme.
   function getCssVar(name, fallback) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
   }
 
+  // Builds a soft chart fill under the line without hard-coding layout dimensions.
   function createGradient(ctx, area, color) {
     const gradient = ctx.createLinearGradient(0, area.top, 0, area.bottom);
     gradient.addColorStop(0, color);
@@ -68,6 +76,7 @@
     return gradient;
   }
 
+  // Custom Chart.js plugin that highlights the current period on the dashboard trend chart.
   const currentPeriodMarker = {
     id: 'currentPeriodMarker',
     afterDatasetsDraw(chart, args, options) {

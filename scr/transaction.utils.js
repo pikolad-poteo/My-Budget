@@ -1,3 +1,8 @@
+/**
+ * Transaction utility helpers.
+ * Keeps route handlers focused on request flow while this module handles sanitization,
+ * workspace-aware queries, filter redirects, and member/category lookup data.
+ */
 const db = require('./db');
 const { getUserCategories, sanitizeCategoryType, getWorkspaceCondition } = require('./category.utils');
 
@@ -9,6 +14,9 @@ function sanitizeTransactionDescription(value = '') {
   return String(value || '').trim().replace(/\s+/g, ' ').slice(0, 255);
 }
 
+/**
+ * Normalizes user-entered money values and rejects empty, negative, or invalid amounts.
+ */
 function sanitizeTransactionAmount(value = '') {
   const normalized = String(value || '').replace(',', '.').trim();
   const amount = Number(normalized);
@@ -54,6 +62,9 @@ function sanitizeTransactionSortDir(value = '') {
   return value === 'asc' ? 'asc' : 'desc';
 }
 
+/**
+ * Preserves transaction filters and sorting after create/update/delete actions.
+ */
 function buildTransactionsRedirect(req) {
   const params = new URLSearchParams();
 
@@ -102,6 +113,9 @@ async function getAvailableTransactionCategories(userId, familyId = null) {
   return categories;
 }
 
+/**
+ * Returns the list of possible transaction payers for personal or family workspaces.
+ */
 async function getAvailableTransactionMembers(userId, family = null) {
   if (!family) {
     const [rows] = await db.query(
@@ -131,6 +145,9 @@ async function getAvailableTransactionMembers(userId, family = null) {
   return rows;
 }
 
+/**
+ * Reads a single transaction only if it belongs to the active personal/family workspace.
+ */
 async function getTransactionByIdForUser(transactionId, userId, familyId = null) {
   const workspace = getWorkspaceCondition(userId, familyId, 't');
 
@@ -157,6 +174,9 @@ async function getTransactionByIdForUser(transactionId, userId, familyId = null)
   return rows[0] || null;
 }
 
+/**
+ * Builds the filtered transaction history query for the current workspace.
+ */
 async function getTransactionsForUser({
   userId,
   familyId = null,

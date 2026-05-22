@@ -1,3 +1,7 @@
+/**
+ * Central role definitions for the shared family workspace.
+ * The rest of the application should use these values instead of hard-coded role strings.
+ */
 const FAMILY_ROLES = {
   OWNER: 'owner',
   EDITOR: 'editor',
@@ -10,6 +14,9 @@ const FAMILY_ROLE_LABELS = {
   viewer: 'Viewer'
 };
 
+/**
+ * Converts unknown or missing role values to the safest read-only role.
+ */
 function normalizeRole(role) {
   return Object.values(FAMILY_ROLES).includes(role) ? role : FAMILY_ROLES.VIEWER;
 }
@@ -26,6 +33,9 @@ function isViewer(role) {
   return normalizeRole(role) === FAMILY_ROLES.VIEWER;
 }
 
+/**
+ * Permission helpers keep route and service code readable and consistent.
+ */
 function canManageFamily(role) {
   return isOwner(role);
 }

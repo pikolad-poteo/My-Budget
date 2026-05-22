@@ -1,3 +1,7 @@
+// Unit tests for the email verification service.
+// Database, token and mail dependencies are mocked so token lifecycle behavior can be tested without sending real emails.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/db', () => ({
   getConnection: jest.fn()
 }));

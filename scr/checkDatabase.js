@@ -2,6 +2,7 @@ const pool = require('./db');
 
 let initialized = false;
 
+// Checks the active database schema instead of assuming that every local dump is already up to date.
 async function columnExists(tableName, columnName) {
   const [rows] = await pool.query(
     `
@@ -18,6 +19,7 @@ async function columnExists(tableName, columnName) {
   return rows.length > 0;
 }
 
+// Adds a backward-compatible column only when it is missing from the current database.
 async function addColumnIfMissing(tableName, columnName, definition) {
   const exists = await columnExists(tableName, columnName);
 
@@ -26,6 +28,7 @@ async function addColumnIfMissing(tableName, columnName, definition) {
   }
 }
 
+// Keeps older development databases compatible with the pending email change feature.
 async function ensurePendingEmailColumns() {
   await addColumnIfMissing('users', 'pending_email', 'VARCHAR(150) NULL AFTER `email`');
   await addColumnIfMissing('users', 'pending_email_token_hash', 'VARCHAR(255) NULL AFTER `pending_email`');
@@ -36,6 +39,7 @@ async function initializeDatabase() {
   if (initialized) return;
 
   try {
+    // A lightweight connectivity check makes startup fail fast when MySQL is unavailable.
     await pool.query('SELECT 1');
     await ensurePendingEmailColumns();
     initialized = true;

@@ -1,3 +1,5 @@
+/* Calendar page layout, month grid, event previews and create-event controls. */
+
 .calendar-shell {
   display: flex;
   flex-direction: column;

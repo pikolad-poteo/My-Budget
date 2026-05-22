@@ -21,14 +21,17 @@ const languageRoutes = require('./routes/language.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Configure EJS as the server-side rendering engine for all application pages.
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Parse form submissions, JSON payloads and static assets before route handlers run.
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/vendor/chart.js', express.static(path.join(__dirname, 'node_modules/chart.js/dist')));
 
+// Session cookie settings keep authenticated users signed in while limiting idle sessions to one hour.
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'my-budget-secret-key',
@@ -44,6 +47,7 @@ app.use(
   })
 );
 
+// Attach shared template helpers and the current session user to every rendered view.
 app.use(attachI18n);
 app.use(attachUser);
 
@@ -61,10 +65,12 @@ app.use(calendarRoutes);
 app.use(accountRoutes);
 app.use(pagesRoutes);
 
+// Final fallback for unknown routes that were not handled by any feature module.
 app.use((req, res) => {
   res.status(404).send('404 - Page not found');
 });
 
+// Database checks run once during startup, not during requests, to avoid runtime schema changes.
 initializeDatabase()
   .then(() => {
     app.listen(PORT, () => {

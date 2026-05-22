@@ -4,6 +4,7 @@ const { sendPasswordResetEmail } = require('./mail.service');
 
 const PASSWORD_RESET_TTL_MINUTES = 30;
 
+// Generates a short-lived reset token and invalidates older unused reset links for this user.
 async function createPasswordResetToken(connection, userId) {
   const token = createSecureToken();
   const tokenHash = hashToken(token);
@@ -28,6 +29,7 @@ async function createPasswordResetToken(connection, userId) {
   return token;
 }
 
+// Creates the reset token and sends the email as a single controlled service operation.
 async function sendPasswordResetToken(user) {
   const connection = await db.getConnection();
 
@@ -44,6 +46,7 @@ async function sendPasswordResetToken(user) {
   }
 }
 
+// Reads a reset token without consuming it so the reset form can be displayed safely.
 async function getValidPasswordResetToken(token) {
   const tokenHash = hashToken(token);
 
@@ -90,6 +93,7 @@ async function usePasswordResetToken(token, passwordHash) {
 
     const resetToken = tokens[0];
 
+    // Updates the password and consumes the token atomically so the same reset link cannot be reused.
     await connection.query(
       'UPDATE users SET password_hash = ? WHERE id = ? LIMIT 1',
       [passwordHash, resetToken.user_id]

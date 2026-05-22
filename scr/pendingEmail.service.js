@@ -3,6 +3,7 @@ const { createSecureToken, hashToken, minutesFromNow } = require('./token.servic
 
 const PENDING_EMAIL_TTL_MINUTES = 24 * 60;
 
+// Stores the requested email separately until the user confirms ownership through the emailed token.
 async function createPendingEmailChange(connection, userId, pendingEmail) {
   const token = createSecureToken();
   const tokenHash = hashToken(token);
@@ -49,6 +50,7 @@ async function confirmPendingEmailChange(token) {
 
     const user = users[0];
 
+    // Re-check duplicates at confirmation time in case another account claimed the email meanwhile.
     const [duplicates] = await connection.query(
       `
       SELECT id
@@ -64,6 +66,7 @@ async function confirmPendingEmailChange(token) {
       return 'duplicate';
     }
 
+    // Promotes the pending email to the active email and clears all temporary verification data.
     await connection.query(
       `
       UPDATE users

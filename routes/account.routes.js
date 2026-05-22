@@ -1,3 +1,9 @@
+/**
+ * Account routes.
+ * Handles authenticated user profile settings, avatar management, email changes,
+ * password updates, and account deletion from the account settings page.
+ */
+
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
@@ -23,6 +29,7 @@ const ALLOWED_AVATAR_MIME_TYPES = new Set([
 const ALLOWED_AVATAR_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png']);
 const MAX_AVATAR_SIZE = 15 * 1024 * 1024;
 
+// Keep avatar uploads in memory so Sharp can validate and compress them before saving.
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_AVATAR_SIZE },
@@ -38,6 +45,7 @@ const upload = multer({
   }
 });
 
+// Store short-lived account messages in the session to survive redirects.
 function setAccountFlash(req, type, message) {
   req.session.accountFlash = { type, message };
 }
@@ -48,6 +56,7 @@ function getAccountFlash(req) {
   return flash;
 }
 
+// Load only account fields that are needed by the settings page and session refresh.
 async function getCurrentUser(userId) {
   const [rows] = await db.query(
     'SELECT id, name, email, pending_email, avatar_url, email_verified_at, created_at FROM users WHERE id = ? LIMIT 1',
@@ -57,6 +66,7 @@ async function getCurrentUser(userId) {
   return rows[0] || null;
 }
 
+// Resolve the user's current family role for display in account management.
 async function getAccountFamilyRole(userId) {
   const [rows] = await db.query(
     `
@@ -72,6 +82,7 @@ async function getAccountFamilyRole(userId) {
   return rows[0] || null;
 }
 
+// Convert Multer upload errors into user-facing account flash messages.
 function runAccountAvatarUpload(req, res, next) {
   upload.single('avatar')(req, res, (error) => {
     if (!error) {
@@ -108,6 +119,7 @@ function removeLocalUserAvatar(avatarUrl) {
   });
 }
 
+// Normalize uploaded avatars to a bounded JPEG file to keep storage predictable.
 async function saveCompressedUserAvatar(file) {
   if (!file) return null;
 
@@ -129,6 +141,7 @@ async function saveCompressedUserAvatar(file) {
   return filename;
 }
 
+// Keep the session user snapshot aligned with profile changes shown in the header.
 function syncSessionUser(req, user) {
   req.session.user = {
     id: user.id,
@@ -138,6 +151,7 @@ function syncSessionUser(req, user) {
   };
 }
 
+// Build the full account settings view model in one place for GET and validation errors.
 async function renderAccountPage(req, res, overrides = {}) {
   const accountUser = await getCurrentUser(req.session.user.id);
 
@@ -178,6 +192,7 @@ router.get('/account', requireAuth, async (req, res) => {
   }
 });
 
+// Update profile data and start a verified pending-email flow when the email changes.
 router.post('/account/profile', requireAuth, async (req, res) => {
   const name = String(req.body.name || '').trim();
   const email = normalizeEmail(req.body.email);
@@ -272,6 +287,7 @@ router.post('/account/email-change/cancel', requireAuth, async (req, res) => {
   }
 });
 
+// Replace the current avatar with a newly compressed local upload.
 router.post('/account/avatar', requireAuth, runAccountAvatarUpload, async (req, res) => {
   try {
     if (!req.file) {
@@ -317,6 +333,7 @@ router.post('/account/avatar/delete', requireAuth, async (req, res) => {
   }
 });
 
+// Change password only after validating the current password and new password policy.
 router.post('/account/password', requireAuth, async (req, res) => {
   try {
     const currentPassword = String(req.body.currentPassword || '');
@@ -371,6 +388,7 @@ router.get('/account/delete', requireAuth, (req, res) => {
   return res.redirect('/account');
 });
 
+// Delete the authenticated user's account after password confirmation.
 router.post('/account/delete', requireAuth, async (req, res) => {
   try {
     const confirmation = String(req.body.confirmation || '').trim();

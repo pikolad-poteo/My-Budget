@@ -30,6 +30,9 @@ function getWorkspaceClause(alias = '') {
   };
 }
 
+/**
+ * Selects either the shared family workspace or the user's personal workspace.
+ */
 function getWorkspaceCondition(userId, familyId = null, alias = '') {
   const clauses = getWorkspaceClause(alias);
 
@@ -60,6 +63,9 @@ function sanitizeCategoryDashboardFeatured(value = '') {
   return value === '1' || value === 'on' || value === true ? 1 : 0;
 }
 
+/**
+ * Preserves the active tab and search query after category form submissions.
+ */
 function buildCategoriesRedirect(req, fallbackTab = 'expense') {
   const params = new URLSearchParams();
 
@@ -83,6 +89,9 @@ function setCategoryFlash(req, type, message) {
   req.session.categoryFlash = { type, message };
 }
 
+/**
+ * Reads categories from the active workspace with optional name filtering.
+ */
 async function getUserCategories(userId, familyId = null, searchTerm = '') {
   const workspace = getWorkspaceCondition(userId, familyId);
   const params = [...workspace.params];
@@ -127,6 +136,9 @@ async function getCategoryByIdForUser(categoryId, userId, familyId = null) {
   return rows[0] || null;
 }
 
+/**
+ * Prevents duplicate category names inside the same workspace and category type.
+ */
 async function findDuplicateCategory({
   userId,
   familyId,

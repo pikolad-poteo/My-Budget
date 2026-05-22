@@ -1,3 +1,6 @@
+// Unit tests for secure token helpers.
+// The suite validates random-token generation, hashing and expiration-date calculation used by email flows.
+
 const crypto = require('crypto');
 const { createSecureToken, hashToken, minutesFromNow } = require('../../scr/token.service');
 

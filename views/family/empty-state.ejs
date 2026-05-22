@@ -1,3 +1,4 @@
+<% /* Personal-mode empty state shown when the user is not connected to a family workspace. */ %>
 <%
   const personalStats = typeof personalWorkspaceStats !== 'undefined' && personalWorkspaceStats ? personalWorkspaceStats : { total: 0 };
   const hasPersonalData = Number(personalStats.total || 0) > 0;

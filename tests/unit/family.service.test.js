@@ -1,3 +1,7 @@
+// Unit tests for family service business logic.
+// Database access is mocked to verify workspace membership, ownership transfer and personal-data migration rules safely.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/db', () => ({
   query: jest.fn(),
   getConnection: jest.fn()

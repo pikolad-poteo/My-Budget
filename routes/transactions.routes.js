@@ -1,3 +1,9 @@
+/**
+ * Transaction routes.
+ * Handles workspace-aware transaction listing, filtering, sorting, and CRUD actions
+ * for income and expense records.
+ */
+
 const express = require('express');
 const router = express.Router();
 
@@ -24,6 +30,7 @@ const {
   getTransactionsForUser
 } = require('../scr/transaction.utils');
 
+// Render the transaction list with validated filters and workspace-aware data sources.
 router.get('/transactions', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -166,6 +173,7 @@ router.get('/transactions', requireAuth, async (req, res) => {
   }
 });
 
+// Create a transaction after sanitizing form input and checking member/category ownership.
 router.post('/transactions/create', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -238,6 +246,7 @@ router.post('/transactions/create', requireAuth, requireBudgetEditor('transactio
   }
 });
 
+// Update transactions only inside the user's accessible workspace scope.
 router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   const transactionId = Number(req.params.id);
 
@@ -321,6 +330,7 @@ router.post('/transactions/:id/update', requireAuth, requireBudgetEditor('transa
   }
 });
 
+// Delete a transaction through a scoped lookup to protect other users' data.
 router.post('/transactions/:id/delete', requireAuth, requireBudgetEditor('transactions'), async (req, res) => {
   const transactionId = Number(req.params.id);
 

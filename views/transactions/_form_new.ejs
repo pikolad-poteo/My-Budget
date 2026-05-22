@@ -1,3 +1,4 @@
+<% /* Create-transaction form partial with category and amount inputs. */ %>
 <%
   const createDefaultType = filters.type === 'income' ? 'income' : 'expense';
   const createDefaultCategory = categories.find((category) => category.type === createDefaultType) || categories[0] || null;

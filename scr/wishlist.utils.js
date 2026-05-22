@@ -1,13 +1,25 @@
+/**
+ * Wishlist utility helpers.
+ * Handles input normalization, safe redirects, folder ownership, workspace-aware queries,
+ * and summary calculations for the wishlist page.
+ */
 const db = require('./db');
 const { getWorkspaceCondition } = require('./category.utils');
 
+/** Allowed item statuses used by filters, forms, and dashboard summaries. */
 const WISHLIST_STATUSES = ['planned', 'postponed', 'bought', 'cancelled'];
 const WISHLIST_SORTS = ['newest', 'oldest', 'price_desc', 'price_asc', 'buyer_asc', 'buyer_desc'];
 
+/**
+ * Accepts either a single value or repeated form values and returns safe trimmed text.
+ */
 function sanitizeWishlistText(value, maxLength = 255) {
   const source = Array.isArray(value) ? [...value].reverse().find((entry) => String(entry || '').trim()) : value;
   return String(source || '').trim().slice(0, maxLength);
 }
+/**
+ * Cleans folder names and prevents reserved pseudo-folders from being stored as real folders.
+ */
 function normalizeWishlistFolderName(value) {
   const raw = sanitizeWishlistText(value, 100);
   if (!raw) return '';
@@ -22,12 +34,18 @@ function sanitizeWishlistSort(value) { return WISHLIST_SORTS.includes(value) ? v
 function sanitizeWishlistDate(value) { const date = String(value || '').trim(); if (!date) return null; return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null; }
 function sanitizeWishlistUrl(value) { const url = String(value || '').trim(); if (!url) return null; if (url.startsWith('/uploads/wishlist/')) return url.slice(0, 1000); if (url.startsWith('http://') || url.startsWith('https://')) return url.slice(0, 1000); return `https://${url}`.slice(0, 1000); }
 function setWishlistFlash(req, type, message) { req.session.wishlistFlash = { type, message }; }
+/**
+ * Restricts return targets to wishlist pages to avoid open redirect behavior.
+ */
 function getSafeWishlistReturnTo(value, fallback = '/wishlist') {
   const returnTo = sanitizeWishlistText(value, 500);
   if (!returnTo || !returnTo.startsWith('/wishlist') || returnTo.startsWith('//')) return fallback;
   return returnTo;
 }
 
+/**
+ * Preserves active wishlist filters after mutating form submissions.
+ */
 function buildWishlistRedirect(req, fallback = '/wishlist') {
   const redirectBase = getSafeWishlistReturnTo(req.body && req.body.return_to, fallback);
   const params = new URLSearchParams();
@@ -39,8 +57,14 @@ function buildWishlistRedirect(req, fallback = '/wishlist') {
   return query ? `${redirectBase}?${query}` : redirectBase;
 }
 
+/**
+ * Converts public sort keys into trusted SQL ORDER BY fragments.
+ */
 function getWishlistOrderBy(sort) { switch (sort) { case 'oldest': return 'w.created_at ASC'; case 'price_desc': return 'w.amount DESC, w.created_at DESC'; case 'price_asc': return 'w.amount ASC, w.created_at DESC'; case 'buyer_asc': return 'COALESCE(u.name, \'\') ASC, w.created_at DESC'; case 'buyer_desc': return 'COALESCE(u.name, \'\') DESC, w.created_at DESC'; default: return 'w.created_at DESC'; } }
 
+/**
+ * Reads wishlist items for the active workspace with status, folder, search, and buyer filters.
+ */
 async function getWishlistItemsForUser({ userId, familyId, filters }) {
   const workspace = getWorkspaceCondition(userId, familyId, 'w');
   const params = [...workspace.params];
@@ -63,6 +87,9 @@ async function getWishlistItemByIdForUser(itemId, userId, familyId) {
   return rows[0] || null;
 }
 
+/**
+ * Combines persisted folder records with folders inferred from existing items.
+ */
 async function getWishlistFoldersForUser(userId, familyId) {
   const workspace = getWorkspaceCondition(userId, familyId);
   const [itemRows] = await db.query(
@@ -85,6 +112,9 @@ async function getWishlistFoldersForUser(userId, familyId) {
   return [...folderSet].sort((a, b) => a.localeCompare(b));
 }
 
+/**
+ * Builds owner-aware folder cards so family members can have folders with the same name.
+ */
 async function getWishlistFolderCardsForUser(userId, familyId, buyerFilter = 'all') {
   const workspaceItems = getWorkspaceCondition(userId, familyId, 'w');
   const workspaceFolders = getWorkspaceCondition(userId, familyId, 'wf');
@@ -160,12 +190,18 @@ async function getWishlistFolderCardsForUser(userId, familyId, buyerFilter = 'al
   });
 }
 
+/**
+ * Creates a folder record if it does not already exist; item updates can then rely on it.
+ */
 async function ensureWishlistFolder(userId, familyId, folderName) {
   const name = normalizeWishlistFolderName(folderName);
   if (!name) return;
   try { await db.query('INSERT IGNORE INTO wishlist_folders (user_id, family_id, name) VALUES (?, ?, ?)', [userId, familyId || null, name]); } catch (error) {}
 }
 
+/**
+ * Renames a folder and can transfer it to another family member owner.
+ */
 async function renameWishlistFolder({ userId, familyId, oldName, newName, oldUserId, newUserId }) {
   const cleanOldName = normalizeWishlistFolderName(oldName);
   const cleanNewName = normalizeWishlistFolderName(newName);
@@ -215,6 +251,9 @@ async function deleteWishlistFolder({ userId, familyId, folderName, deleteAction
   } catch (error) {}
 }
 
+/**
+ * Replaces the current folder item selection with the selected item IDs.
+ */
 async function syncWishlistFolderItems({ userId, familyId, targetFolder, targetOwnerId, selectedItemIds }) {
   const cleanFolderName = normalizeWishlistFolderName(targetFolder);
   const ownerId = Number(targetOwnerId) || userId;
@@ -252,6 +291,9 @@ async function getCurrentBalanceForUser(userId, familyId) {
   return Number(rows[0].balance || 0);
 }
 
+/**
+ * Calculates totals used by wishlist overview cards and balance-after-plans hints.
+ */
 function buildWishlistSummary(items, balance) {
   return items.reduce((acc, item) => {
     const amount = Number(item.amount || 0);

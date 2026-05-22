@@ -1,7 +1,13 @@
+/**
+ * Transactions page client-side behavior.
+ * Manages create-form state, category selectors, advanced filters, and partial
+ * history updates without forcing scroll jumps after every user action.
+ */
 document.addEventListener('DOMContentLoaded', function () {
     const transactionI18n = window.transactionI18n || {};
 
 
+    // Toggles the transaction create panel and optionally opens it from query parameters.
     function initTransactionCreateToggle() {
       const panel = document.getElementById('transactionCreatePanel');
       const button = document.getElementById('toggleTransactionCreateButton');
@@ -9,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!panel || !button) return;
 
+      // Keeps the panel, button state, and primary amount field in sync.
       function setCreatePanelOpen(isOpen, shouldScroll) {
         if (isOpen) {
           panel.removeAttribute('hidden');
@@ -59,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // Turns transaction type/category controls into large clickable UI buttons.
     function initTransactionForm() {
       const form = document.querySelector('.transaction-form');
       if (!form) return;
@@ -70,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!typeInput || !categorySelect || !categoryButtons.length) return;
 
+      // Highlights the category button matching the underlying select value.
       function applyActiveCategory() {
         const selectedValue = categorySelect.value;
 
@@ -146,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
       filterCategoriesByType(typeInput.value);
     }
 
+    // Controls the advanced filters panel without submitting the form immediately.
     function initAdvancedFilters() {
       const advancedToggle = document.querySelector('[data-advanced-filters-toggle]');
       const advancedPanel = document.querySelector('[data-advanced-filters-panel]');
@@ -162,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
+    // Removes modal/backdrop state after replacing the history zone through AJAX.
     function clearTransactionModalState() {
       const openModal = document.querySelector('.transaction-edit-modal.show');
 
@@ -178,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.style.removeProperty('padding-right');
     }
 
+    // Reloads only the transaction history section for filters and pagination.
     async function replaceHistoryZone(url) {
       const historyZone = document.querySelector('[data-transactions-history-zone]');
 
@@ -223,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // Builds a clean query string by omitting empty and default filter values.
     function buildFilterUrl(form) {
       const formData = new FormData(form);
       const params = new URLSearchParams();
@@ -245,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return queryString ? `/transactions?${queryString}` : '/transactions?view=date';
     }
 
+    // Submits edit/delete style history mutations and refreshes the history list in place.
     async function submitHistoryMutationForm(form) {
       const historyZone = document.querySelector('[data-transactions-history-zone]');
       if (!historyZone) return;
@@ -301,6 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // Wires links and forms inside the replaceable history zone after every refresh.
     function initLiveHistoryControls() {
       const historyZone = document.querySelector('[data-transactions-history-zone]');
       if (!historyZone) return;

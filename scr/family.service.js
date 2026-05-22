@@ -2,6 +2,9 @@ const db = require('./db');
 const { FAMILY_ROLES, normalizeRole } = require('./family.permissions');
 const { logFamilyActivity } = require('./family.activity');
 
+/**
+ * Returns the current family workspace for a user, including membership role metadata.
+ */
 async function getUserFamily(userId) {
   const [rows] = await db.query(
     `
@@ -41,6 +44,9 @@ async function getFamilyMember(familyId, userId) {
   return rows[0] || null;
 }
 
+/**
+ * Lists family members in UI order: owners first, then editors/viewers by name.
+ */
 async function getFamilyMembers(familyId) {
   const [rows] = await db.query(
     `
@@ -71,6 +77,9 @@ async function getFamilyMembers(familyId) {
   return rows;
 }
 
+/**
+ * Used before role changes and removals to prevent a family from losing its last owner.
+ */
 async function countFamilyOwners(familyId) {
   const [rows] = await db.query(
     'SELECT COUNT(*) AS total FROM family_members WHERE family_id = ? AND role = ?',
@@ -81,6 +90,9 @@ async function countFamilyOwners(familyId) {
 }
 
 
+/**
+ * Counts data that still belongs to the user's personal workspace before joining a family.
+ */
 async function countPersonalWorkspaceData(userId) {
   const tables = [
     ['categories', 'categories'],
@@ -104,6 +116,10 @@ async function countPersonalWorkspaceData(userId) {
   return result;
 }
 
+/**
+ * Moves existing personal budget data into a newly created family workspace.
+ * The caller owns the transaction so all workspace tables are migrated atomically.
+ */
 async function migratePersonalWorkspaceToFamily(connection, userId, familyId) {
   await connection.query('UPDATE categories SET family_id = ? WHERE user_id = ? AND family_id IS NULL', [familyId, userId]);
   await connection.query('UPDATE transactions SET family_id = ? WHERE user_id = ? AND family_id IS NULL', [familyId, userId]);
@@ -112,6 +128,9 @@ async function migratePersonalWorkspaceToFamily(connection, userId, familyId) {
   await connection.query('UPDATE calendar_events SET family_id = ? WHERE user_id = ? AND family_id IS NULL', [familyId, userId]);
 }
 
+/**
+ * Deletes personal-only data when the user chooses not to keep it before joining a family.
+ */
 async function deletePersonalWorkspaceData(userId) {
   const connection = await db.getConnection();
 
@@ -131,6 +150,9 @@ async function deletePersonalWorkspaceData(userId) {
   }
 }
 
+/**
+ * Builds a unified activity feed for a lone user's personal workspace.
+ */
 async function getPersonalWorkspaceActivity(userId, limit = 100) {
   const safeLimit = Number.isInteger(Number(limit)) ? Math.min(Math.max(Number(limit), 1), 100) : 100;
 
@@ -209,6 +231,9 @@ async function getPersonalWorkspaceActivity(userId, limit = 100) {
   return rows;
 }
 
+/**
+ * Creates a family, assigns the creator as owner, and migrates personal data into it.
+ */
 async function createFamily({ userId, name, avatarUrl = null }) {
   const existingFamily = await getUserFamily(userId);
   if (existingFamily) {
@@ -257,6 +282,9 @@ async function createFamily({ userId, name, avatarUrl = null }) {
   }
 }
 
+/**
+ * Updates family profile fields and records the change in the activity log.
+ */
 async function updateFamilyName({ familyId, actorUserId, name }) {
   const cleanName = String(name || '').trim();
   if (!cleanName) {
@@ -315,6 +343,9 @@ async function updateFamilyAvatar({ familyId, actorUserId, avatarUrl }) {
   });
 }
 
+/**
+ * Adds an existing application user to the family workspace with a normalized role.
+ */
 async function addFamilyMember({ familyId, actorUserId, email, role = FAMILY_ROLES.VIEWER }) {
   const normalizedEmail = String(email || '').trim().toLowerCase();
   const cleanRole = normalizeRole(role);
@@ -361,6 +392,9 @@ async function addFamilyMember({ familyId, actorUserId, email, role = FAMILY_ROL
   return user;
 }
 
+/**
+ * Changes a member role while preserving the invariant that every family has an owner.
+ */
 async function changeMemberRole({ familyId, actorUserId, targetUserId, role }) {
   const cleanRole = normalizeRole(role);
   const targetMember = await getFamilyMember(familyId, targetUserId);
@@ -399,6 +433,9 @@ async function changeMemberRole({ familyId, actorUserId, targetUserId, role }) {
   });
 }
 
+/**
+ * Removes a member from the family, except when that would remove the last owner.
+ */
 async function removeFamilyMember({ familyId, actorUserId, targetUserId }) {
   const targetMember = await getFamilyMember(familyId, targetUserId);
 
@@ -429,6 +466,9 @@ async function removeFamilyMember({ familyId, actorUserId, targetUserId }) {
   });
 }
 
+/**
+ * Lets a member leave the family while keeping ownership rules valid.
+ */
 async function leaveFamily({ familyId, actorUserId }) {
   const member = await getFamilyMember(familyId, actorUserId);
 
@@ -465,6 +505,9 @@ async function leaveFamily({ familyId, actorUserId }) {
   });
 }
 
+/**
+ * Transfers shared family records back to one user's personal workspace when deleting a family.
+ */
 async function moveFamilyWorkspaceToPersonal(connection, familyId, userId) {
   await connection.query('UPDATE categories SET user_id = ?, family_id = NULL WHERE family_id = ?', [userId, familyId]);
   await connection.query('UPDATE transactions SET user_id = ?, family_id = NULL, paid_by_user_id = ? WHERE family_id = ?', [userId, userId, familyId]);
@@ -473,6 +516,9 @@ async function moveFamilyWorkspaceToPersonal(connection, familyId, userId) {
   await connection.query('UPDATE calendar_events SET user_id = ?, family_id = NULL WHERE family_id = ?', [userId, familyId]);
 }
 
+/**
+ * Deletes a family workspace and either removes or preserves its shared budget data.
+ */
 async function deleteFamily({ familyId, actorUserId, keepSharedDataAsPersonal = false }) {
   await logFamilyActivity({
     familyId,

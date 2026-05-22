@@ -1,3 +1,7 @@
+// Unit tests for password reset token handling.
+// External dependencies are mocked to verify secure token creation, expiration checks and password-update behavior.
+
+// Mocks isolate the unit under test from the database, mail transport and runtime side effects.
 jest.mock('../../scr/db', () => ({
   query: jest.fn(),
   getConnection: jest.fn()

@@ -1,6 +1,9 @@
 const { getUserFamily } = require('./family.service');
 const { canEditBudget: roleCanEditBudget } = require('./family.permissions');
 
+/**
+ * Maps protected budget pages to their page-specific flash message keys.
+ */
 const FLASH_KEYS = {
   transactions: 'transactionFlash',
   categories: 'categoryFlash',
@@ -17,6 +20,9 @@ const DEFAULT_REDIRECTS = {
 
 const VIEWER_BLOCK_MESSAGE = 'Your family role is Viewer. You can view shared budget data, but you cannot create, edit, or delete records.';
 
+/**
+ * A user outside a family owns a personal workspace and can edit it by default.
+ */
 function getCanEditBudget(family) {
   if (!family) return true;
   return roleCanEditBudget(family.role);
@@ -27,6 +33,9 @@ function setPageFlash(req, page, type, message) {
   if (key) req.session[key] = { type, message };
 }
 
+/**
+ * Builds a same-page fallback redirect without trusting arbitrary user-provided URLs.
+ */
 function getSafeRedirect(req, page) {
   const fallback = DEFAULT_REDIRECTS[page] || '/';
   const referrer = req.get('Referrer') || req.get('Referer');
@@ -40,6 +49,10 @@ function getSafeRedirect(req, page) {
   }
 }
 
+/**
+ * Express middleware that blocks Viewer users from mutating shared budget data.
+ * Owners and Editors can continue to the protected route handler.
+ */
 function requireBudgetEditor(page) {
   return async function requireBudgetEditorMiddleware(req, res, next) {
     try {

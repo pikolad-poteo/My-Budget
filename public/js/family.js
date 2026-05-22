@@ -1,4 +1,9 @@
+/**
+ * Family page client-side behavior.
+ * Preserves scroll after member actions and manages the interactive activity feed.
+ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Family actions post back to the server, so the current scroll position is restored after reload.
   const scrollStorageKey = 'myBudgetFamilyScrollY';
   const storedScrollY = sessionStorage.getItem(scrollStorageKey);
 
@@ -15,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // The family avatar card opens the hidden file input and submits once a file is selected.
   const avatarTrigger = document.getElementById('familyAvatarTrigger');
   const avatarInput = document.getElementById('familyAvatarInput');
   const avatarForm = document.getElementById('familyAvatarForm');
@@ -45,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const defaultTitle = activityTitle ? activityTitle.textContent : (familyI18n.latestUpdates || 'Latest household updates');
   const getItems = () => Array.from(list.querySelectorAll('.family-activity-item'));
 
+  // Applies filtering, sorting, and collapsed/expanded visibility to the activity feed.
   function applyActivityView() {
     const viewMode = list.dataset.viewMode || 'default';
     const expanded = viewMode === 'expanded';
@@ -75,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
+  // Controls whether activity is hidden, collapsed to the latest items, or fully expanded.
   function setActivityMode(nextMode) {
     const mode = nextMode || 'default';
     const expanded = mode === 'expanded';
@@ -98,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyActivityView();
   }
 
+  // Keeps the legacy expand button behavior mapped to the newer activity view modes.
   function setExpandedState(nextExpanded) {
     setActivityMode(nextExpanded ? 'expanded' : 'hidden');
   }

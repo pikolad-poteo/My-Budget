@@ -1,3 +1,6 @@
+// Unit tests for Express authentication middleware.
+// These checks confirm that protected routes require a session user and anonymous users are redirected to login.
+
 const { attachUser, requireAuth } = require('../../scr/middleware');
 
 function createReq(user) {

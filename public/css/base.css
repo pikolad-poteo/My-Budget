@@ -1,3 +1,5 @@
+/* Global design tokens and browser defaults shared by all pages. */
+
 * {
   box-sizing: border-box;
 }

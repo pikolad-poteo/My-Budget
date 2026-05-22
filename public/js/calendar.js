@@ -1,4 +1,10 @@
+/**
+ * Calendar page client-side behavior.
+ * Handles the inline create form, calendar form widgets, and AJAX month navigation
+ * so users can move between months without losing scroll position.
+ */
 (function () {
+  // Toggles the compact create-event panel without forcing a full page reload.
   function setupCalendarCreatePanel() {
     const panel = document.getElementById('calendarCreatePanel');
     const button = document.getElementById('toggleCalendarCreateButton');
@@ -25,6 +31,7 @@
     });
   }
 
+  // Initializes reusable form controls for both the main form and content loaded via AJAX.
   function setupCalendarFormControls(root) {
     const scope = root || document;
 
@@ -36,6 +43,7 @@
       const preview = wrapper ? wrapper.querySelector('[data-calendar-color-preview]') : null;
       const value = wrapper ? wrapper.querySelector('[data-calendar-color-value]') : null;
 
+      // Keeps the custom color preview synchronized with the native color input.
       function updateColorView() {
         const color = String(input.value || '#0d6efd').toLowerCase();
         if (wrapper) wrapper.style.setProperty('--selected-color', color);
@@ -55,6 +63,7 @@
       const form = checkbox.closest('form');
       const repeatSelect = form ? form.querySelector('select[name="recurring_type"]') : null;
 
+      // Disables repeat options unless the event is explicitly marked as recurring.
       function updateRecurringState() {
         if (!repeatSelect) return;
         repeatSelect.disabled = !checkbox.checked;
@@ -73,6 +82,7 @@
       const startTime = form ? form.querySelector('input[name="event_time"]') : null;
       const endTime = form ? form.querySelector('input[name="end_time"]') : null;
 
+      // All-day events do not need start/end time values.
       function updateTimeState() {
         [startTime, endTime].forEach(function (input) {
           if (!input) return;
@@ -86,11 +96,13 @@
     });
   }
 
+  // Re-runs all calendar initializers after the calendar shell is replaced.
   function setupCalendarPage() {
     setupCalendarCreatePanel();
     setupCalendarFormControls(document);
   }
 
+  // Replaces only the calendar shell for month navigation and preserves the current scroll.
   async function replaceCalendarContent(url, shouldPushState) {
     const currentShell = document.querySelector('.calendar-shell');
     if (!currentShell) {
@@ -141,6 +153,7 @@
     }
   }
 
+  // Intercepts internal calendar navigation links while leaving browser shortcuts untouched.
   document.addEventListener('click', function (event) {
     const link = event.target.closest('a[data-calendar-ajax]');
     if (!link) return;
@@ -151,6 +164,7 @@
     replaceCalendarContent(link.href, true);
   });
 
+  // Supports browser Back/Forward after AJAX calendar navigation.
   window.addEventListener('popstate', function () {
     replaceCalendarContent(window.location.href, false);
   });

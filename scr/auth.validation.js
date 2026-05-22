@@ -1,3 +1,4 @@
+// Stores and compares emails in one predictable format across registration, login and account settings.
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
@@ -12,6 +13,7 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
 }
 
+// Returns translated validation labels when a translation function is available.
 function getPasswordRuleLabels(t) {
   if (typeof t !== 'function') {
     return {
@@ -36,6 +38,7 @@ function getPasswordRuleLabels(t) {
   };
 }
 
+// Enforces the same password policy for registration, password reset and account password changes.
 function validatePassword(password, t) {
   const value = String(password || '');
   const labels = getPasswordRuleLabels(t);

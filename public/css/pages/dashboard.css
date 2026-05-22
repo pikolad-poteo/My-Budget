@@ -1,3 +1,5 @@
+/* Dashboard summary cards, charts and budget overview layout. */
+
 .dashboard-shell {
   display: flex;
   flex-direction: column;

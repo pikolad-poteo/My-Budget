@@ -1,3 +1,6 @@
+// End-to-end smoke tests for public authentication pages.
+// These checks verify that login and registration screens render correctly before authenticated workflows run.
+
 const { test, expect } = require('@playwright/test');
 
 test.describe('Authentication smoke tests', () => {

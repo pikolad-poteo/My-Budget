@@ -4,6 +4,7 @@ const { sendVerificationEmail } = require('./mail.service');
 
 const EMAIL_VERIFICATION_TTL_MINUTES = 24 * 60;
 
+// Creates a new email verification token and invalidates any previous unused tokens for the same user.
 async function createEmailVerificationToken(connection, userId) {
   const token = createSecureToken();
   const tokenHash = hashToken(token);
@@ -28,6 +29,7 @@ async function createEmailVerificationToken(connection, userId) {
   return token;
 }
 
+// Saves the token and sends the email in one transaction to keep the verification state consistent.
 async function sendVerificationToken(user) {
   const connection = await db.getConnection();
 
@@ -71,6 +73,7 @@ async function verifyEmailToken(token) {
 
     const verificationToken = tokens[0];
 
+    // Marks both the user email and the token itself as completed in the same database transaction.
     await connection.query(
       'UPDATE users SET email_verified_at = NOW() WHERE id = ? LIMIT 1',
       [verificationToken.user_id]

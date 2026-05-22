@@ -1,7 +1,13 @@
+// Jest configuration for My Budget unit tests.
+// The suite focuses on pure backend helpers and service logic that can be verified without a browser.
+// Coverage intentionally excludes infrastructure files and static dictionaries so the report reflects business code.
+
 module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/tests/unit/**/*.test.js'],
+  // Reset mock call history between tests so each scenario remains isolated.
   clearMocks: true,
+  // Measure coverage only for application logic that is meaningful at the unit-test level.
   collectCoverageFrom: [
     'scr/**/*.js',
 

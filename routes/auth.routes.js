@@ -1,3 +1,9 @@
+/**
+ * Authentication routes.
+ * Provides login, registration, email verification, pending email confirmation,
+ * password reset, resend verification, and logout flows.
+ */
+
 const express = require('express');
 const bcrypt = require('bcryptjs');
 
@@ -13,6 +19,7 @@ const {
   usePasswordResetToken
 } = require('../scr/passwordReset.service');
 
+// Store authentication messages in the session so they remain visible after redirects.
 function setAuthFlash(req, type, message) {
   req.session.authFlash = { type, message };
 }
@@ -23,6 +30,7 @@ function getAuthFlash(req) {
   return flash;
 }
 
+// Centralize login view rendering to keep validation and redirect flows consistent.
 function renderLogin(req, res, overrides = {}) {
   const flash = getAuthFlash(req);
 
@@ -60,6 +68,7 @@ function renderForgotPassword(req, res, overrides = {}) {
   });
 }
 
+// Render reset form only for a token that was already checked by the route handler.
 function renderResetPassword(req, res, token, overrides = {}) {
   return res.render('reset-password', {
     title: req.t('auth.resetPasswordTitle'),
@@ -99,6 +108,7 @@ router.get('/register', (req, res) => {
   return renderRegister(req, res);
 });
 
+// Authenticate verified users and create the session user object used across protected pages.
 router.post('/login', async (req, res) => {
   const email = normalizeEmail(req.body.email);
   const password = String(req.body.password || '');
@@ -158,6 +168,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Create a new user with a hashed password and send the first verification email.
 router.post('/register', async (req, res) => {
   const name = String(req.body.name || '').trim();
   const email = normalizeEmail(req.body.email);
@@ -238,6 +249,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// Consume a verification token and mark the related account as verified.
 router.get('/verify-email/:token', async (req, res) => {
   try {
     const isVerified = await verifyEmailToken(req.params.token);
@@ -257,6 +269,7 @@ router.get('/verify-email/:token', async (req, res) => {
 });
 
 
+// Confirm a pending email change only through the verification token sent to the new address.
 router.get('/verify-email-change/:token', async (req, res) => {
   try {
     const result = await confirmPendingEmailChange(req.params.token);
@@ -284,6 +297,7 @@ router.get('/resend-verification', (req, res) => {
   return renderResendVerification(req, res);
 });
 
+// Resend verification without revealing whether an address exists beyond normal form feedback.
 router.post('/resend-verification', async (req, res) => {
   const email = normalizeEmail(req.body.email);
 
@@ -342,6 +356,7 @@ router.get('/forgot-password', (req, res) => {
   return renderForgotPassword(req, res);
 });
 
+// Start password reset by email while keeping the response safe for account enumeration.
 router.post('/forgot-password', async (req, res) => {
   const email = normalizeEmail(req.body.email);
 
@@ -401,6 +416,7 @@ router.get('/reset-password/:token', async (req, res) => {
   }
 });
 
+// Replace the password and invalidate the reset token in a single reset flow.
 router.post('/reset-password/:token', async (req, res) => {
   const token = req.params.token;
   const password = String(req.body.password || '');
@@ -440,6 +456,7 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
+// Destroy the session and clear the browser cookie before returning to login.
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/login');

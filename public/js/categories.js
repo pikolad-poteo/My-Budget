@@ -38,6 +38,7 @@
 
   const categoryI18n = window.categoryI18n || {};
 
+  // Reads translated UI text from the server-provided dictionary with safe fallbacks.
   function tr(key, fallback) {
     return categoryI18n[key] || fallback;
   }
@@ -52,6 +53,7 @@
   const categoryItems = document.querySelectorAll('[data-category-item]');
   const categoryAddCards = document.querySelectorAll('[data-category-add-card]');
 
+  // Converts category hex colors into transparent preview backgrounds.
   function hexToRgba(hex, alpha) {
     if (!hex) return 'rgba(108, 117, 125, ' + alpha + ')';
 
@@ -67,6 +69,7 @@
     return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
   }
 
+  // Switches between category type tabs and stores the selected tab for server redirects.
   function setActiveTab(targetTab) {
     tabButtons.forEach(function (item) {
       item.classList.toggle('is-active', item.dataset.categoryTab === targetTab);
@@ -85,6 +88,7 @@
     }
   }
 
+  // Changes the visible category group without reloading the page.
   function setCategoryView(view) {
     const safeView = view === 'list' ? 'list' : 'cards';
 
@@ -109,6 +113,7 @@
     return String(value || '').trim().toLowerCase();
   }
 
+  // Filters category cards in place and hides add-cards while search results are active.
   function applyLiveCategorySearch() {
     if (!liveSearchInput) return;
 
@@ -158,6 +163,7 @@
     liveSearchInput.focus({ preventScroll: true });
   }
 
+  // Opens the create panel while preserving the user's current page context.
   function openCreatePanel() {
     if (!createPanel || !toggleCreateButton) return;
 
@@ -191,6 +197,7 @@
     }
   }
 
+  // Keeps custom toggle buttons and hidden form fields synchronized.
   function syncToggleGroup(target, value) {
     document.querySelectorAll('[data-toggle-target="' + target + '"]').forEach(function (button) {
       button.classList.toggle('is-active', button.dataset.toggleValue === value);
@@ -215,6 +222,7 @@
     namePreview.textContent = trimmed || tr('newCategory', 'New category');
   }
 
+  // Updates all color-dependent preview elements when a swatch or custom color changes.
   function updateColorPreview(color) {
     if (colorValue) {
       colorValue.textContent = color.toUpperCase();
@@ -247,6 +255,7 @@
     });
   }
 
+  // Opens lightweight page modals used by category edit/delete flows.
   function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -438,6 +447,7 @@
     const colorInput = row.querySelector('[data-edit-color-input]');
     const swatchButtons = row.querySelectorAll('[data-color-value]');
 
+    // Keeps each edit form's color swatches aligned with its hidden color input.
     function setActiveColor(color) {
       swatchButtons.forEach(function (button) {
         button.classList.toggle(

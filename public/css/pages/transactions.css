@@ -1,3 +1,5 @@
+/* Transactions page filters, form layout, summary cards and history table. */
+
 .transactions-shell {
   display: flex;
   flex-direction: column;

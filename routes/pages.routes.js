@@ -1,6 +1,13 @@
+/**
+ * Page routes.
+ * Renders the landing redirect and the authenticated dashboard with period filters,
+ * budget health metrics, trend data, recent transactions, and wishlist summary data.
+ */
+
 const express = require('express');
 const router = express.Router();
 
+// Dashboard formatting uses stable browser locales for month, day, and chart labels.
 const DASHBOARD_LOCALES = {
   en: 'en-US',
   ru: 'ru-RU',
@@ -43,6 +50,7 @@ function addYears(date, amount) {
   return new Date(date.getFullYear() + amount, 0, 1);
 }
 
+// Resolve the selected month/year period and prebuild navigation URLs for the dashboard.
 function getDashboardPeriod(query = {}, language = 'en', t = (key) => key) {
   const locale = getDashboardLocale(language);
   const now = new Date();
@@ -117,6 +125,7 @@ function roundCurrency(value) {
   return Math.round(Number(value || 0) * 100) / 100;
 }
 
+// Calculate percentage changes while handling empty previous periods safely.
 function calculateChange(current, previous, positiveWhenLower = false, t = (key) => key) {
   const currentValue = Math.abs(Number(current || 0));
   const previousValue = Math.abs(Number(previous || 0));
@@ -148,6 +157,7 @@ function normalizeDateLabel(value, language = 'en') {
   return `${date.getDate()} ${date.toLocaleString(locale, { month: 'short' })}`;
 }
 
+// Fill daily trend data so chart labels stay continuous even on days without transactions.
 function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false, language = 'en', t = (key) => key) {
   const locale = getDashboardLocale(language);
   const rowsByDate = new Map(
@@ -180,6 +190,7 @@ function buildMonthTrend(periodStart, chartEnd, dailyRows, containsToday = false
   };
 }
 
+// Build monthly trend data for yearly dashboard mode.
 function buildYearTrend(year, chartEnd, monthlyRows, containsToday = false, language = 'en', t = (key) => key) {
   const locale = getDashboardLocale(language);
   const rowsByMonth = new Map(
@@ -220,6 +231,7 @@ function getCategoryIcon(icon) {
   return icon ? `bi bi-${icon}` : 'bi bi-tag';
 }
 
+// Convert financial signals into a simple health score and localized status label.
 function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishlistPlannedTotal, t = (key) => key) {
   const income = Number(periodIncome || 0);
   const expenses = Number(periodExpenses || 0);
@@ -269,6 +281,7 @@ function calculateBudgetHealth(periodIncome, periodExpenses, savingsRate, wishli
   };
 }
 
+// Load all dashboard metrics with workspace-aware queries and prepared chart data.
 async function loadDashboardData(user, query = {}, t = (key) => key, language = 'en') {
   const currentUserId = user.id;
   const family = await getUserFamily(currentUserId);
@@ -570,6 +583,7 @@ router.get('/', (req, res) => {
   return res.redirect('/login');
 });
 
+// Render the authenticated dashboard with period filters and aggregated workspace data.
 router.get('/dashboard', requireAuth, async (req, res) => {
   const t = getTranslator(req);
   const language = req.language || 'en';

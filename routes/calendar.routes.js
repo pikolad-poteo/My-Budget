@@ -1,3 +1,9 @@
+/**
+ * Calendar routes.
+ * Handles workspace-aware event rendering and CRUD actions for budget events,
+ * reminders, tasks, and recurring calendar entries.
+ */
+
 const express = require('express');
 const router = express.Router();
 
@@ -22,6 +28,7 @@ function parseDate(value) {
 }
 
 
+// Validate locale values before using Intl to avoid runtime RangeError exceptions.
 function getSafeDateLocale(locale, fallback = 'en-US') {
   const rawLocale = String(locale || '').trim();
 
@@ -58,6 +65,7 @@ function formatHumanDate(dateInput, locale = 'en-US') {
   }).format(parseDate(dateInput));
 }
 
+// Sanitize form text fields before persisting calendar event data.
 function sanitizeText(value, maxLength = 255) {
   return String(value || '').trim().slice(0, maxLength);
 }
@@ -117,6 +125,7 @@ function getEventColorStyle(color) {
   return sanitizeColor(color);
 }
 
+// Convert raw database rows into UI-friendly calendar event objects.
 function normalizeEvent(event, t) {
   return {
     ...event,
@@ -134,6 +143,7 @@ function normalizeEvent(event, t) {
   };
 }
 
+// Build a fixed month grid and attach events to the matching local date cell.
 function buildMonthMatrix(baseDate, events, t) {
   const year = baseDate.getFullYear();
   const month = baseDate.getMonth();
@@ -180,6 +190,7 @@ function buildRedirect(view, date) {
   return `/calendar?view=${safeView}&date=${encodeURIComponent(safeDate)}`;
 }
 
+// Family calendars can assign events to members; lone users get a single fallback member.
 async function getCalendarMembers(familyId, currentUser) {
   if (!familyId) return [{ id: currentUser.id, name: currentUser.name || 'Me' }];
 
@@ -199,6 +210,7 @@ async function getCalendarMembers(familyId, currentUser) {
   return rows.length ? rows : [{ id: currentUser.id, name: currentUser.name || 'Me' }];
 }
 
+// Limit event reads and writes to either the current family workspace or personal workspace.
 function getEventScopeClause(familyId) {
   if (familyId) return 'family_id = ?';
   return 'family_id IS NULL AND user_id = ?';
@@ -208,6 +220,7 @@ function getScopeParams(familyId, userId) {
   return familyId ? [familyId] : [userId];
 }
 
+// Render the calendar for the selected date and workspace with summary statistics.
 router.get('/calendar', requireAuth, async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -319,6 +332,7 @@ router.get('/calendar', requireAuth, async (req, res) => {
   }
 });
 
+// Create an event in the current workspace after editor permission checks.
 router.post('/calendar/create', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -371,6 +385,7 @@ router.post('/calendar/create', requireAuth, requireBudgetEditor('calendar'), as
   }
 });
 
+// Update only events that belong to the current workspace scope.
 router.post('/calendar/update', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -439,6 +454,7 @@ router.post('/calendar/update', requireAuth, requireBudgetEditor('calendar'), as
   }
 });
 
+// Toggle completion for task-like calendar entries without leaving the current view.
 router.post('/calendar/complete', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -470,6 +486,7 @@ router.post('/calendar/complete', requireAuth, requireBudgetEditor('calendar'), 
   }
 });
 
+// Delete an event only after confirming it belongs to the accessible workspace.
 router.post('/calendar/delete', requireAuth, requireBudgetEditor('calendar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;

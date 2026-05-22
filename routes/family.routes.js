@@ -1,3 +1,9 @@
+/**
+ * Family routes.
+ * Manages family workspace creation, profile updates, avatar handling, member roles,
+ * activity history, leaving a family, and deleting a family workspace.
+ */
+
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -39,6 +45,7 @@ const upload = multer({
   }
 });
 
+// Store family page messages in the session for redirect-based form handling.
 function setFamilyFlash(req, type, message) {
   req.session.familyFlash = { type, message };
 }
@@ -58,6 +65,7 @@ function getFamilyMessage(req, key) {
   return req.t ? req.t(`family.messages.${key}`) : key;
 }
 
+// Map service-layer error messages to localized UI messages.
 function translateFamilyError(req, error, fallbackKey) {
   const originalMessage = error && error.message ? error.message : '';
   const errorMap = {
@@ -92,6 +100,7 @@ function removeLocalFamilyAvatar(avatarUrl) {
   });
 }
 
+// Compress uploaded family avatars before saving them into public uploads.
 async function saveCompressedFamilyAvatar(file) {
   if (!file) return null;
 
@@ -113,6 +122,7 @@ async function saveCompressedFamilyAvatar(file) {
   return filename;
 }
 
+// Build the family page view model for both family and personal-workspace states.
 async function renderFamilyPage(req, res, overrides = {}) {
   const currentUserId = req.session.user.id;
   const family = await getUserFamily(currentUserId);
@@ -171,6 +181,7 @@ router.get('/family', requireAuth, async (req, res) => {
   }
 });
 
+// Return member-specific activity entries for the expandable activity section.
 router.get('/family/activity/:userId', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -202,6 +213,7 @@ router.get('/family/activity/:userId', requireAuth, async (req, res) => {
   }
 });
 
+// Create a new family workspace and optionally move personal data into it.
 router.post('/family/create', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -220,6 +232,7 @@ router.post('/family/create', requireAuth, async (req, res) => {
   }
 });
 
+// Owner-only family name update.
 router.post('/family/update', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -246,6 +259,7 @@ router.post('/family/update', requireAuth, async (req, res) => {
 });
 
 
+// Owner/editor family motto update used by the family overview card.
 router.post('/family/motto', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -271,6 +285,7 @@ router.post('/family/motto', requireAuth, async (req, res) => {
   }
 });
 
+// Owner/editor avatar replacement for the shared family profile.
 router.post('/family/avatar', requireAuth, upload.single('avatar'), async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -323,6 +338,7 @@ router.post('/family/avatar/delete', requireAuth, async (req, res) => {
   }
 });
 
+// Add an existing registered user to the current family workspace.
 router.post('/family/members/add', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -349,6 +365,7 @@ router.post('/family/members/add', requireAuth, async (req, res) => {
   }
 });
 
+// Change member roles while preserving the rule that every family needs an owner.
 router.post('/family/members/:userId/role', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -375,6 +392,7 @@ router.post('/family/members/:userId/role', requireAuth, async (req, res) => {
   }
 });
 
+// Remove a family member after service-level owner and membership validation.
 router.post('/family/members/:userId/remove', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -402,6 +420,7 @@ router.post('/family/members/:userId/remove', requireAuth, async (req, res) => {
   }
 });
 
+// Let the current user leave the family unless they are the last owner.
 router.post('/family/leave', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;
@@ -423,6 +442,7 @@ router.post('/family/leave', requireAuth, async (req, res) => {
   }
 });
 
+// Delete the family workspace or move its data back to the owner's personal workspace.
 router.post('/family/delete', requireAuth, async (req, res) => {
   try {
     const currentUserId = req.session.user.id;

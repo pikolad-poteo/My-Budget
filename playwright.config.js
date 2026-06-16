@@ -31,7 +31,8 @@ module.exports = defineConfig({
     env: {
       ...process.env,
       NODE_ENV: 'test',
-      PORT: String(PORT)
+      PORT: String(PORT),
+      SESSION_SECRET: process.env.SESSION_SECRET || 'playwright-test-session-secret'
     }
   },
   projects: [

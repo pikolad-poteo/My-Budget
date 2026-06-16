@@ -1,7 +1,7 @@
 // Unit tests for Express authentication middleware.
 // These checks confirm that protected routes require a session user and anonymous users are redirected to login.
 
-const { attachUser, requireAuth } = require('../../scr/middleware');
+const { attachUser, requireAuth, renderForbidden } = require('../../scr/middleware');
 
 function createReq(user) {
   return {
@@ -14,7 +14,11 @@ function createReq(user) {
 function createRes() {
   return {
     locals: {},
-    redirect: jest.fn()
+    redirect: jest.fn(),
+    render: jest.fn(),
+    status: jest.fn(function status() {
+      return this;
+    })
   };
 }
 
@@ -65,6 +69,22 @@ describe('middleware', () => {
 
       expect(res.redirect).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('renderForbidden', () => {
+    test('renders the shared 403 page with an optional message', () => {
+      const req = createReq({ id: 3 });
+      const res = createRes();
+
+      renderForbidden(req, res, 'Only admins can open this page.');
+
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.render).toHaveBeenCalledWith('errors/403', {
+        title: 'Access denied',
+        activePage: '',
+        message: 'Only admins can open this page.'
+      });
     });
   });
 });

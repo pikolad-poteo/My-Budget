@@ -1,0 +1,20 @@
+<% /* Access-denied page for permission failures. */ %>
+<%- include('../partials/header') %>
+
+<section class="container auth-section">
+  <div class="auth-card text-center">
+    <p class="eyebrow">403</p>
+    <h1 class="page-title"><%= t('errors.accessDenied.title') %></h1>
+    <p class="page-text">
+      <%= typeof message !== 'undefined' && message ? message : t('errors.accessDenied.description') %>
+    </p>
+
+    <div class="hero-actions justify-content-center">
+      <a class="btn btn-primary rounded-pill px-4" href="<%= currentUser ? '/dashboard' : '/login' %>">
+        <%= currentUser ? t('errors.actions.backToDashboard') : t('errors.actions.backToLogin') %>
+      </a>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

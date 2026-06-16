@@ -1,0 +1,20 @@
+<% /* Server-error page that hides stack details in production. */ %>
+<%- include('../partials/header') %>
+
+<section class="container auth-section">
+  <div class="auth-card text-center">
+    <p class="eyebrow">500</p>
+    <h1 class="page-title"><%= t('errors.serverError.title') %></h1>
+    <p class="page-text">
+      <%= typeof message !== 'undefined' && message ? message : t('errors.serverError.description') %>
+    </p>
+
+    <div class="hero-actions justify-content-center">
+      <a class="btn btn-primary rounded-pill px-4" href="<%= currentUser ? '/dashboard' : '/login' %>">
+        <%= currentUser ? t('errors.actions.backToDashboard') : t('errors.actions.backToLogin') %>
+      </a>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

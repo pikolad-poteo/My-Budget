@@ -13,7 +13,19 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// Renders the shared 403 page for routes that need a direct permission failure.
+function renderForbidden(req, res, message) {
+  const title = req.t ? req.t('errors.accessDenied.title') : 'Access denied';
+
+  return res.status(403).render('errors/403', {
+    title,
+    activePage: '',
+    message
+  });
+}
+
 module.exports = {
   attachUser,
-  requireAuth
+  requireAuth,
+  renderForbidden
 };

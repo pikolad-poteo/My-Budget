@@ -1,7 +1,14 @@
 // Unit tests for authentication input helpers.
 // These checks protect the login, registration, password reset and account-management flows from invalid email/password values.
 
-const { normalizeEmail, isValidEmail, validatePassword } = require('../../scr/auth.validation');
+const {
+  USER_STATUSES,
+  normalizeEmail,
+  isValidEmail,
+  validatePassword,
+  normalizeUserStatus,
+  isActiveUserStatus
+} = require('../../scr/auth.validation');
 
 describe('auth.validation helpers', () => {
   describe('normalizeEmail', () => {
@@ -57,6 +64,20 @@ describe('auth.validation helpers', () => {
 
       expect(result.isValid).toBe(false);
       expect(result.message).toContain('no spaces');
+    });
+  });
+
+  describe('user status helpers', () => {
+    test('accepts active status for login', () => {
+      expect(normalizeUserStatus(USER_STATUSES.ACTIVE)).toBe(USER_STATUSES.ACTIVE);
+      expect(isActiveUserStatus(USER_STATUSES.ACTIVE)).toBe(true);
+    });
+
+    test('treats blocked, deleted and unknown statuses as inactive', () => {
+      expect(isActiveUserStatus(USER_STATUSES.BLOCKED)).toBe(false);
+      expect(isActiveUserStatus(USER_STATUSES.DELETED)).toBe(false);
+      expect(normalizeUserStatus('unexpected')).toBe(USER_STATUSES.BLOCKED);
+      expect(isActiveUserStatus('unexpected')).toBe(false);
     });
   });
 });

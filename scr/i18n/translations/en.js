@@ -91,6 +91,8 @@ module.exports = {
       enterEmailAndPassword: 'Please enter both email and password.',
       invalidEmailOrPassword: 'Invalid email or password.',
       verifyEmailBeforeLogin: 'Please verify your email before signing in. You can request a new verification email below.',
+      accountBlocked: 'This account is blocked or no longer active. Please contact support.',
+      tooManyAttempts: 'Too many attempts. Please wait and try again.',
       failedToSignIn: 'Failed to sign in. Please try again.',
       fillAllFields: 'Please fill in all fields.',
       invalidEmail: 'Please enter a valid email address.',
@@ -968,6 +970,26 @@ module.exports = {
       eventDeleted: 'Event deleted successfully.',
       failedToDeleteEvent: 'Failed to delete event.'
     }
+  },
+
+  errors: {
+    accessDenied: {
+      title: 'Access denied',
+      description: 'You do not have permission to open this page.'
+    },
+    notFound: {
+      title: 'Page not found',
+      description: 'The page you are looking for does not exist or may have been moved.'
+    },
+    serverError: {
+      title: 'Server error',
+      description: 'Something went wrong. Please try again later.'
+    },
+    actions: {
+      backToDashboard: 'Back to dashboard',
+      backToLogin: 'Back to login'
+    }
   }
+
 
 };

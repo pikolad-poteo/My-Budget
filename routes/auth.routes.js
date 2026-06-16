@@ -9,7 +9,8 @@ const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 const db = require('../scr/db');
-const { normalizeEmail, isValidEmail, validatePassword } = require('../scr/auth.validation');
+const { normalizeEmail, isValidEmail, validatePassword, isActiveUserStatus } = require('../scr/auth.validation');
+const { authLimiter, passwordResetLimiter } = require('../scr/rateLimiters');
 const { createEmailVerificationToken, sendVerificationToken, verifyEmailToken } = require('../scr/emailVerification.service');
 const { sendVerificationEmail } = require('../scr/mail.service');
 const { confirmPendingEmailChange } = require('../scr/pendingEmail.service');
@@ -92,6 +93,40 @@ function renderResendVerification(req, res, overrides = {}) {
   });
 }
 
+function getClientIp(req) {
+  const forwardedFor = req.get('x-forwarded-for');
+  const ip = req.ip ||
+    (forwardedFor ? forwardedFor.split(',')[0].trim() : '') ||
+    req.socket?.remoteAddress ||
+    '';
+
+  return ip ? ip.slice(0, 45) : null;
+}
+
+function logLoginAttempt(req, { email, userId = null, action, reason }) {
+  const payload = {
+    userId,
+    email: email || null,
+    ip: getClientIp(req),
+    userAgent: req.get('user-agent') || null,
+    reason
+  };
+
+  if (action === 'USER_LOGIN_SUCCESS') {
+    console.info(action, payload);
+    return;
+  }
+
+  console.warn(action, payload);
+}
+
+async function updateLastLogin(userId, ipAddress) {
+  await db.query(
+    'UPDATE users SET last_login_at = NOW(), last_login_ip = ? WHERE id = ? LIMIT 1',
+    [ipAddress, userId]
+  );
+}
+
 router.get('/login', (req, res) => {
   if (req.session.user) {
     return res.redirect('/dashboard');
@@ -109,11 +144,13 @@ router.get('/register', (req, res) => {
 });
 
 // Authenticate verified users and create the session user object used across protected pages.
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   const email = normalizeEmail(req.body.email);
   const password = String(req.body.password || '');
 
   if (!email || !password) {
+    logLoginAttempt(req, { email, action: 'USER_LOGIN_FAILED', reason: 'missing_credentials' });
+
     return renderLogin(req, res, {
       errorMessage: req.t('auth.messages.enterEmailAndPassword'),
       successMessage: ''
@@ -122,11 +159,18 @@ router.post('/login', async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      'SELECT id, name, email, avatar_url, password_hash, email_verified_at FROM users WHERE email = ? LIMIT 1',
+      `
+      SELECT id, name, email, avatar_url, password_hash, email_verified_at, status, global_role
+      FROM users
+      WHERE email = ?
+      LIMIT 1
+      `,
       [email]
     );
 
     if (rows.length === 0) {
+      logLoginAttempt(req, { email, action: 'USER_LOGIN_FAILED', reason: 'unknown_email' });
+
       return renderLogin(req, res, {
         errorMessage: req.t('auth.messages.invalidEmailOrPassword'),
         successMessage: ''
@@ -137,24 +181,42 @@ router.post('/login', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
+      logLoginAttempt(req, { email, userId: user.id, action: 'USER_LOGIN_FAILED', reason: 'invalid_password' });
+
       return renderLogin(req, res, {
         errorMessage: req.t('auth.messages.invalidEmailOrPassword'),
         successMessage: ''
       });
     }
 
+    if (!isActiveUserStatus(user.status)) {
+      logLoginAttempt(req, { email, userId: user.id, action: 'USER_LOGIN_FAILED', reason: `status_${user.status || 'unknown'}` });
+
+      return renderLogin(req, res, {
+        errorMessage: req.t('auth.messages.accountBlocked'),
+        successMessage: ''
+      });
+    }
+
     if (!user.email_verified_at) {
+      logLoginAttempt(req, { email, userId: user.id, action: 'USER_LOGIN_FAILED', reason: 'email_not_verified' });
+
       return renderLogin(req, res, {
         errorMessage: req.t('auth.messages.verifyEmailBeforeLogin'),
         successMessage: ''
       });
     }
 
+    const loginIp = getClientIp(req);
+    await updateLastLogin(user.id, loginIp);
+    logLoginAttempt(req, { email, userId: user.id, action: 'USER_LOGIN_SUCCESS', reason: 'authenticated' });
+
     req.session.user = {
       id: user.id,
       name: user.name,
       email: user.email,
-      avatar_url: user.avatar_url || null
+      avatar_url: user.avatar_url || null,
+      global_role: user.global_role || 'user'
     };
 
     return res.redirect('/dashboard');
@@ -169,7 +231,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Create a new user with a hashed password and send the first verification email.
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
   const name = String(req.body.name || '').trim();
   const email = normalizeEmail(req.body.email);
   const password = String(req.body.password || '');
@@ -298,7 +360,7 @@ router.get('/resend-verification', (req, res) => {
 });
 
 // Resend verification without revealing whether an address exists beyond normal form feedback.
-router.post('/resend-verification', async (req, res) => {
+router.post('/resend-verification', passwordResetLimiter, async (req, res) => {
   const email = normalizeEmail(req.body.email);
 
   if (!isValidEmail(email)) {
@@ -357,7 +419,7 @@ router.get('/forgot-password', (req, res) => {
 });
 
 // Start password reset by email while keeping the response safe for account enumeration.
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
   const email = normalizeEmail(req.body.email);
 
   if (!isValidEmail(email)) {
@@ -417,7 +479,7 @@ router.get('/reset-password/:token', async (req, res) => {
 });
 
 // Replace the password and invalidate the reset token in a single reset flow.
-router.post('/reset-password/:token', async (req, res) => {
+router.post('/reset-password/:token', passwordResetLimiter, async (req, res) => {
   const token = req.params.token;
   const password = String(req.body.password || '');
   const confirmPassword = String(req.body.confirmPassword || '');

@@ -91,6 +91,8 @@ module.exports = {
       enterEmailAndPassword: 'Sisesta email ja parool.',
       invalidEmailOrPassword: 'Vale email või parool.',
       verifyEmailBeforeLogin: 'Kinnita email enne sisselogimist. Allpool saad küsida uue kinnituskirja.',
+      accountBlocked: 'See konto on blokeeritud või pole enam aktiivne. Võta ühendust toega.',
+      tooManyAttempts: 'Liiga palju katseid. Oota ja proovi uuesti.',
       failedToSignIn: 'Sisselogimine ebaõnnestus. Proovi uuesti.',
       fillAllFields: 'Täida kõik väljad.',
       invalidEmail: 'Sisesta korrektne email.',
@@ -968,6 +970,26 @@ module.exports = {
       eventDeleted: 'Sündmus kustutati edukalt.',
       failedToDeleteEvent: 'Sündmuse kustutamine ebaõnnestus.'
     }
+  },
+
+  errors: {
+    accessDenied: {
+      title: 'Juurdepääs keelatud',
+      description: 'Sul ei ole õigust seda lehte avada.'
+    },
+    notFound: {
+      title: 'Lehte ei leitud',
+      description: 'Otsitud lehte ei ole olemas või see on teisaldatud.'
+    },
+    serverError: {
+      title: 'Serveri viga',
+      description: 'Midagi läks valesti. Proovi hiljem uuesti.'
+    },
+    actions: {
+      backToDashboard: 'Tagasi töölauale',
+      backToLogin: 'Tagasi sisselogimisele'
+    }
   }
+
 
 };

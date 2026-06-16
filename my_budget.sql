@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1
--- Время создания: Май 21 2026 г., 17:42
--- Версия сервера: 10.4.32-MariaDB
--- Версия PHP: 8.0.30
+-- Хост: localhost
+-- Время создания: Июн 16 2026 г., 13:07
+-- Версия сервера: 10.4.28-MariaDB
+-- Версия PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -259,6 +259,10 @@ CREATE TABLE `users` (
   `avatar_url` varchar(255) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `email_verified_at` datetime DEFAULT NULL,
+  `status` enum('active','blocked','deleted') NOT NULL DEFAULT 'active',
+  `global_role` enum('user','support_admin','global_admin') NOT NULL DEFAULT 'user',
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -266,10 +270,10 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `pending_email`, `pending_email_token_hash`, `pending_email_token_expires`, `avatar_url`, `password_hash`, `email_verified_at`, `created_at`) VALUES
-(1, 'Test Owner', 'admin@test.local', NULL, NULL, NULL, NULL, '$2b$12$9NoS4fpmnLf6AFu4A6qTLOyVe7b0w5C1zD0F3n9Brvl8a983qmDTG', '2026-05-01 09:00:00', '2026-05-01 09:00:00'),
-(2, 'Test Editor', 'admin@myshop.local', NULL, NULL, NULL, NULL, '$2b$12$0ljJLZXnRWJb3.5O8Y6E5eU38uMCyXBOEdOcWWQ1BSPxmsRZMNOJy', '2026-05-01 09:05:00', '2026-05-01 09:05:00'),
-(3, 'Test Viewer', 'viewer@test.local', NULL, NULL, NULL, NULL, '$2b$12$qKswsNhUGhyV9HHhvvzcZ.rB95ZuN546MwT3ARNa01i0xEja3YjsG', '2026-05-01 09:08:00', '2026-05-01 09:08:00');
+INSERT INTO `users` (`id`, `name`, `email`, `pending_email`, `pending_email_token_hash`, `pending_email_token_expires`, `avatar_url`, `password_hash`, `email_verified_at`, `status`, `global_role`, `last_login_at`, `last_login_ip`, `created_at`) VALUES
+(1, 'Test Owner', 'admin@test.local', NULL, NULL, NULL, NULL, '$2b$12$9NoS4fpmnLf6AFu4A6qTLOyVe7b0w5C1zD0F3n9Brvl8a983qmDTG', '2026-05-01 09:00:00', 'active', 'user', '2026-06-16 14:06:53', '::1', '2026-05-01 09:00:00'),
+(2, 'Test Editor', 'admin@myshop.local', NULL, NULL, NULL, NULL, '$2b$12$0ljJLZXnRWJb3.5O8Y6E5eU38uMCyXBOEdOcWWQ1BSPxmsRZMNOJy', '2026-05-01 09:05:00', 'active', 'user', NULL, NULL, '2026-05-01 09:05:00'),
+(3, 'Test Viewer', 'viewer@test.local', NULL, NULL, NULL, NULL, '$2b$12$qKswsNhUGhyV9HHhvvzcZ.rB95ZuN546MwT3ARNa01i0xEja3YjsG', '2026-05-01 09:08:00', 'active', 'user', NULL, NULL, '2026-05-01 09:08:00');
 
 -- --------------------------------------------------------
 
@@ -406,7 +410,9 @@ ALTER TABLE `transactions`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_users_status` (`status`),
+  ADD KEY `idx_users_global_role` (`global_role`);
 
 --
 -- Индексы таблицы `wishlist_folders`

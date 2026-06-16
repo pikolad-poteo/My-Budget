@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const helmet = require('helmet');
 const path = require('path');
 const session = require('express-session');
 
@@ -20,10 +21,51 @@ const languageRoutes = require('./routes/language.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SESSION_SECRET = process.env.SESSION_SECRET;
+
+if (!SESSION_SECRET) {
+  throw new Error('SESSION_SECRET is required');
+}
+
+app.set('trust proxy', 1);
 
 // Configure EJS as the server-side rendering engine for all application pages.
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Add baseline HTTP security headers. CSP is kept off until inline assets are migrated.
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
+
+function ensureErrorTemplateLocals(res) {
+  const fallbackTranslations = {
+    'app.name': 'My Budget',
+    'nav.login': 'Login',
+    'nav.register': 'Register',
+    'language.label': 'Language',
+    'language.english': 'English',
+    'language.russian': 'Russian',
+    'language.estonian': 'Estonian',
+    'language.short.en': 'EN',
+    'accessibility.toggleNavigation': 'Toggle navigation',
+    'errors.accessDenied.title': 'Access denied',
+    'errors.accessDenied.description': 'You do not have permission to open this page.',
+    'errors.notFound.title': 'Page not found',
+    'errors.notFound.description': 'The page you are looking for does not exist or may have been moved.',
+    'errors.serverError.title': 'Server error',
+    'errors.serverError.description': 'Something went wrong. Please try again later.',
+    'errors.actions.backToDashboard': 'Back to dashboard',
+    'errors.actions.backToLogin': 'Back to login'
+  };
+
+  res.locals.language = res.locals.language || 'en';
+  res.locals.languages = res.locals.languages || ['en', 'ru', 'et'];
+  res.locals.currentUser = res.locals.currentUser || null;
+  res.locals.t = res.locals.t || ((key) => fallbackTranslations[key] || key);
+}
 
 // Parse form submissions, JSON payloads and static assets before route handlers run.
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +76,7 @@ app.use('/vendor/chart.js', express.static(path.join(__dirname, 'node_modules/ch
 // Session cookie settings keep authenticated users signed in while limiting idle sessions to one hour.
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'my-budget-secret-key',
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     rolling: true,
@@ -67,7 +109,41 @@ app.use(pagesRoutes);
 
 // Final fallback for unknown routes that were not handled by any feature module.
 app.use((req, res) => {
-  res.status(404).send('404 - Page not found');
+  ensureErrorTemplateLocals(res);
+
+  const t = res.locals.t;
+
+  res.status(404).render('errors/404', {
+    title: t('errors.notFound.title'),
+    activePage: ''
+  });
+});
+
+// Central production error response. Keep details visible in development only.
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const statusCode = err.status === 403 || err.statusCode === 403 ? 403 : 500;
+  const view = statusCode === 403 ? 'errors/403' : 'errors/500';
+  console.error(err);
+  ensureErrorTemplateLocals(res);
+
+  const t = res.locals.t;
+  const productionMessage =
+    statusCode === 403
+      ? t('errors.accessDenied.description')
+      : t('errors.serverError.description');
+
+  return res.status(statusCode).render(view, {
+    title: statusCode === 403 ? t('errors.accessDenied.title') : t('errors.serverError.title'),
+    activePage: '',
+    message:
+      process.env.NODE_ENV === 'production'
+        ? productionMessage
+        : err.message
+  });
 });
 
 // Database checks run once during startup, not during requests, to avoid runtime schema changes.

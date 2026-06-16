@@ -1,4 +1,16 @@
 // Stores and compares emails in one predictable format across registration, login and account settings.
+const USER_STATUSES = Object.freeze({
+  ACTIVE: 'active',
+  BLOCKED: 'blocked',
+  DELETED: 'deleted'
+});
+
+const GLOBAL_ROLES = Object.freeze({
+  USER: 'user',
+  SUPPORT_ADMIN: 'support_admin',
+  GLOBAL_ADMIN: 'global_admin'
+});
+
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
@@ -76,8 +88,20 @@ function validatePassword(password, t) {
   };
 }
 
+function normalizeUserStatus(status) {
+  return Object.values(USER_STATUSES).includes(status) ? status : USER_STATUSES.BLOCKED;
+}
+
+function isActiveUserStatus(status) {
+  return normalizeUserStatus(status) === USER_STATUSES.ACTIVE;
+}
+
 module.exports = {
+  USER_STATUSES,
+  GLOBAL_ROLES,
   normalizeEmail,
   isValidEmail,
-  validatePassword
+  validatePassword,
+  normalizeUserStatus,
+  isActiveUserStatus
 };

@@ -91,6 +91,8 @@ module.exports = {
       enterEmailAndPassword: 'Введите email и пароль.',
       invalidEmailOrPassword: 'Неверный email или пароль.',
       verifyEmailBeforeLogin: 'Подтвердите email перед входом. Ниже можно запросить новое письмо для подтверждения.',
+      accountBlocked: 'Этот аккаунт заблокирован или больше не активен. Обратитесь в поддержку.',
+      tooManyAttempts: 'Слишком много попыток. Подождите и попробуйте снова.',
       failedToSignIn: 'Не удалось войти. Попробуйте еще раз.',
       fillAllFields: 'Заполните все поля.',
       invalidEmail: 'Введите корректный email.',
@@ -965,6 +967,26 @@ module.exports = {
       eventDeleted: 'Событие успешно удалено.',
       failedToDeleteEvent: 'Не удалось удалить событие.'
     }
+  },
+
+  errors: {
+    accessDenied: {
+      title: 'Доступ запрещён',
+      description: 'У вас нет прав для открытия этой страницы.'
+    },
+    notFound: {
+      title: 'Страница не найдена',
+      description: 'Страница не существует или была перемещена.'
+    },
+    serverError: {
+      title: 'Ошибка сервера',
+      description: 'Что-то пошло не так. Попробуйте позже.'
+    },
+    actions: {
+      backToDashboard: 'Вернуться на рабочий стол',
+      backToLogin: 'Вернуться ко входу'
+    }
   }
+
 
 };

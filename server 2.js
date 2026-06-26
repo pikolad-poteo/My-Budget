@@ -8,7 +8,6 @@ const session = require('express-session');
 const { initializeDatabase } = require('./scr/checkDatabase');
 const { attachI18n } = require('./scr/i18n');
 const { attachUser } = require('./scr/middleware');
-const { attachCsrfToken, validateCsrfToken } = require('./scr/csrf');
 
 const authRoutes = require('./routes/auth.routes');
 const familyRoutes = require('./routes/family.routes');
@@ -93,8 +92,6 @@ app.use(
 // Attach shared template helpers and the current session user to every rendered view.
 app.use(attachI18n);
 app.use(attachUser);
-app.use(attachCsrfToken);
-app.use(validateCsrfToken);
 
 /*
   Main application routes.

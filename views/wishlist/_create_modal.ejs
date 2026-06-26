@@ -1,6 +1,7 @@
 <% /* Wishlist create modal with optional image upload and URL-based fields. */ %>
 <div class="wishlist-create-panel-inline border-top pt-4" id="wishlistCreatePanel" hidden>
-  <form class="wishlist-form wishlist-create-form" data-wishlist-create-form action="/wishlist/create?<%= keepQuery %>" method="POST" enctype="multipart/form-data">
+  <form class="wishlist-form wishlist-create-form" data-wishlist-create-form action="/wishlist/create?<%= keepQuery %>&_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
       <div>
         <p class="section-label"><%= t('wishlist.create') %></p>

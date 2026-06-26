@@ -11,6 +11,7 @@
 
       <% if (familyPermissions.canManageMembers) { %>
         <form action="/family/members/add" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <div class="mb-3">
             <label class="form-label" for="email"><%= t('family.emailAddress') %></label>
             <input class="form-control rounded-3" id="email" name="email" type="email" placeholder="<%= t('family.registeredUserEmail') %>" required />
@@ -48,6 +49,7 @@
 
       <% if (familyPermissions.canManageFamily) { %>
         <form action="/family/update" method="POST" class="mb-4">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <label class="form-label" for="familyName"><%= t('family.familyName') %></label>
           <div class="family-inline-form">
             <input class="form-control rounded-3" id="familyName" name="familyName" type="text" value="<%= currentFamily.name %>" required />
@@ -55,7 +57,8 @@
           </div>
         </form>
 
-        <form action="/family/avatar" method="POST" enctype="multipart/form-data">
+        <form action="/family/avatar?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <label class="form-label" for="avatar"><%= t('family.familyAvatar') %></label>
           <input class="form-control rounded-3 mb-3" id="avatar" name="avatar" type="file" accept="image/*" />
           <button class="btn btn-secondary rounded-pill px-4 w-100" type="submit">
@@ -97,6 +100,7 @@
       </div>
 
       <form action="/family/leave" method="POST" class="mb-4" onsubmit="return confirm(<%- JSON.stringify(t('family.confirmLeaveFamily')) %>);">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <p class="family-sidebar-note mt-0">
           <%= t('family.lastOwnerTransferHint') %>
         </p>
@@ -107,6 +111,7 @@
 
       <% if (familyPermissions.canDeleteFamily) { %>
         <form action="/family/delete" method="POST" onsubmit="return confirm(<%- JSON.stringify(t('family.confirmDeleteFamily')) %>);">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <p class="family-sidebar-note mt-0">
             <%= t('family.deleteSidebarNote') %>
           </p>

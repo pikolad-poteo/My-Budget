@@ -8,6 +8,7 @@
   </div>
 
   <form class="category-form" method="POST" action="/categories/create" id="categoryCreateForm">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <input type="hidden" name="redirectTab" id="categoryRedirectTabInput" value="<%= typeof activeTab === 'string' ? activeTab : 'all' %>" />
     <input type="hidden" name="redirectQuery" value="<%= currentSearch %>" />
 

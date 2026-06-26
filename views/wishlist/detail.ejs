@@ -120,6 +120,7 @@
 
       <% if (canEditBudget) { %>
         <form class="wishlist-status-actions wishlist-detail-status-actions" action="/wishlist/<%= item.id %>/status" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <input type="hidden" name="return_to" value="/wishlist/<%= item.id %>" />
           <button class="btn btn-outline-secondary wishlist-status-option <%= item.status === 'planned' ? 'is-active is-planned' : '' %>" name="status" value="planned" type="submit"><%= t('wishlist.status.planned') %></button>
           <button class="btn btn-outline-secondary wishlist-status-option <%= item.status === 'postponed' ? 'is-active is-postponed' : '' %>" name="status" value="postponed" type="submit"><%= t('wishlist.status.postponed') %></button>
@@ -132,7 +133,8 @@
   <% if (canEditBudget) { %>
     <div class="wishlist-modal wishlist-item-edit-modal" id="wishlistEdit<%= item.id %>" hidden>
       <div class="wishlist-modal-backdrop" data-wishlist-item-modal-close></div>
-      <form class="wishlist-modal-card wishlist-edit-panel card border-0 rounded-4" action="/wishlist/<%= item.id %>/update" method="POST" enctype="multipart/form-data">
+      <form class="wishlist-modal-card wishlist-edit-panel card border-0 rounded-4" action="/wishlist/<%= item.id %>/update?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="wishlist-modal-header">
           <div>
             <p class="section-label"><%= t('wishlist.editWishlistItem') %></p>
@@ -276,6 +278,7 @@
     <div class="wishlist-modal" id="wishlistItemDeleteModal" hidden>
       <div class="wishlist-modal-backdrop" data-wishlist-item-modal-close></div>
       <form class="wishlist-modal-card card border-0 rounded-4 wishlist-delete-item-modal" id="wishlistItemDeleteForm" action="/wishlist/<%= item.id %>/delete" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="wishlist-modal-header">
           <div>
             <p class="section-label"><%= t('wishlist.deleteItem') %></p>

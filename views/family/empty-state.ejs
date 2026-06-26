@@ -95,6 +95,7 @@
       </div>
 
       <form action="/family/create" method="POST" class="family-preserve-scroll-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-body pt-3">
           <div class="family-warning-box mb-3">
             <i class="bi bi-arrow-left-right"></i>

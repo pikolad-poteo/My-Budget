@@ -19,6 +19,7 @@ const calendarRoutes = require('./routes/calendar.routes');
 const accountRoutes = require('./routes/account.routes');
 const pagesRoutes = require('./routes/pages.routes');
 const languageRoutes = require('./routes/language.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -83,6 +84,7 @@ app.use(transactionsRoutes);
 app.use(wishlistRoutes);
 app.use(calendarRoutes);
 app.use(accountRoutes);
+app.use(adminRoutes);
 app.use(pagesRoutes);
 
 // Final fallback for unknown routes that were not handled by any feature module.

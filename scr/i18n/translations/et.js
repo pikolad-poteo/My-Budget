@@ -13,7 +13,8 @@ module.exports = {
     account: 'Konto seaded',
     logout: 'Logi välja',
     login: 'Logi sisse',
-    register: 'Registreeru'
+    register: 'Registreeru',
+    admin: 'Admin'
   },
 
   language: {
@@ -993,6 +994,127 @@ module.exports = {
       backToLogin: 'Tagasi sisselogimisele'
     }
   }
+,
 
+admin: {
+    title: 'Admini paneel',
+    eyebrow: 'Globaalne haldus',
+    dashboardTitle: 'Admini ülevaade',
+    dashboardDescription: 'Tehniline ülevaade kasutajatest, peredest ja olulistest turvasündmustest.',
+    usersTitle: 'Kasutajad',
+    usersDescription: 'Otsi kasutajaid, kontrolli olekut, blokeeri kontosid ja halda globaalseid rolle.',
+    familiesTitle: 'Pered',
+    familiesDescription: 'Pere tööruumide tehniline statistika ilma detailseid finantsandmeid kuvamata.',
+    auditTitle: 'Audit logid',
+    auditDescription: 'Vaata olulisi sisselogimise, konto ja admini toiminguid.',
+    systemTitle: 'Süsteem',
+    systemDescription: 'Põhiline käivituskeskkonna info juurutuse kontrolliks.',
+    globalAdminOnly: 'Ainult global admin',
+    latestAuditLogs: 'Viimased audit logid',
+    usersFound: 'Leitud kasutajaid',
+    auditFound: 'Leitud audit kirjeid',
+    userDetails: 'Kasutaja andmed',
+    userFamilies: 'Kasutaja pered',
+    yes: 'Jah',
+    no: 'Ei',
+
+    nav: {
+      dashboard: 'Ülevaade',
+      users: 'Kasutajad',
+      families: 'Pered',
+      audit: 'Audit logid',
+      system: 'Süsteem'
+    },
+
+    stats: {
+      title: 'Admini statistika',
+      totalUsers: 'Kasutajaid kokku',
+      activeUsers: 'Aktiivsed kasutajad',
+      blockedUsers: 'Blokeeritud',
+      deletedUsers: 'Kustutatud',
+      globalAdmins: 'Globaalsed adminid',
+      totalFamilies: 'Peresid kokku',
+      totalTransactions: 'Tehingud',
+      totalWishlistItems: 'Wishlisti kirjed',
+      totalCalendarEvents: 'Kalendri sündmused',
+      newUsersThisMonth: 'Uued sel kuul',
+      failedLoginsThisMonth: 'Ebaõnnestunud sisselogimised'
+    },
+
+    filters: {
+      search: 'Otsing',
+      searchUsersPlaceholder: 'Nimi või email',
+      allStatuses: 'Kõik olekud',
+      allRoles: 'Kõik rollid',
+      from: 'Alates',
+      to: 'Kuni'
+    },
+
+    table: {
+      user: 'Kasutaja',
+      status: 'Olek',
+      role: 'Globaalne roll',
+      lastLogin: 'Viimane sisselogimine',
+      families: 'Pered',
+      actions: 'Toimingud',
+      time: 'Aeg',
+      action: 'Toiming',
+      ip: 'IP',
+      family: 'Pere',
+      owner: 'Omanik',
+      members: 'Liikmed',
+      transactions: 'Tehingud',
+      wishlist: 'Wishlist',
+      calendar: 'Kalender',
+      createdAt: 'Loodud',
+      emailVerified: 'Email kinnitatud',
+      joinedAt: 'Liitus',
+      entity: 'Objekt',
+      details: 'Detailid',
+      appVersion: 'Rakenduse versioon'
+    },
+
+    status: {
+      active: 'Aktiivne',
+      blocked: 'Blokeeritud',
+      deleted: 'Kustutatud'
+    },
+
+    roles: {
+      user: 'Kasutaja',
+      support_admin: 'Abiadministraator',
+      global_admin: 'Peamine omanik'
+    },
+
+    actions: {
+      viewAll: 'Vaata kõiki',
+      open: 'Ava',
+      block: 'Blokeeri',
+      unblock: 'Tühista blokeering',
+      save: 'Salvesta',
+      backToUsers: 'Tagasi kasutajate juurde'
+    },
+
+    empty: {
+      noAuditLogs: 'Audit logid puuduvad.',
+      noUsers: 'Kasutajaid ei leitud.',
+      noFamilies: 'Peresid ei leitud.'
+    },
+
+    messages: {
+      accessDenied: 'Seda lehte saavad avada ainult administraatorid.',
+      globalAdminOnly: 'Seda tegevust saab teha ainult süsteemi peamine omanik.',
+      userNotFound: 'Kasutajat ei leitud.',
+      cannotBlockSelf: 'Sa ei saa oma admini kontot blokeerida.',
+      cannotDemoteSelf: 'Sa ei saa enda peamise omaniku rolli eemaldada.',
+      cannotManageAdminUser: 'Administraatori kontosid ei saa blokeerida, avada ega taastada.',
+      cannotChangeAdminRole: 'Seda administraatori rolli ei saa muuta.',
+      onlyOneGlobalAdmin: 'Süsteemis võib olla ainult üks peamine omanik. Määra abiadministraatori roll.',
+      roleChangeRestricted: 'See roll on kaitstud ja sinu konto ei saa seda muuta.',
+      userBlocked: 'Kasutaja blokeeriti.',
+      userUnblocked: 'Kasutaja blokeering eemaldati.',
+      roleUpdated: 'Kasutaja globaalne roll uuendati.'
+    }
+  }
 
 };

@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <h1 class="page-title"><%= t('admin.systemTitle') %></h1>
+      <p class="page-text"><%= t('admin.systemDescription') %></p>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'system' }) %>
+
+    <section class="section-card">
+      <div class="admin-detail-list admin-system-list">
+        <div><span>NODE_ENV</span><strong><%= systemInfo.nodeEnv %></strong></div>
+        <div><span>Node.js</span><strong><%= systemInfo.nodeVersion %></strong></div>
+        <div><span><%= t('admin.table.appVersion') %></span><strong><%= systemInfo.appVersion %></strong></div>
+        <div><span>CSRF disabled</span><strong><%= systemInfo.csrfDisabled ? t('admin.yes') : t('admin.no') %></strong></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

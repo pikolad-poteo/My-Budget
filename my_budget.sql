@@ -290,7 +290,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `pending_email`, `pending_email_token_hash`, `pending_email_token_expires`, `avatar_url`, `password_hash`, `email_verified_at`, `status`, `global_role`, `last_login_at`, `last_login_ip`, `created_at`) VALUES
-(1, 'Test Owner', 'admin@test.local', NULL, NULL, NULL, NULL, '$2b$12$9NoS4fpmnLf6AFu4A6qTLOyVe7b0w5C1zD0F3n9Brvl8a983qmDTG', '2026-05-01 09:00:00', 'active', 'user', '2026-06-16 14:06:53', '::1', '2026-05-01 09:00:00'),
+(1, 'Test Owner', 'admin@test.local', NULL, NULL, NULL, NULL, '$2b$12$9NoS4fpmnLf6AFu4A6qTLOyVe7b0w5C1zD0F3n9Brvl8a983qmDTG', '2026-05-01 09:00:00', 'active', 'global_admin', '2026-06-16 14:06:53', '::1', '2026-05-01 09:00:00'),
 (2, 'Test Editor', 'admin@myshop.local', NULL, NULL, NULL, NULL, '$2b$12$0ljJLZXnRWJb3.5O8Y6E5eU38uMCyXBOEdOcWWQ1BSPxmsRZMNOJy', '2026-05-01 09:05:00', 'active', 'user', NULL, NULL, '2026-05-01 09:05:00'),
 (3, 'Test Viewer', 'viewer@test.local', NULL, NULL, NULL, NULL, '$2b$12$qKswsNhUGhyV9HHhvvzcZ.rB95ZuN546MwT3ARNa01i0xEja3YjsG', '2026-05-01 09:08:00', 'active', 'user', NULL, NULL, '2026-05-01 09:08:00');
 

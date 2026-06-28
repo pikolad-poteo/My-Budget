@@ -1,0 +1,149 @@
+<%- include('../partials/header') %>
+<%
+  const user = details.user;
+  const memberships = details.memberships || [];
+  const recentAuditLogs = details.recentAuditLogs || [];
+  const fmtDate = (value) => value ? new Date(value).toLocaleString(language || 'en') : '-';
+  const roleOptions = getEditableRoleValues(user);
+  const canEditRole = canManageUserRole(user) && roleOptions.length > 0;
+  const canEditStatus = canManageUserStatus(user);
+%>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <h1 class="page-title"><%= user.name %></h1>
+          <p class="page-text"><%= user.email %></p>
+        </div>
+        <a class="btn btn-outline-dark rounded-pill align-self-start" href="/admin/users">
+          <i class="bi bi-arrow-left me-2"></i><%= t('admin.actions.backToUsers') %>
+        </a>
+      </div>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'users' }) %>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <section class="section-card h-100">
+          <p class="section-label"><%= t('admin.userDetails') %></p>
+          <div class="admin-detail-list">
+            <div><span><%= t('admin.table.status') %></span><strong><%= t(`admin.status.${user.status}`) %></strong></div>
+            <div><span><%= t('admin.table.role') %></span><strong><%= t(`admin.roles.${user.global_role}`) %></strong></div>
+            <div><span><%= t('admin.table.createdAt') %></span><strong><%= fmtDate(user.created_at) %></strong></div>
+            <div><span><%= t('admin.table.emailVerified') %></span><strong><%= user.email_verified_at ? t('admin.yes') : t('admin.no') %></strong></div>
+            <div><span><%= t('admin.table.lastLogin') %></span><strong><%= fmtDate(user.last_login_at) %></strong></div>
+            <div><span><%= t('admin.table.ip') %></span><strong><%= user.last_login_ip || '-' %></strong></div>
+          </div>
+
+          <div class="admin-detail-actions mt-4">
+            <% if (user.status === 'blocked') { %>
+              <form action="/admin/users/<%= user.id %>/unblock" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button class="btn btn-outline-success rounded-pill w-100" type="submit" <%= canEditStatus ? '' : 'disabled' %>><%= t('admin.actions.unblock') %></button>
+              </form>
+            <% } else { %>
+              <form action="/admin/users/<%= user.id %>/block" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button class="btn btn-outline-danger rounded-pill w-100" type="submit" <%= canEditStatus ? '' : 'disabled' %>><%= t('admin.actions.block') %></button>
+              </form>
+            <% } %>
+
+            <% if (canEditRole) { %>
+              <form action="/admin/users/<%= user.id %>/role" method="POST" class="mt-3">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <label class="form-label" for="detailGlobalRole"><%= t('admin.table.role') %></label>
+                <div class="d-flex gap-2">
+                  <select class="form-select rounded-3" id="detailGlobalRole" name="global_role">
+                    <% roleOptions.forEach((role) => { %>
+                      <option value="<%= role %>" <%= user.global_role === role ? 'selected' : '' %>><%= t(`admin.roles.${role}`) %></option>
+                    <% }) %>
+                  </select>
+                  <button class="btn btn-primary rounded-3" type="submit"><%= t('admin.actions.save') %></button>
+                </div>
+              </form>
+            <% } else { %>
+              <p class="text-muted small mt-3 mb-0"><%= t('admin.messages.roleChangeRestricted') %></p>
+            <% } %>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-lg-8">
+        <section class="section-card mb-4">
+          <div class="section-header">
+            <div>
+              <p class="section-label"><%= t('admin.familiesTitle') %></p>
+              <h2><%= t('admin.userFamilies') %></h2>
+            </div>
+          </div>
+          <% if (memberships.length) { %>
+            <div class="table-responsive">
+              <table class="table align-middle admin-table mb-0">
+                <thead>
+                  <tr>
+                    <th><%= t('admin.table.family') %></th>
+                    <th><%= t('admin.table.role') %></th>
+                    <th><%= t('admin.table.joinedAt') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% memberships.forEach((family) => { %>
+                    <tr>
+                      <td><%= family.name %></td>
+                      <td><span class="admin-pill"><%= family.role %></span></td>
+                      <td><%= fmtDate(family.joined_at) %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="text-muted mb-0"><%= t('admin.empty.noFamilies') %></p>
+          <% } %>
+        </section>
+
+        <section class="section-card">
+          <div class="section-header">
+            <div>
+              <p class="section-label"><%= t('admin.auditTitle') %></p>
+              <h2><%= t('admin.latestAuditLogs') %></h2>
+            </div>
+          </div>
+          <% if (recentAuditLogs.length) { %>
+            <div class="table-responsive">
+              <table class="table align-middle admin-table mb-0">
+                <thead>
+                  <tr>
+                    <th><%= t('admin.table.time') %></th>
+                    <th><%= t('admin.table.action') %></th>
+                    <th><%= t('admin.table.entity') %></th>
+                    <th><%= t('admin.table.ip') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentAuditLogs.forEach((log) => { %>
+                    <tr>
+                      <td><%= fmtDate(log.created_at) %></td>
+                      <td><span class="admin-code"><%= log.action %></span></td>
+                      <td><%= log.entity_type || '-' %> <%= log.entity_id || '' %></td>
+                      <td><%= log.ip_address || '-' %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="text-muted mb-0"><%= t('admin.empty.noAuditLogs') %></p>
+          <% } %>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

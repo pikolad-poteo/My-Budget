@@ -13,7 +13,8 @@ module.exports = {
     account: 'Настройки аккаунта',
     logout: 'Выйти',
     login: 'Войти',
-    register: 'Регистрация'
+    register: 'Регистрация',
+    admin: 'Админ-панель'
   },
 
   language: {
@@ -990,6 +991,127 @@ module.exports = {
       backToLogin: 'Вернуться ко входу'
     }
   }
+,
 
+admin: {
+    title: 'Админ-панель',
+    eyebrow: 'Глобальное управление',
+    dashboardTitle: 'Панель администратора',
+    dashboardDescription: 'Технический обзор пользователей, семей и важных событий безопасности.',
+    usersTitle: 'Пользователи',
+    usersDescription: 'Поиск пользователей, проверка статуса, блокировка аккаунтов и управление глобальными ролями.',
+    familiesTitle: 'Семьи',
+    familiesDescription: 'Техническая статистика семейных пространств без просмотра детальных финансовых данных.',
+    auditTitle: 'Audit logs',
+    auditDescription: 'Просмотр важных действий входа, аккаунта и администрирования.',
+    systemTitle: 'Система',
+    systemDescription: 'Базовая информация о запуске приложения для проверки деплоя.',
+    globalAdminOnly: 'Только global admin',
+    latestAuditLogs: 'Последние события audit logs',
+    usersFound: 'Найдено пользователей',
+    auditFound: 'Найдено записей audit',
+    userDetails: 'Данные пользователя',
+    userFamilies: 'Семьи пользователя',
+    yes: 'Да',
+    no: 'Нет',
+
+    nav: {
+      dashboard: 'Обзор',
+      users: 'Пользователи',
+      families: 'Семьи',
+      audit: 'Audit logs',
+      system: 'Система'
+    },
+
+    stats: {
+      title: 'Статистика админки',
+      totalUsers: 'Всего пользователей',
+      activeUsers: 'Активные пользователи',
+      blockedUsers: 'Заблокированные',
+      deletedUsers: 'Удалённые',
+      globalAdmins: 'Глобальные админы',
+      totalFamilies: 'Всего семей',
+      totalTransactions: 'Транзакции',
+      totalWishlistItems: 'Позиции wishlist',
+      totalCalendarEvents: 'События календаря',
+      newUsersThisMonth: 'Новые за месяц',
+      failedLoginsThisMonth: 'Ошибки входа за месяц'
+    },
+
+    filters: {
+      search: 'Поиск',
+      searchUsersPlaceholder: 'Имя или email',
+      allStatuses: 'Все статусы',
+      allRoles: 'Все роли',
+      from: 'От',
+      to: 'До'
+    },
+
+    table: {
+      user: 'Пользователь',
+      status: 'Статус',
+      role: 'Глобальная роль',
+      lastLogin: 'Последний вход',
+      families: 'Семьи',
+      actions: 'Действия',
+      time: 'Время',
+      action: 'Действие',
+      ip: 'IP',
+      family: 'Семья',
+      owner: 'Владелец',
+      members: 'Участники',
+      transactions: 'Транзакции',
+      wishlist: 'Wishlist',
+      calendar: 'Календарь',
+      createdAt: 'Создано',
+      emailVerified: 'Email подтверждён',
+      joinedAt: 'Вступил',
+      entity: 'Объект',
+      details: 'Детали',
+      appVersion: 'Версия приложения'
+    },
+
+    status: {
+      active: 'Активен',
+      blocked: 'Заблокирован',
+      deleted: 'Удалён'
+    },
+
+    roles: {
+      user: 'Пользователь',
+      support_admin: 'Вспомогательный админ',
+      global_admin: 'Главный владелец'
+    },
+
+    actions: {
+      viewAll: 'Смотреть все',
+      open: 'Открыть',
+      block: 'Заблокировать',
+      unblock: 'Разблокировать',
+      save: 'Сохранить',
+      backToUsers: 'Назад к пользователям'
+    },
+
+    empty: {
+      noAuditLogs: 'Audit logs пока пустые.',
+      noUsers: 'Пользователи не найдены.',
+      noFamilies: 'Семьи не найдены.'
+    },
+
+    messages: {
+      accessDenied: 'Эта страница доступна только администраторам.',
+      globalAdminOnly: 'Это действие доступно только главному владельцу системы.',
+      userNotFound: 'Пользователь не найден.',
+      cannotBlockSelf: 'Нельзя заблокировать свой собственный админ-аккаунт.',
+      cannotDemoteSelf: 'Нельзя убрать роль главного владельца у самого себя.',
+      cannotManageAdminUser: 'Нельзя блокировать, разблокировать или восстанавливать аккаунты администраторов.',
+      cannotChangeAdminRole: 'Нельзя изменить эту административную роль.',
+      onlyOneGlobalAdmin: 'В системе может быть только один главный владелец. Назначьте роль вспомогательного админа.',
+      roleChangeRestricted: 'Эта роль защищена и недоступна для изменения вашим аккаунтом.',
+      userBlocked: 'Пользователь заблокирован.',
+      userUnblocked: 'Пользователь разблокирован.',
+      roleUpdated: 'Глобальная роль пользователя обновлена.'
+    }
+  }
 
 };

@@ -1,0 +1,100 @@
+<%- include('../partials/header') %>
+<%
+  const auditLogs = logs || [];
+  const fmtDate = (value) => value ? new Date(value).toLocaleString(language || 'en') : '-';
+%>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <h1 class="page-title"><%= t('admin.auditTitle') %></h1>
+      <p class="page-text"><%= t('admin.auditDescription') %></p>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'audit' }) %>
+
+    <section class="section-card mb-4">
+      <form class="row g-3 align-items-end" action="/admin/audit" method="GET">
+        <div class="col-md-3">
+          <label class="form-label" for="auditAction"><%= t('admin.table.action') %></label>
+          <input class="form-control rounded-3" id="auditAction" name="action" value="<%= filters.action || '' %>" placeholder="USER_LOGIN_FAILED" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="auditUserId">User ID</label>
+          <input class="form-control rounded-3" id="auditUserId" name="userId" value="<%= filters.userId || '' %>" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="auditEntityType"><%= t('admin.table.entity') %></label>
+          <input class="form-control rounded-3" id="auditEntityType" name="entityType" value="<%= filters.entityType || '' %>" placeholder="user" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="auditIp"><%= t('admin.table.ip') %></label>
+          <input class="form-control rounded-3" id="auditIp" name="ip" value="<%= filters.ip || '' %>" />
+        </div>
+        <div class="col-md-1">
+          <label class="form-label" for="auditDateFrom"><%= t('admin.filters.from') %></label>
+          <input class="form-control rounded-3" id="auditDateFrom" name="dateFrom" value="<%= filters.dateFrom || '' %>" type="date" />
+        </div>
+        <div class="col-md-1">
+          <label class="form-label" for="auditDateTo"><%= t('admin.filters.to') %></label>
+          <input class="form-control rounded-3" id="auditDateTo" name="dateTo" value="<%= filters.dateTo || '' %>" type="date" />
+        </div>
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-primary rounded-3" type="submit"><i class="bi bi-filter"></i></button>
+        </div>
+      </form>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <p class="section-label"><%= t('admin.auditTitle') %></p>
+          <h2><%= t('admin.auditFound') %>: <%= Number(total || 0).toLocaleString(language || 'en') %></h2>
+        </div>
+      </div>
+
+      <% if (auditLogs.length) { %>
+        <div class="table-responsive">
+          <table class="table align-middle admin-table mb-0">
+            <thead>
+              <tr>
+                <th><%= t('admin.table.time') %></th>
+                <th><%= t('admin.table.action') %></th>
+                <th><%= t('admin.table.user') %></th>
+                <th><%= t('admin.table.family') %></th>
+                <th><%= t('admin.table.entity') %></th>
+                <th><%= t('admin.table.ip') %></th>
+                <th><%= t('admin.table.details') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% auditLogs.forEach((log) => { %>
+                <tr>
+                  <td><%= fmtDate(log.created_at) %></td>
+                  <td><span class="admin-code"><%= log.action %></span></td>
+                  <td>
+                    <% if (log.user_id) { %>
+                      <a href="/admin/users/<%= log.user_id %>"><%= log.user_email || log.user_name || `#${log.user_id}` %></a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td><%= log.family_name || (log.family_id ? `#${log.family_id}` : '-') %></td>
+                  <td><%= log.entity_type || '-' %> <%= log.entity_id || '' %></td>
+                  <td><%= log.ip_address || '-' %></td>
+                  <td><code class="admin-details-code"><%= log.details || '-' %></code></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0"><%= t('admin.empty.noAuditLogs') %></p>
+      <% } %>
+    </section>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

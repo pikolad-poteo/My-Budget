@@ -1,0 +1,87 @@
+<%- include('../partials/header') %>
+<%
+  const fmtNumber = (value) => Number(value || 0).toLocaleString(language || 'en');
+  const latestLogs = latestAuditLogs || [];
+  const statCards = [
+    { label: t('admin.stats.totalUsers'), value: stats.total_users, icon: 'bi-people' },
+    { label: t('admin.stats.activeUsers'), value: stats.active_users, icon: 'bi-person-check' },
+    { label: t('admin.stats.blockedUsers'), value: stats.blocked_users, icon: 'bi-person-x' },
+    { label: t('admin.stats.globalAdmins'), value: stats.global_admins, icon: 'bi-shield-lock' },
+    { label: t('admin.stats.totalFamilies'), value: stats.total_families, icon: 'bi-house-heart' },
+    { label: t('admin.stats.totalTransactions'), value: stats.total_transactions, icon: 'bi-receipt' },
+    { label: t('admin.stats.totalWishlistItems'), value: stats.total_wishlist_items, icon: 'bi-gift' },
+    { label: t('admin.stats.totalCalendarEvents'), value: stats.total_calendar_events, icon: 'bi-calendar-event' },
+    { label: t('admin.stats.newUsersThisMonth'), value: stats.new_users_this_month, icon: 'bi-person-plus' },
+    { label: t('admin.stats.failedLoginsThisMonth'), value: stats.failed_logins_this_month, icon: 'bi-exclamation-triangle' }
+  ];
+%>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <h1 class="page-title"><%= t('admin.dashboardTitle') %></h1>
+          <p class="page-text"><%= t('admin.dashboardDescription') %></p>
+        </div>
+        <div class="admin-hero-lock">
+          <i class="bi bi-shield-check"></i>
+          <span><%= t('admin.globalAdminOnly') %></span>
+        </div>
+      </div>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'dashboard' }) %>
+
+    <section class="admin-stats-grid mb-4" aria-label="<%= t('admin.stats.title') %>">
+      <% statCards.forEach((card) => { %>
+        <article class="section-card admin-stat-card">
+          <span class="admin-stat-icon"><i class="bi <%= card.icon %>"></i></span>
+          <strong><%= fmtNumber(card.value) %></strong>
+          <span><%= card.label %></span>
+        </article>
+      <% }) %>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <p class="section-label"><%= t('admin.auditTitle') %></p>
+          <h2><%= t('admin.latestAuditLogs') %></h2>
+        </div>
+        <a class="btn btn-outline-dark btn-small" href="/admin/audit"><%= t('admin.actions.viewAll') %></a>
+      </div>
+
+      <% if (latestLogs.length) { %>
+        <div class="table-responsive">
+          <table class="table align-middle admin-table mb-0">
+            <thead>
+              <tr>
+                <th><%= t('admin.table.time') %></th>
+                <th><%= t('admin.table.action') %></th>
+                <th><%= t('admin.table.user') %></th>
+                <th><%= t('admin.table.ip') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% latestLogs.forEach((log) => { %>
+                <tr>
+                  <td><%= log.created_at ? new Date(log.created_at).toLocaleString(language || 'en') : '-' %></td>
+                  <td><span class="admin-code"><%= log.action %></span></td>
+                  <td><%= log.user_email || log.user_name || '-' %></td>
+                  <td><%= log.ip_address || '-' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0"><%= t('admin.empty.noAuditLogs') %></p>
+      <% } %>
+    </section>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

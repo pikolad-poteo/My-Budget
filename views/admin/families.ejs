@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+<%
+  const familiesList = families || [];
+  const fmtDate = (value) => value ? new Date(value).toLocaleString(language || 'en') : '-';
+%>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <h1 class="page-title"><%= t('admin.familiesTitle') %></h1>
+      <p class="page-text"><%= t('admin.familiesDescription') %></p>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'families' }) %>
+
+    <section class="section-card">
+      <% if (familiesList.length) { %>
+        <div class="table-responsive">
+          <table class="table align-middle admin-table mb-0">
+            <thead>
+              <tr>
+                <th><%= t('admin.table.family') %></th>
+                <th><%= t('admin.table.owner') %></th>
+                <th><%= t('admin.table.members') %></th>
+                <th><%= t('admin.table.transactions') %></th>
+                <th><%= t('admin.table.wishlist') %></th>
+                <th><%= t('admin.table.calendar') %></th>
+                <th><%= t('admin.table.createdAt') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% familiesList.forEach((family) => { %>
+                <tr>
+                  <td><strong><%= family.name %></strong></td>
+                  <td><%= family.owner_email || family.owner_name || '-' %></td>
+                  <td><%= Number(family.members_count || 0).toLocaleString(language || 'en') %></td>
+                  <td><%= Number(family.transactions_count || 0).toLocaleString(language || 'en') %></td>
+                  <td><%= Number(family.wishlist_items_count || 0).toLocaleString(language || 'en') %></td>
+                  <td><%= Number(family.calendar_events_count || 0).toLocaleString(language || 'en') %></td>
+                  <td><%= fmtDate(family.created_at) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0"><%= t('admin.empty.noFamilies') %></p>
+      <% } %>
+    </section>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

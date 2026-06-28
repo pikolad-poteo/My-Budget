@@ -1,0 +1,18 @@
+<% /* Admin secondary navigation. */ %>
+<div class="admin-tabs section-card mb-4">
+  <a class="admin-tab <%= activeAdminPage === 'dashboard' ? 'active' : '' %>" href="/admin">
+    <i class="bi bi-speedometer2"></i><%= t('admin.nav.dashboard') %>
+  </a>
+  <a class="admin-tab <%= activeAdminPage === 'users' ? 'active' : '' %>" href="/admin/users">
+    <i class="bi bi-people"></i><%= t('admin.nav.users') %>
+  </a>
+  <a class="admin-tab <%= activeAdminPage === 'families' ? 'active' : '' %>" href="/admin/families">
+    <i class="bi bi-house-heart"></i><%= t('admin.nav.families') %>
+  </a>
+  <a class="admin-tab <%= activeAdminPage === 'audit' ? 'active' : '' %>" href="/admin/audit">
+    <i class="bi bi-journal-text"></i><%= t('admin.nav.audit') %>
+  </a>
+  <a class="admin-tab <%= activeAdminPage === 'system' ? 'active' : '' %>" href="/admin/system">
+    <i class="bi bi-hdd-network"></i><%= t('admin.nav.system') %>
+  </a>
+</div>

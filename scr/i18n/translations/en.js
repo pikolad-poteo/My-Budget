@@ -13,7 +13,8 @@ module.exports = {
     account: 'Account settings',
     logout: 'Logout',
     login: 'Login',
-    register: 'Register'
+    register: 'Register',
+    admin: 'Admin'
   },
 
   language: {
@@ -993,6 +994,127 @@ module.exports = {
       backToLogin: 'Back to login'
     }
   }
+,
 
+admin: {
+    title: 'Admin panel',
+    eyebrow: 'Global control',
+    dashboardTitle: 'Admin dashboard',
+    dashboardDescription: 'Technical overview of users, families and important security events.',
+    usersTitle: 'Users',
+    usersDescription: 'Search users, check status, block accounts and manage global roles.',
+    familiesTitle: 'Families',
+    familiesDescription: 'Technical family workspace statistics without exposing detailed financial records.',
+    auditTitle: 'Audit logs',
+    auditDescription: 'Review important authentication, account and admin actions.',
+    systemTitle: 'System',
+    systemDescription: 'Basic runtime information for deployment checks.',
+    globalAdminOnly: 'Global admin only',
+    latestAuditLogs: 'Latest audit logs',
+    usersFound: 'Users found',
+    auditFound: 'Audit records found',
+    userDetails: 'User details',
+    userFamilies: 'User families',
+    yes: 'Yes',
+    no: 'No',
+
+    nav: {
+      dashboard: 'Dashboard',
+      users: 'Users',
+      families: 'Families',
+      audit: 'Audit logs',
+      system: 'System'
+    },
+
+    stats: {
+      title: 'Admin statistics',
+      totalUsers: 'Total users',
+      activeUsers: 'Active users',
+      blockedUsers: 'Blocked users',
+      deletedUsers: 'Deleted users',
+      globalAdmins: 'Global admins',
+      totalFamilies: 'Total families',
+      totalTransactions: 'Transactions',
+      totalWishlistItems: 'Wishlist items',
+      totalCalendarEvents: 'Calendar events',
+      newUsersThisMonth: 'New users this month',
+      failedLoginsThisMonth: 'Failed logins this month'
+    },
+
+    filters: {
+      search: 'Search',
+      searchUsersPlaceholder: 'Name or email',
+      allStatuses: 'All statuses',
+      allRoles: 'All roles',
+      from: 'From',
+      to: 'To'
+    },
+
+    table: {
+      user: 'User',
+      status: 'Status',
+      role: 'Global role',
+      lastLogin: 'Last login',
+      families: 'Families',
+      actions: 'Actions',
+      time: 'Time',
+      action: 'Action',
+      ip: 'IP',
+      family: 'Family',
+      owner: 'Owner',
+      members: 'Members',
+      transactions: 'Transactions',
+      wishlist: 'Wishlist',
+      calendar: 'Calendar',
+      createdAt: 'Created at',
+      emailVerified: 'Email verified',
+      joinedAt: 'Joined at',
+      entity: 'Entity',
+      details: 'Details',
+      appVersion: 'App version'
+    },
+
+    status: {
+      active: 'Active',
+      blocked: 'Blocked',
+      deleted: 'Deleted'
+    },
+
+    roles: {
+      user: 'User',
+      support_admin: 'Support admin',
+      global_admin: 'System owner'
+    },
+
+    actions: {
+      viewAll: 'View all',
+      open: 'Open',
+      block: 'Block',
+      unblock: 'Unblock',
+      save: 'Save',
+      backToUsers: 'Back to users'
+    },
+
+    empty: {
+      noAuditLogs: 'No audit logs yet.',
+      noUsers: 'No users found.',
+      noFamilies: 'No families found.'
+    },
+
+    messages: {
+      accessDenied: 'Only administrators can open this page.',
+      globalAdminOnly: 'Only the system owner can perform this action.',
+      userNotFound: 'User was not found.',
+      cannotBlockSelf: 'You cannot block your own admin account.',
+      cannotDemoteSelf: 'You cannot remove your own system owner role.',
+      cannotManageAdminUser: 'You cannot block, unblock, or restore administrator accounts.',
+      cannotChangeAdminRole: 'You cannot change this administrator role.',
+      onlyOneGlobalAdmin: 'Only one system owner is allowed. Assign Support admin instead.',
+      roleChangeRestricted: 'This role is protected and cannot be changed by your account.',
+      userBlocked: 'User has been blocked.',
+      userUnblocked: 'User has been unblocked.',
+      roleUpdated: 'User global role has been updated.'
+    }
+  }
 
 };

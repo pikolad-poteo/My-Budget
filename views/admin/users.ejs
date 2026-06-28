@@ -1,0 +1,129 @@
+<%- include('../partials/header') %>
+<%
+  const fmtDate = (value) => value ? new Date(value).toLocaleString(language || 'en') : '-';
+  const usersList = users || [];
+%>
+
+<section class="admin-page">
+  <div class="container">
+    <section class="hero section-card mb-4">
+      <p class="eyebrow"><%= t('admin.eyebrow') %></p>
+      <h1 class="page-title"><%= t('admin.usersTitle') %></h1>
+      <p class="page-text"><%= t('admin.usersDescription') %></p>
+    </section>
+
+    <%- include('_flash') %>
+    <%- include('_nav', { activeAdminPage: 'users' }) %>
+
+    <section class="section-card mb-4">
+      <form class="row g-3 align-items-end" action="/admin/users" method="GET">
+        <div class="col-md-5">
+          <label class="form-label" for="adminUserSearch"><%= t('admin.filters.search') %></label>
+          <input class="form-control rounded-3" id="adminUserSearch" name="q" value="<%= filters.search || '' %>" placeholder="<%= t('admin.filters.searchUsersPlaceholder') %>" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="adminUserStatus"><%= t('admin.table.status') %></label>
+          <select class="form-select rounded-3" id="adminUserStatus" name="status">
+            <option value="all"><%= t('admin.filters.allStatuses') %></option>
+            <% statusValues.forEach((status) => { %>
+              <option value="<%= status %>" <%= filters.status === status ? 'selected' : '' %>><%= t(`admin.status.${status}`) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="adminUserRole"><%= t('admin.table.role') %></label>
+          <select class="form-select rounded-3" id="adminUserRole" name="role">
+            <option value="all"><%= t('admin.filters.allRoles') %></option>
+            <% roleValues.forEach((role) => { %>
+              <option value="<%= role %>" <%= filters.role === role ? 'selected' : '' %>><%= t(`admin.roles.${role}`) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-primary rounded-3" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+      </form>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <p class="section-label"><%= t('admin.usersTitle') %></p>
+          <h2><%= t('admin.usersFound') %>: <%= Number(total || 0).toLocaleString(language || 'en') %></h2>
+        </div>
+      </div>
+
+      <% if (usersList.length) { %>
+        <div class="table-responsive">
+          <table class="table align-middle admin-table mb-0">
+            <thead>
+              <tr>
+                <th><%= t('admin.table.user') %></th>
+                <th><%= t('admin.table.status') %></th>
+                <th><%= t('admin.table.role') %></th>
+                <th><%= t('admin.table.lastLogin') %></th>
+                <th><%= t('admin.table.families') %></th>
+                <th class="text-end"><%= t('admin.table.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% usersList.forEach((user) => { %>
+                <%
+                  const roleOptions = getEditableRoleValues(user);
+                  const canEditRole = canManageUserRole(user) && roleOptions.length > 0;
+                  const canEditStatus = canManageUserStatus(user);
+                %>
+                <tr>
+                  <td>
+                    <a class="admin-user-link" href="/admin/users/<%= user.id %>"><strong><%= user.name %></strong></a>
+                    <div class="text-muted small"><%= user.email %></div>
+                  </td>
+                  <td><span class="admin-pill is-<%= user.status %>"><%= t(`admin.status.${user.status}`) %></span></td>
+                  <td>
+                    <% if (canEditRole) { %>
+                      <form class="admin-inline-form" action="/admin/users/<%= user.id %>/role" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <select class="form-select form-select-sm rounded-3" name="global_role" onchange="this.form.submit()">
+                          <% roleOptions.forEach((role) => { %>
+                            <option value="<%= role %>" <%= user.global_role === role ? 'selected' : '' %>><%= t(`admin.roles.${role}`) %></option>
+                          <% }) %>
+                        </select>
+                      </form>
+                    <% } else { %>
+                      <span class="admin-pill"><%= t(`admin.roles.${user.global_role}`) %></span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <%= fmtDate(user.last_login_at) %>
+                    <% if (user.last_login_ip) { %><div class="text-muted small"><%= user.last_login_ip %></div><% } %>
+                  </td>
+                  <td><%= Number(user.families_count || 0).toLocaleString(language || 'en') %></td>
+                  <td class="text-end">
+                    <div class="admin-actions">
+                      <a class="btn btn-outline-dark btn-sm rounded-pill" href="/admin/users/<%= user.id %>"><%= t('admin.actions.open') %></a>
+                      <% if (user.status === 'blocked') { %>
+                        <form action="/admin/users/<%= user.id %>/unblock" method="POST">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                          <button class="btn btn-outline-success btn-sm rounded-pill" type="submit" <%= canEditStatus ? '' : 'disabled' %>><%= t('admin.actions.unblock') %></button>
+                        </form>
+                      <% } else { %>
+                        <form action="/admin/users/<%= user.id %>/block" method="POST">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                          <button class="btn btn-outline-danger btn-sm rounded-pill" type="submit" <%= canEditStatus ? '' : 'disabled' %>><%= t('admin.actions.block') %></button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0"><%= t('admin.empty.noUsers') %></p>
+      <% } %>
+    </section>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

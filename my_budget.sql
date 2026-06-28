@@ -24,6 +24,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED DEFAULT NULL,
+  `family_id` int(10) UNSIGNED DEFAULT NULL,
+  `action` varchar(100) NOT NULL,
+  `entity_type` varchar(100) DEFAULT NULL,
+  `entity_id` int(10) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`details`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `calendar_events`
 --
 
@@ -338,6 +357,16 @@ INSERT INTO `wishlist_items` (`id`, `user_id`, `family_id`, `title`, `amount`, `
 --
 
 --
+-- Индексы таблицы `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_audit_user` (`user_id`),
+  ADD KEY `idx_audit_family` (`family_id`),
+  ADD KEY `idx_audit_action` (`action`),
+  ADD KEY `idx_audit_created_at` (`created_at`);
+
+--
 -- Индексы таблицы `calendar_events`
 --
 ALTER TABLE `calendar_events`
@@ -438,6 +467,12 @@ ALTER TABLE `wishlist_items`
 --
 
 --
+-- AUTO_INCREMENT для таблицы `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT для таблицы `calendar_events`
 --
 ALTER TABLE `calendar_events`
@@ -506,6 +541,13 @@ ALTER TABLE `wishlist_items`
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
+
+--
+-- Ограничения внешнего ключа таблицы `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD CONSTRAINT `fk_audit_logs_family` FOREIGN KEY (`family_id`) REFERENCES `families` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_audit_logs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Ограничения внешнего ключа таблицы `calendar_events`

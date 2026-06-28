@@ -17,6 +17,7 @@ const { requireAuth } = require('../scr/middleware');
 const { normalizeEmail, isValidEmail, validatePassword } = require('../scr/auth.validation');
 const { sendEmailChangeVerificationEmail } = require('../scr/mail.service');
 const { createPendingEmailChange, cancelPendingEmailChange } = require('../scr/pendingEmail.service');
+const { safeAuditFromRequest } = require('../scr/audit.service');
 
 const accountUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'users');
 fs.mkdirSync(accountUploadDir, { recursive: true });
@@ -147,7 +148,8 @@ function syncSessionUser(req, user) {
     id: user.id,
     name: user.name,
     email: user.email,
-    avatar_url: user.avatar_url || null
+    avatar_url: user.avatar_url || null,
+    global_role: req.session.user?.global_role || user.global_role || 'user'
   };
 }
 
@@ -236,6 +238,13 @@ router.post('/account/profile', requireAuth, async (req, res) => {
       const updatedUser = await getCurrentUser(req.session.user.id);
       syncSessionUser(req, updatedUser);
 
+      await safeAuditFromRequest(req, {
+        action: 'ACCOUNT_PROFILE_UPDATED',
+        entityType: 'user',
+        entityId: req.session.user.id,
+        details: { changedEmail: false }
+      });
+
       setAccountFlash(req, 'success', req.t('account.messages.accountUpdated'));
       return res.redirect('/account');
     }
@@ -252,6 +261,12 @@ router.post('/account/profile', requireAuth, async (req, res) => {
 
       const token = await createPendingEmailChange(connection, req.session.user.id, email);
       await sendEmailChangeVerificationEmail(email, token);
+      await safeAuditFromRequest(req, {
+        action: 'EMAIL_CHANGE_REQUESTED',
+        entityType: 'user',
+        entityId: req.session.user.id,
+        details: { pendingEmail: email }
+      }, connection);
       await connection.commit();
     } catch (error) {
       await connection.rollback();
@@ -278,6 +293,11 @@ router.post('/account/profile', requireAuth, async (req, res) => {
 router.post('/account/email-change/cancel', requireAuth, async (req, res) => {
   try {
     await cancelPendingEmailChange(req.session.user.id);
+    await safeAuditFromRequest(req, {
+      action: 'EMAIL_CHANGE_CANCELLED',
+      entityType: 'user',
+      entityId: req.session.user.id
+    });
     setAccountFlash(req, 'success', req.t('account.messages.pendingEmailCancelled'));
     return res.redirect('/account');
   } catch (error) {
@@ -300,6 +320,11 @@ router.post('/account/avatar', requireAuth, runAccountAvatarUpload, async (req, 
     const avatarUrl = getAvatarUrl(filename);
 
     await db.query('UPDATE users SET avatar_url = ? WHERE id = ? LIMIT 1', [avatarUrl, req.session.user.id]);
+    await safeAuditFromRequest(req, {
+      action: 'ACCOUNT_AVATAR_UPDATED',
+      entityType: 'user',
+      entityId: req.session.user.id
+    });
     removeLocalUserAvatar(accountUser.avatar_url);
 
     const updatedUser = await getCurrentUser(req.session.user.id);
@@ -319,6 +344,11 @@ router.post('/account/avatar/delete', requireAuth, async (req, res) => {
     const accountUser = await getCurrentUser(req.session.user.id);
 
     await db.query('UPDATE users SET avatar_url = NULL WHERE id = ? LIMIT 1', [req.session.user.id]);
+    await safeAuditFromRequest(req, {
+      action: 'ACCOUNT_AVATAR_DELETED',
+      entityType: 'user',
+      entityId: req.session.user.id
+    });
     removeLocalUserAvatar(accountUser.avatar_url);
 
     const updatedUser = await getCurrentUser(req.session.user.id);
@@ -374,6 +404,11 @@ router.post('/account/password', requireAuth, async (req, res) => {
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
     await db.query('UPDATE users SET password_hash = ? WHERE id = ? LIMIT 1', [passwordHash, req.session.user.id]);
+    await safeAuditFromRequest(req, {
+      action: 'PASSWORD_CHANGED',
+      entityType: 'user',
+      entityId: req.session.user.id
+    });
 
     setAccountFlash(req, 'success', req.t('account.messages.passwordChanged'));
     return res.redirect('/account');
@@ -399,6 +434,11 @@ router.post('/account/delete', requireAuth, async (req, res) => {
     }
 
     const accountUser = await getCurrentUser(req.session.user.id);
+    await safeAuditFromRequest(req, {
+      action: 'ACCOUNT_DELETED',
+      entityType: 'user',
+      entityId: req.session.user.id
+    });
     await db.query('DELETE FROM users WHERE id = ? LIMIT 1', [req.session.user.id]);
     removeLocalUserAvatar(accountUser.avatar_url);
 

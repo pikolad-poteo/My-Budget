@@ -19,6 +19,7 @@ const {
   getValidPasswordResetToken,
   usePasswordResetToken
 } = require('../scr/passwordReset.service');
+const { safeAuditFromRequest, getClientIp } = require('../scr/audit.service');
 
 // Store authentication messages in the session so they remain visible after redirects.
 function setAuthFlash(req, type, message) {
@@ -93,16 +94,6 @@ function renderResendVerification(req, res, overrides = {}) {
   });
 }
 
-function getClientIp(req) {
-  const forwardedFor = req.get('x-forwarded-for');
-  const ip = req.ip ||
-    (forwardedFor ? forwardedFor.split(',')[0].trim() : '') ||
-    req.socket?.remoteAddress ||
-    '';
-
-  return ip ? ip.slice(0, 45) : null;
-}
-
 function logLoginAttempt(req, { email, userId = null, action, reason }) {
   const payload = {
     userId,
@@ -111,6 +102,17 @@ function logLoginAttempt(req, { email, userId = null, action, reason }) {
     userAgent: req.get('user-agent') || null,
     reason
   };
+
+  safeAuditFromRequest(req, {
+    userId,
+    action,
+    entityType: 'user',
+    entityId: userId,
+    details: {
+      email: email || null,
+      reason
+    }
+  });
 
   if (action === 'USER_LOGIN_SUCCESS') {
     console.info(action, payload);
@@ -292,6 +294,14 @@ router.post('/register', authLimiter, async (req, res) => {
     const token = await createEmailVerificationToken(connection, result.insertId);
     await sendVerificationEmail(email, token);
 
+    await safeAuditFromRequest(req, {
+      userId: result.insertId,
+      action: 'USER_REGISTERED',
+      entityType: 'user',
+      entityId: result.insertId,
+      details: { email }
+    }, connection);
+
     await connection.commit();
 
     setAuthFlash(req, 'success', req.t('auth.messages.accountCreated'));
@@ -322,6 +332,11 @@ router.get('/verify-email/:token', async (req, res) => {
     }
 
     setAuthFlash(req, 'success', req.t('auth.messages.emailVerified'));
+    await safeAuditFromRequest(req, {
+      action: 'EMAIL_VERIFIED',
+      entityType: 'user',
+      details: { tokenVerified: true }
+    });
     return res.redirect('/login');
   } catch (error) {
     console.error('Email verification error:', error.message);
@@ -347,6 +362,11 @@ router.get('/verify-email-change/:token', async (req, res) => {
     }
 
     setAuthFlash(req, 'success', req.t('auth.messages.emailChangeConfirmed'));
+    await safeAuditFromRequest(req, {
+      action: 'EMAIL_CHANGED',
+      entityType: 'user',
+      details: { tokenVerified: true }
+    });
     return res.redirect('/login');
   } catch (error) {
     console.error('Pending email verification error:', error.message);
@@ -498,6 +518,15 @@ router.post('/reset-password/:token', passwordResetLimiter, async (req, res) => 
   }
 
   try {
+    const validResetToken = await getValidPasswordResetToken(token);
+
+    if (!validResetToken) {
+      return renderResetPassword(req, res, token, {
+        isTokenValid: false,
+        errorMessage: req.t('auth.messages.resetLinkInvalid')
+      });
+    }
+
     const passwordHash = await bcrypt.hash(password, 12);
     const wasUpdated = await usePasswordResetToken(token, passwordHash);
 
@@ -507,6 +536,13 @@ router.post('/reset-password/:token', passwordResetLimiter, async (req, res) => 
         errorMessage: req.t('auth.messages.resetLinkInvalid')
       });
     }
+
+    await safeAuditFromRequest(req, {
+      userId: validResetToken.user_id,
+      action: 'PASSWORD_RESET_COMPLETED',
+      entityType: 'user',
+      entityId: validResetToken.user_id
+    });
 
     setAuthFlash(req, 'success', req.t('auth.messages.passwordChanged'));
     return res.redirect('/login');

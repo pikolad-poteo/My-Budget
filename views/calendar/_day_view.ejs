@@ -33,6 +33,7 @@
           <summary><%= t('calendar.editEvent') %></summary>
 
           <form action="/calendar/update" method="POST" class="calendar-edit-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="id" value="<%= event.id %>">
             <input type="hidden" name="redirect_view" value="<%= calendarView %>">
             <input type="hidden" name="redirect_date" value="<%= selectedDate %>">
@@ -127,6 +128,7 @@
 
       <div class="calendar-day-item-actions">
         <form action="/calendar/complete" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <input type="hidden" name="id" value="<%= event.id %>">
           <input type="hidden" name="redirect_view" value="<%= calendarView %>">
           <input type="hidden" name="redirect_date" value="<%= selectedDate %>">
@@ -134,6 +136,7 @@
         </form>
 
         <form action="/calendar/delete" method="POST" onsubmit="return confirm('<%= t('calendar.confirmDelete') %>');">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <input type="hidden" name="id" value="<%= event.id %>">
           <input type="hidden" name="redirect_view" value="<%= calendarView %>">
           <input type="hidden" name="redirect_date" value="<%= selectedDate %>">

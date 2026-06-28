@@ -985,6 +985,9 @@ module.exports = {
       title: 'Server error',
       description: 'Something went wrong. Please try again later.'
     },
+    csrf: {
+      description: 'The form session has expired. Please refresh the page and try again.'
+    },
     actions: {
       backToDashboard: 'Back to dashboard',
       backToLogin: 'Back to login'

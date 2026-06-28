@@ -2,6 +2,7 @@
 <div class="wishlist-modal" id="wishlistFolderCreateModal" hidden>
   <div class="wishlist-modal-backdrop" data-folder-modal-close></div>
   <form class="wishlist-modal-card card border-0 rounded-4" action="/wishlist/folders/create?<%= keepQuery %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="wishlist-modal-header">
       <div>
         <p class="section-label"><%= t('wishlist.createFolder') %></p>
@@ -49,6 +50,7 @@
 <div class="wishlist-modal" id="wishlistFolderRenameModal" hidden>
   <div class="wishlist-modal-backdrop" data-folder-modal-close></div>
   <form class="wishlist-modal-card card border-0 rounded-4" action="/wishlist/folders/rename?<%= keepQuery %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="wishlist-modal-header">
       <div>
         <p class="section-label"><%= t('wishlist.renameFolder') %></p>
@@ -86,6 +88,7 @@
 <div class="wishlist-modal" id="wishlistFolderDeleteModal" hidden>
   <div class="wishlist-modal-backdrop" data-folder-modal-close></div>
   <form class="wishlist-modal-card card border-0 rounded-4" action="/wishlist/folders/delete?<%= keepQuery %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="wishlist-modal-header">
       <div>
         <p class="section-label"><%= t('wishlist.deleteFolder') %></p>
@@ -127,6 +130,7 @@
 <div class="wishlist-modal" id="wishlistItemDeleteModal" hidden>
   <div class="wishlist-modal-backdrop" data-wishlist-item-modal-close></div>
   <form class="wishlist-modal-card card border-0 rounded-4 wishlist-delete-item-modal" id="wishlistItemDeleteForm" action="/wishlist" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="wishlist-modal-header">
       <div>
         <p class="section-label"><%= t('wishlist.deleteItem') %></p>
@@ -180,6 +184,7 @@
 <div class="wishlist-modal wishlist-existing-items-modal" id="wishlistExistingItemsModal" hidden>
   <div class="wishlist-modal-backdrop" data-wishlist-add-modal-close></div>
   <form class="wishlist-modal-card card border-0 rounded-4 wishlist-existing-items-card" action="/wishlist/folders/add-items?<%= keepQuery %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="wishlist-modal-header">
       <div>
         <p class="section-label"><%= t('wishlist.existingCards') %></p>

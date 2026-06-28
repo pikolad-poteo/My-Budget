@@ -7,6 +7,7 @@
 </div>
 
 <form action="/calendar/create" method="POST" class="calendar-quick-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <input type="hidden" name="redirect_view" value="<%= calendarView %>">
 
   <div class="form-group">

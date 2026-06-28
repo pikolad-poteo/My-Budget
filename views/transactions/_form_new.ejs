@@ -26,6 +26,7 @@
     </div>
   <% } else { %>
     <form class="transaction-form" method="POST" action="/transactions/create">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
       <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
       <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />

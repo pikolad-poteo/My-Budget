@@ -67,12 +67,14 @@
             <p class="account-avatar-help"><%= t('account.avatarHelp') %></p>
           </div>
 
-          <form action="/account/avatar" method="POST" enctype="multipart/form-data" class="d-none" id="accountAvatarForm">
+          <form action="/account/avatar?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data" class="d-none" id="accountAvatarForm">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input id="accountAvatarInput" name="avatar" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-invalid-type="<%= t('account.messages.uploadJpgPngOnly') %>" data-too-large="<%= t('account.messages.avatarTooLarge') %>" />
           </form>
 
           <% if (accountUser.avatar_url) { %>
             <form action="/account/avatar/delete" method="POST" class="account-avatar-delete-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button class="btn btn-primary rounded-pill px-4" type="submit"><%= t('account.deleteAvatar') %></button>
             </form>
           <% } %>
@@ -129,6 +131,7 @@
           <h2><%= t('account.profileSettings') %></h2>
 
           <form action="/account/profile" method="POST" class="account-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-group">
               <label class="form-label" for="name"><%= t('account.name') %></label>
               <input class="form-control form-input" id="name" name="name" type="text" value="<%= accountUser.name %>" maxlength="100" required />
@@ -160,6 +163,7 @@
           <h2><%= t('account.changePassword') %></h2>
 
           <form action="/account/password" method="POST" class="account-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-group">
               <label class="form-label" for="currentPassword"><%= t('account.currentPassword') %></label>
               <input class="form-control form-input" id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" placeholder="<%= t('account.currentPasswordPlaceholder') %>" required />
@@ -213,6 +217,7 @@
       </div>
 
       <form action="/account/delete" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-body pt-3">
           <p class="account-modal-note">
             <%= t('account.deleteAccountWarning') %>

@@ -985,6 +985,9 @@ module.exports = {
       title: 'Serveri viga',
       description: 'Midagi läks valesti. Proovi hiljem uuesti.'
     },
+    csrf: {
+      description: 'Vormi sessioon aegus. Värskenda lehte ja proovi uuesti.'
+    },
     actions: {
       backToDashboard: 'Tagasi töölauale',
       backToLogin: 'Tagasi sisselogimisele'

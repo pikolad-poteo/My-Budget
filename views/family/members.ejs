@@ -64,6 +64,7 @@
 
             <% if (familyPermissions.canManageMembers) { %>
               <form action="/family/members/<%= member.id %>/role" method="POST" class="family-role-form family-preserve-scroll-form" aria-label="<%= t('family.changeRoleFor') %> <%= member.name || member.email %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <select class="form-select rounded-pill family-role-select" name="role" onchange="this.form.submit()">
                   <option value="owner" <%= member.role === 'owner' ? 'selected' : '' %>><%= t('family.roles.owner') %></option>
                   <option value="editor" <%= member.role === 'editor' ? 'selected' : '' %>><%= t('family.roles.editor') %></option>
@@ -78,6 +79,7 @@
               </button>
             <% } else if (familyPermissions.canManageMembers) { %>
               <form action="/family/members/<%= member.id %>/remove" method="POST" class="family-remove-member-form family-preserve-scroll-form" onsubmit="return confirm(<%- JSON.stringify(t('family.confirmRemoveMember')) %>);">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button class="btn btn-secondary btn-small family-remove-member-btn" type="submit">
                   <i class="bi bi-trash me-2"></i><%= t('family.remove') %>
                 </button>
@@ -110,6 +112,7 @@
       </div>
 
       <form action="/family/leave" method="POST" class="family-preserve-scroll-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-body pt-3">
           <div class="family-warning-box mb-3">
             <i class="bi bi-box-arrow-right"></i>
@@ -144,6 +147,7 @@
       </div>
 
       <form action="/family/delete" method="POST" class="family-preserve-scroll-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-body pt-3">
           <div class="family-danger-box mb-3">
             <i class="bi bi-exclamation-triangle"></i>

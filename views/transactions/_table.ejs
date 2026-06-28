@@ -128,6 +128,7 @@
                   action="/transactions/<%= transaction.id %>/update"
                   data-history-mutation-form
                 >
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
                   <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
                   <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />
@@ -188,6 +189,7 @@
                   onsubmit="return confirm('<%= t('transactions.confirmDelete') %>');"
                   data-history-mutation-form
                 >
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <input type="hidden" name="redirectFrom" value="<%= filters.from %>" />
                   <input type="hidden" name="redirectTo" value="<%= filters.to %>" />
                   <input type="hidden" name="redirectCategory" value="<%= filters.category %>" />

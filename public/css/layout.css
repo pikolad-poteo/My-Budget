@@ -181,11 +181,20 @@
 }
 
 .app-user-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 4px 0;
   border-radius: 12px;
   padding: 10px 12px;
   color: #374151;
   font-weight: 700;
   font-size: 14px;
+  line-height: 1.2;
+}
+
+.app-user-menu-item i {
+  line-height: 1;
 }
 
 .app-user-menu-item:hover,
@@ -319,4 +328,15 @@
   .app-guest-language-menu {
     width: 100%;
   }
+}
+
+/* Highlight the admin panel shortcut in the account dropdown. */
+.app-user-menu-item[href="/admin"]:not(.active) {
+  color: #dc2626;
+}
+
+.app-user-menu-item[href="/admin"]:not(.active):hover,
+.app-user-menu-item[href="/admin"].active {
+  background: #dc2626;
+  color: #ffffff;
 }

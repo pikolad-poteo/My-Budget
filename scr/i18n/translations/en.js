@@ -1010,6 +1010,7 @@ admin: {
     systemTitle: 'System',
     systemDescription: 'Basic runtime information for deployment checks.',
     globalAdminOnly: 'Global admin only',
+    supportAdminOnly: 'Support admin only',
     latestAuditLogs: 'Latest audit logs',
     usersFound: 'Users found',
     auditFound: 'Audit records found',

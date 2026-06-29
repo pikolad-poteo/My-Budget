@@ -25,9 +25,9 @@
           <h1 class="page-title"><%= t('admin.dashboardTitle') %></h1>
           <p class="page-text"><%= t('admin.dashboardDescription') %></p>
         </div>
-        <div class="admin-hero-lock">
-          <i class="bi bi-shield-check"></i>
-          <span><%= t('admin.globalAdminOnly') %></span>
+        <div class="admin-hero-lock <%= isSupportAdminUser ? 'is-support-admin' : '' %>">
+          <i class="bi <%= isSupportAdminUser ? 'bi-headset' : 'bi-shield-check' %>"></i>
+          <span><%= isSupportAdminUser ? t('admin.supportAdminOnly') : t('admin.globalAdminOnly') %></span>
         </div>
       </div>
     </section>

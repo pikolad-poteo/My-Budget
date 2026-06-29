@@ -1007,6 +1007,7 @@ admin: {
     systemTitle: 'Система',
     systemDescription: 'Базовая информация о запуске приложения для проверки деплоя.',
     globalAdminOnly: 'Только global admin',
+    supportAdminOnly: 'Support admin only',
     latestAuditLogs: 'Последние события audit logs',
     usersFound: 'Найдено пользователей',
     auditFound: 'Найдено записей audit',

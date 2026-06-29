@@ -1010,6 +1010,7 @@ admin: {
     systemTitle: 'Süsteem',
     systemDescription: 'Põhiline käivituskeskkonna info juurutuse kontrolliks.',
     globalAdminOnly: 'Ainult global admin',
+    supportAdminOnly: 'Support admin only',
     latestAuditLogs: 'Viimased audit logid',
     usersFound: 'Leitud kasutajaid',
     auditFound: 'Leitud audit kirjeid',

@@ -41,6 +41,8 @@
 </head>
 
 <body>
+  <% const languageReturnPath = encodeURIComponent(currentPath || '/'); %>
+
   <header class="site-header sticky-top">
     <nav class="navbar navbar-expand-lg bg-white border-bottom">
       <div class="container">
@@ -151,21 +153,21 @@
                       <div class="app-user-menu-language-options" aria-label="<%= t('language.label') %>">
                         <a
                           class="app-language-option <%= language === 'en' ? 'active' : '' %>"
-                          href="/language/en"
+                          href="/language/en?returnTo=<%= languageReturnPath %>"
                         >
                           <%= t('language.short.en') %>
                         </a>
 
                         <a
                           class="app-language-option <%= language === 'ru' ? 'active' : '' %>"
-                          href="/language/ru"
+                          href="/language/ru?returnTo=<%= languageReturnPath %>"
                         >
                           <%= t('language.short.ru') %>
                         </a>
 
                         <a
                           class="app-language-option <%= language === 'et' ? 'active' : '' %>"
-                          href="/language/et"
+                          href="/language/et?returnTo=<%= languageReturnPath %>"
                         >
                           <%= t('language.short.et') %>
                         </a>
@@ -195,17 +197,17 @@
 
                 <ul class="dropdown-menu dropdown-menu-end app-guest-language-menu shadow-sm">
                   <li>
-                    <a class="dropdown-item app-user-menu-item <%= language === 'en' ? 'active' : '' %>" href="/language/en">
+                    <a class="dropdown-item app-user-menu-item <%= language === 'en' ? 'active' : '' %>" href="/language/en?returnTo=<%= languageReturnPath %>">
                       <%= t('language.english') %>
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item app-user-menu-item <%= language === 'ru' ? 'active' : '' %>" href="/language/ru">
+                    <a class="dropdown-item app-user-menu-item <%= language === 'ru' ? 'active' : '' %>" href="/language/ru?returnTo=<%= languageReturnPath %>">
                       <%= t('language.russian') %>
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item app-user-menu-item <%= language === 'et' ? 'active' : '' %>" href="/language/et">
+                    <a class="dropdown-item app-user-menu-item <%= language === 'et' ? 'active' : '' %>" href="/language/et?returnTo=<%= languageReturnPath %>">
                       <%= t('language.estonian') %>
                     </a>
                   </li>

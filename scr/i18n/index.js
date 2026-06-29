@@ -34,6 +34,7 @@ function attachI18n(req, res, next) {
 
   res.locals.language = language;
   res.locals.languages = SUPPORTED_LANGUAGES;
+  res.locals.currentPath = req.originalUrl || req.url || '/';
   res.locals.t = req.t;
 
   next();
